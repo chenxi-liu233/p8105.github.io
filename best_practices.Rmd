@@ -6,10 +6,6 @@ output:
     toc_float: true
 ---
 
-We'll going to get up-to-speed on the basic tools in R. As part of that, we'll define and establish some good habits.
-
-This is the first module in the [Building Blocks](topic_building_blocks.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CMPF9U6LA).
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -19,21 +15,32 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Some slides
+This is the first module in the [Building Blocks](topic_building_blocks.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CMPF9U6LA).
 
-<div class="container">
-  <h2>Simple Collapsible</h2>
-  <p>Click on the button to toggle between showing and hiding content.</p>
-  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Simple collapsible</button>
-  <div id="demo" class="collapse">
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-  </div>
-</div>
+## {.tabset .tabset-pills}
+
+### Learning objectives
+
+We'll going to get up-to-speed on the basic tools in R. As part of that, we'll define and establish some good habits.
+
+
+### Slide Deck
 
 <script async class="speakerdeck-embed" data-id="39618f30472e4cac9659ce4f21a98aa6" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices-1" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+### Video Lecture
+
+<iframe 
+  src="https://www.youtube.com/embed/oHg5SJYRHA0" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+  allowfullscreen
+  style="width:100%" 
+  height="100%" 
+  width="100%"></iframe>
+
+
 
 ## Example
 
