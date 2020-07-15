@@ -467,6 +467,7 @@ div.tocify {
 <div id="learning-objectives" class="section level3">
 <h3>Learning objectives</h3>
 <p>We’ll going to get up-to-speed on the basic tools in R. As part of that, we’ll define and establish some good habits.</p>
+<hr />
 </div>
 <div id="slide-deck" class="section level3">
 <h3>Slide Deck</h3>
@@ -475,11 +476,16 @@ div.tocify {
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices-1" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
 </div>
 <div id="video-lecture" class="section level3">
 <h3>Video Lecture</h3>
-<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%" height="100%" width="100%">
-</iframe>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
 </div>
 </div>
 <div id="example" class="section level2">
@@ -527,15 +533,15 @@ x + y
 <p>When making assignments, R assumes you don’t want to see the result. If you do want to see the result, you’ll have to ask for it. You can also apply <strong>functions</strong> to objects.</p>
 <pre class="r"><code>x = runif(20)
 x
-##  [1] 0.96259137 0.43910491 0.21749190 0.24744033 0.42320196 0.53371822
-##  [7] 0.78279877 0.09661989 0.36009812 0.86386769 0.93104833 0.02562611
-## [13] 0.12064119 0.48833360 0.48981922 0.56749763 0.19637339 0.48805653
-## [19] 0.96391056 0.67314933
+##  [1] 0.81468847 0.89557473 0.95630362 0.84425447 0.41497086 0.60947665
+##  [7] 0.93893096 0.77273620 0.24346899 0.06686018 0.33354774 0.40581665
+## [13] 0.03958786 0.08890528 0.65039471 0.85594370 0.76927962 0.37923743
+## [19] 0.26725667 0.76885419
 
 mean(x)
-## [1] 0.4935695
+## [1] 0.5558044
 var(x)
-## [1] 0.08732813</code></pre>
+## [1] 0.09684448</code></pre>
 <p>We’ve created two variables, <code>x</code> and <code>y</code> – these now exist in the <strong>environment</strong>. You can see everything in the environment using <code>ls()</code> on the command line, or check out the environment pane in RStudio.</p>
 <p>(If you care about these things, <a href="https://colinfay.me/r-assignment/">people</a> have <a href="https://twitter.com/JennyBryan/status/1162185393518759936">opinions</a> about <a href="https://r4ds.had.co.nz/workflow-basics.html#coding-basics">assignment operators</a>. I don’t have such strong opinions about this, and don’t care much if you use <code>=</code> or <code>&lt;-</code>.)</p>
 </div>
