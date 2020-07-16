@@ -462,16 +462,21 @@ div.tocify {
 
 
 <p>This is the first module in the <a href="topic_building_blocks.html">Building Blocks</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CMPF9U6LA">here</a>.</p>
-<div id="section" class="section level2 tabset tabset-pills">
-<h2></h2>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
 <div id="learning-objectives" class="section level3">
-<h3>Learning objectives</h3>
+<h3>Learning Objectives</h3>
 <p>We’ll going to get up-to-speed on the basic tools in R. As part of that, we’ll define and establish some good habits.</p>
-<hr />
 </div>
 <div id="slide-deck" class="section level3">
 <h3>Slide Deck</h3>
-<script async class="speakerdeck-embed" data-id="39618f30472e4cac9659ce4f21a98aa6" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/39618f30472e4cac9659ce4f21a98aa6" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices-1" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
@@ -533,15 +538,15 @@ x + y
 <p>When making assignments, R assumes you don’t want to see the result. If you do want to see the result, you’ll have to ask for it. You can also apply <strong>functions</strong> to objects.</p>
 <pre class="r"><code>x = runif(20)
 x
-##  [1] 0.81468847 0.89557473 0.95630362 0.84425447 0.41497086 0.60947665
-##  [7] 0.93893096 0.77273620 0.24346899 0.06686018 0.33354774 0.40581665
-## [13] 0.03958786 0.08890528 0.65039471 0.85594370 0.76927962 0.37923743
-## [19] 0.26725667 0.76885419
+##  [1] 0.12473722 0.65757424 0.47305807 0.63287686 0.33831964 0.86547218
+##  [7] 0.22626265 0.34988653 0.94406635 0.47775888 0.76852944 0.03043873
+## [13] 0.36703062 0.31959543 0.24530848 0.65717250 0.56927042 0.23091663
+## [19] 0.63728597 0.15349437
 
 mean(x)
-## [1] 0.5558044
+## [1] 0.4534528
 var(x)
-## [1] 0.09684448</code></pre>
+## [1] 0.06547782</code></pre>
 <p>We’ve created two variables, <code>x</code> and <code>y</code> – these now exist in the <strong>environment</strong>. You can see everything in the environment using <code>ls()</code> on the command line, or check out the environment pane in RStudio.</p>
 <p>(If you care about these things, <a href="https://colinfay.me/r-assignment/">people</a> have <a href="https://twitter.com/JennyBryan/status/1162185393518759936">opinions</a> about <a href="https://r4ds.had.co.nz/workflow-basics.html#coding-basics">assignment operators</a>. I don’t have such strong opinions about this, and don’t care much if you use <code>=</code> or <code>&lt;-</code>.)</p>
 </div>
