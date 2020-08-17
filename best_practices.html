@@ -506,20 +506,19 @@ div.tocify {
 <p>Launch R Studio and take stock – find the Console, the Environment/History, and the Files/Plots/Packages/Help. This is also a good time to set some preferences – I like to turn off saving the workspace and history, and also turn on a lot of the R code diagnostics.</p>
 <p>Create a new R script using File &gt; New File &gt; R Script. Write a short comment section describing what this is, and follow along with the code below!</p>
 <pre class="r"><code>##################################################################
-# Sept 5, 2019
+# Sept 5, 2020
 # Jeff Goldsmith
 #
 # Script for exploring R!
 ##################################################################</code></pre>
 <p>As part of <a href="homework_0.html">Homework 0</a>, we installed a lot of packages. You don’t need to re-install those each time you need them, but you do need to load packages you want to use with the <code>library</code> function. Although we won’t use it yet, I’m going to load the <code>tidyverse</code> package now.</p>
 <pre class="r"><code>library(tidyverse)
-## Warning: package &#39;tidyverse&#39; was built under R version 4.0.1
-## ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 ## ✓ ggplot2 3.3.0     ✓ purrr   0.3.4
 ## ✓ tibble  3.0.1     ✓ dplyr   0.8.5
-## ✓ tidyr   1.0.3     ✓ stringr 1.4.0
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
 ## ✓ readr   1.3.1     ✓ forcats 0.5.0
-## ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p>You can do basic computations in R, either on the command line (in the console) or by writing things in the script and executing the code in the console. Note that you can execute commands (e.g. the line with the cursor or highlighted code) in the console from a script using Command+Enter (Mac) or Ctrl+Enter (Windows).</p>
@@ -538,15 +537,14 @@ x + y
 <p>When making assignments, R assumes you don’t want to see the result. If you do want to see the result, you’ll have to ask for it. You can also apply <strong>functions</strong> to objects.</p>
 <pre class="r"><code>x = runif(20)
 x
-##  [1] 0.12473722 0.65757424 0.47305807 0.63287686 0.33831964 0.86547218
-##  [7] 0.22626265 0.34988653 0.94406635 0.47775888 0.76852944 0.03043873
-## [13] 0.36703062 0.31959543 0.24530848 0.65717250 0.56927042 0.23091663
-## [19] 0.63728597 0.15349437
+##  [1] 0.5919850 0.2942353 0.7411212 0.5733009 0.3926267 0.1936479 0.3848076
+##  [8] 0.9917301 0.5526434 0.7538818 0.3304449 0.2665782 0.3370680 0.4870138
+## [15] 0.4626118 0.4461851 0.8455476 0.8129679 0.2729829 0.4096276
 
 mean(x)
-## [1] 0.4534528
+## [1] 0.5070504
 var(x)
-## [1] 0.06547782</code></pre>
+## [1] 0.04906812</code></pre>
 <p>We’ve created two variables, <code>x</code> and <code>y</code> – these now exist in the <strong>environment</strong>. You can see everything in the environment using <code>ls()</code> on the command line, or check out the environment pane in RStudio.</p>
 <p>(If you care about these things, <a href="https://colinfay.me/r-assignment/">people</a> have <a href="https://twitter.com/JennyBryan/status/1162185393518759936">opinions</a> about <a href="https://r4ds.had.co.nz/workflow-basics.html#coding-basics">assignment operators</a>. I don’t have such strong opinions about this, and don’t care much if you use <code>=</code> or <code>&lt;-</code>.)</p>
 </div>
@@ -560,10 +558,14 @@ var(x)
   vec_factor = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
 )
 
-class(pull(example_df, vec_numeric))
-## [1] &quot;integer&quot;
-class(pull(example_df, vec_factor))
-## [1] &quot;factor&quot;</code></pre>
+example_df
+## # A tibble: 4 x 4
+##   vec_numeric vec_char vec_logical vec_factor
+##         &lt;int&gt; &lt;chr&gt;    &lt;lgl&gt;       &lt;fct&gt;     
+## 1           5 My       TRUE        male      
+## 2           6 name     TRUE        male      
+## 3           7 is       TRUE        female    
+## 4           8 Jeff     FALSE       female</code></pre>
 <p>We’re going to spend a lot of time talking about data frames over the course of the semester, starting in <a href="topic_data_wrangling_i.html">Data Wrangling I</a>. For now, just think of it as a rectangle that holds data you care about.</p>
 </div>
 <div id="basic-plots" class="section level3">
@@ -584,30 +586,33 @@ ggplot(plot_df, aes(x = x)) + geom_histogram()
 <p><img src="best_practices_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
 <p>We’ll go through plotting in detail in <a href="topic_visualization_and_eda.html">Visualization and EDA</a>.</p>
 </div>
-<div id="organizing-code-into-readable-scripts" class="section level3">
-<h3>Organizing code into readable scripts</h3>
+<div id="self-contained-readable-scripts" class="section level3">
+<h3>Self-contained, readable scripts</h3>
 <p>You should <em>always</em> keep the complete code that was used for an analysis or project, no matter how brief. Your code should be self-contained – it should include everything you did to produce what you wanted to produce. The two scripts below repeat content from above.</p>
 <p>First, data frames and variable classes.</p>
 <pre class="r"><code>##################################################################
 # Sept 5, 2019
 # Jeff Goldsmith
 #
-# Script exploring vector classes
+# Script exploring variable assignment
 ##################################################################
 
 library(tidyverse)
 
-## create data frame
-example_df = tibble(
-  vec_numeric = 5:8,
-  vec_char = c(&quot;My&quot;, &quot;name&quot;, &quot;is&quot;, &quot;Jeff&quot;),
-  vec_logical = c(TRUE, TRUE, TRUE, FALSE),
-  vec_factor = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
-)
+## create two variables
+x = (18/3 + 1*2) ^ (4 - 2) - 6.18273
+y = c(1, 3, 6, 9)
 
-## examine classes
-class(pull(example_df, vec_numeric))
-class(pull(example_df, vec_factor))</code></pre>
+## print and add the variables
+x
+x + y
+
+## overwrite x and examine / manipulate
+x = runif(20)
+x
+
+mean(x)
+var(x)</code></pre>
 <p>Second, simple plots.</p>
 <pre class="r"><code>##################################################################
 # Sept 5, 2019
