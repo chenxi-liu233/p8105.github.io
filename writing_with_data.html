@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -470,7 +476,7 @@ div.tocify {
 <p>Before jumping in, one short note about the default RStudio treatment of R Markdown documents: it behaves like a “notebook” and shows output mixed in with the code, rather than in the console or viewer. I don’t like this, and I’m definitely not the only one. I might just be old and set in my ways, but there are <a href="https://docs.google.com/presentation/d/1n2RlMdmv1p25Xy5thJUhkKGvjtV-dkAIsUXP-AL4ffI/preview?slide=id.g362da58057_0_1">good reasons</a> to <a href="https://twitter.com/hspter/status/1034511875499732993">avoid notebooks</a>. These can be turned off using Preferences &gt; R Markdown &gt; Show output inline.</p>
 <div id="basic-rmd" class="section level3">
 <h3>Basic RMD</h3>
-<p>Below is a first RMD file. To follow along, create a .Rmd file using File &gt; New File &gt; R Markdown, and replace the default text with what’s below.</p>
+<p>Below is a first RMD file. To follow along, create a .Rmd file using File &gt; New File &gt; R Markdown, and replace the default text with what’s below; you can also download the template <a href="resources/template.Rmd">here</a>. Don’t forget to keep this in a directory you can find again later!</p>
 <pre><code>---
 title: &quot;Simple document&quot;
 output: html_document
@@ -510,7 +516,7 @@ The mean is `r mean(samp)`.</code></pre>
 <ul>
 <li><code>eval = FALSE</code>: code will be displayed but not executed; results are not included.</li>
 <li><code>echo = FALSE</code>: code will be executed but not displayed; results are included.</li>
-<li><code>include = FALSE</code>: code will be executed but not displayed; results are not included.</li>
+<li><code>include = FALSE</code>: code won’t be executed or displayed.</li>
 <li><code>message = FALSE</code> and <code>warning = FALSE</code>: prevents messages and warnings from being displayed.</li>
 <li><code>results = hide</code> and <code>fig.show = hide</code>: prevents results and figures from being shown, respectively.</li>
 <li><code>collapse = TRUE</code>: output will be collapsed into a single block at shown at the end of the chunk.</li>
@@ -518,7 +524,7 @@ The mean is `r mean(samp)`.</code></pre>
 </ul>
 <p>Use these options to be judicious about what you include in your report. Remember to keep your audience in mind: how much do they want or need to see?</p>
 <p>You can also cache the results of a code chunk, but we will largely avoid this. Caching can save time by saving the results of a code chunk instead of re-executing when the document is knit. However, you have to be careful when using this option since downstream code can depend on upstream changes. Controlling this behavior through the <code>dependson</code> option can help, but if you cache code you’ll want to periodically clear you cache to ensure you’re getting reproducible results.</p>
-<p>Inserting brief code snippets inline is often helpful; I frequently use these to give the sample size or summary statistics in text. You can insert code inline using <code>`r `</code>, often in conjunction with the <code>format()</code> function to clean up your output.</p>
+<p>Inserting brief code snippets inline is sometimes helpful; I use these to give the sample size or summary statistics in text. You can insert code inline using <code>`r `</code>, often in conjunction with the <code>format()</code> function to clean up your output.</p>
 <p><strong><em>Learning assessment:</em></strong> Write a named code chunk that creates a dataframe comprised of: a numeric variable containing a random sample of size 500 from a normal variable with mean 1; a logical vector indicating whether each sampled value is greater than zero; and a numeric vector containing the absolute value of each element. Then, produce a histogram of the absolute value variable just created. Add an inline summary giving the median value rounded to two decimal places. What happens if you set <code>eval = FALSE</code> to the code chunk? What about <code>echo = FALSE</code>?</p>
 <details>
 <p><summary> Solution </summary></p>
@@ -627,7 +633,7 @@ date: 2019-09-10</code></pre>
 <h2>New workflow</h2>
 <p>All of this suggests a slight modification to the previous workflow:</p>
 <ul>
-<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
 <li>Put an R Project in the directory</li>
 <li>Keep everything related to the analysis – data inputs, scripts / <strong>R Markdown files</strong>, reports, output – in there, <strong>and use R Markdown as much as possible</strong></li>
 <li>Periodically check for reproducibility of the analysis</li>
@@ -705,7 +711,7 @@ ggplot(plot_df, aes(x = x, y = y)) + geom_point()
 <h2>Other materials</h2>
 <p>Constructing useful documents that combine text and code is the subject of several online guides. See below for a sampling:</p>
 <ul>
-<li>The R Markdown <a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">cheatsheet</a> is a useful resource once you have the basics down</li>
+<li>The R Markdown <a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">cheatsheet</a> and this more <a href="https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf">recent version</a> are useful resources once you have the basics down</li>
 <li>R For Data Science devotes chapters to <a href="http://r4ds.had.co.nz/r-markdown.html">R Markdown</a>, <a href="http://r4ds.had.co.nz/r-markdown-formats.html">additional output formats</a>, and a useful <a href="http://r4ds.had.co.nz/r-markdown-workflow.html">workflow</a>.</li>
 <li>The <a href="http://rmarkdown.rstudio.com/articles_intro.html">Intro to R Markdown</a> from RStudio overlaps a lot with the previous bullet, but is also handy to review</li>
 <li>This <a href="https://ismayc.github.io/rbasics-book/4-rmarkdown.html">chapter</a> from <a href="https://ismayc.github.io/rbasics-book/">R Basics</a> is a good intro to R Markdown</li>
@@ -771,7 +777,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
