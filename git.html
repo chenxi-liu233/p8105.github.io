@@ -504,9 +504,9 @@ div.tocify {
 <h3>Commit to git</h3>
 <p>At this point, I haven’t done much “work” – I’ve created a repo and set up a project. Although I haven’t really done much yet I’m going to make an initial commit with the Project set-up, which is a nice starting point.</p>
 <p><img src="images/git_initial_commit.png" style="width:80%"></p>
-<p>Now I’ll start actually doing stuff. As I noted above, I’m going to repeat some of <a href="writing_with_data.html">Writing with Data</a> – my goal is to focus on the git side of things without distractions from new code. As a first step, I’ll add an R Markdown file, knit it, and commit.</p>
+<p>Now I’ll start actually doing stuff. As I noted above, I’m going to repeat some of <a href="writing_with_data.html">Writing with Data</a> – my goal is to focus on the git side of things without distractions from new code. As a first step, I’ll add an R Markdown template (download <a href="resources/template.Rmd">here</a>), knit it, and commit.</p>
 <p><img src="images/git_second_commit.png" style="width:80%"></p>
-<p>Next I’ll add an R Markdown file looking at (shown below) to my repository / directory.</p>
+<p>Next I’ll add an R Markdown file looking at basic plots (shown below; download <a href="resources/rmd_basic_plots.Rmd">here</a>) to my repository / directory.</p>
 <pre><code>---
 title: &quot;Basic Plots&quot;
 author: &quot;Jeff Goldsmith&quot;
@@ -672,7 +672,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

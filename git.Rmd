@@ -8,6 +8,10 @@ output:
 
 This is the third module in the [Building blocks](topic_building_blocks.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CMPF9U6LA).
 
+```{r, echo = FALSE, message=FALSE}
+library(tidyverse)
+```
+
 ## Some slides
 
 <script async class="speakerdeck-embed" data-id="b1f65532f0644b8fb5301f8fd6934b01" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
@@ -62,14 +66,16 @@ At this point, I haven't done much "work" -- I've created a repo and set up a pr
 
 <img src="images/git_initial_commit.png" style="width:80%">
 
-Now I'll start actually doing stuff. As I noted above, I'm going to repeat some of [Writing with Data](writing_with_data.html) -- my goal is to focus on the git side of things without distractions from new code. As a first step, I'll add an R Markdown file, knit it, and commit.
+Now I'll start actually doing stuff. As I noted above, I'm going to repeat some of [Writing with Data](writing_with_data.html) -- my goal is to focus on the git side of things without distractions from new code. As a first step, I'll add an R Markdown template (download [here](resources/template.Rmd)), knit it, and commit.
 
 <img src="images/git_second_commit.png" style="width:80%">
 
-Next I'll add an R Markdown file looking at (shown below) to my repository / directory.
+Next I'll add an R Markdown file looking at basic plots (shown below; download [here](resources/rmd_basic_plots.Rmd)) to my repository / directory.
 
 ```{r, echo = FALSE, comment = ""}
-cat(htmltools::includeText("resources/rmd_basic_plots.Rmd"))
+cat(
+  htmltools::includeText("resources/rmd_basic_plots.Rmd") %>% 
+    str_sub(start = 9))
 ```
 
 Now I'll commit.
@@ -124,7 +130,7 @@ For the repository holding this example, I'll add Angel as a collaborator. Once 
 
 <img src="images/git_collab_commit.png" style="width:80%">
 
-Of course, team members may want to work in parallel. As an example, I'll edit the README a bit and Angel will add the RMD file for vector classes. Once I've written my code, I'm going to commit; pull to see if there are any changes in the remote repository; and then push everything.
+Of course, team members may want to work in parallel. As an example, I'll edit the README a bit and Angel will edit the template RMD file. Once I've written my code, I'm going to commit; pull to see if there are any changes in the remote repository; and then push everything.
 
 <img src="images/git_parallel_code.png" style="width:80%">
 
