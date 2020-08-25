@@ -16,7 +16,7 @@ At this point, we've covered [Building Blocks](topic_building_blocks.html), [Dat
 
 ### Due date
 
-Due: 
+Due: October 25 at 10:00pm
 
 ### Reproducibility
 
