@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This is the first module in the [Building Blocks](topic_building_blocks.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CMPF9U6LA).
+This is the first module in the [Building Blocks](topic_building_blocks.html) topic.
 
 ## Overview {.tabset .tabset-pills}
 
