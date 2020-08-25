@@ -7,21 +7,20 @@ title: "P8105"
 
 Contemporary biostatistics and data analysis depends on the mastery of tools for computation, exploratory analysis, visualization, dissemination, and reproducibility, in addition to proficiency in traditional statistical techniques. The goal of this course is to provide training in the elements of a complete pipeline for data analysis. We will develop skills in data wrangling, reproducible research, software development, collaboration, and effective communication; all programming will be done in R. Although there are no formal prerequisites for this course, some familiarity with statistics and basic programming knowledge will be helpful.
 
-This course is being offered in the Fall of 2018 through the Biostatistics Department at the Columbia School of Public Health; the syllabus is available here [[pdf](resources/P8105_Syllabus.pdf) | [docx](resources/P8105_Syllabus.docx)].
+This course is being offered in the Fall of 2020 through the Biostatistics Department at the Columbia School of Public Health; the syllabus is available here [[coming soon](resources/P8105_Syllabus.pdf) | [coming soon](resources/P8105_Syllabus.docx)].
 
 ### People
 
-* Jeff Goldsmith (Instructor; [email Jeff](mailto:jeff.goldsmith@columbia.edu))
-* Angel Garcia de la Garza (Lead TA; [email Angel](mailto:ag3914@cumc.columbia.edu))
-* Erin McDonnell (Lead TA; [email Erin](mailto:eim2117@cumc.columbia.edu))
-* Rui Huang
-* Courtney Johnson 
-* Christian Pascual
-* Jiayi Shen 
-* Dana Zeng
-* Eleanor Zhang 
-* Zelos Zhu
-* Coco Zou
+* Jeff Goldsmith (Instructor; ajg2202)
+* Margaret Gacheru (Lead TA; mg3861)
+* Angel Garcia de la Garza (Lead TA; ag3914)
+* Hana Akbarnejad (ha2546)
+* Bryan Bunning (bjb2178)
+* Junxian Chen (jc5314)
+* Gavin Ko (wk2343)
+* Sibei Liu (sl4660)
+* Robert Tumasian III (rat2134)
+* Yuanzhi Yu (yy3019)
 
 
 ### Calendar
