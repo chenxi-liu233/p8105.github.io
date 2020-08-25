@@ -12,7 +12,7 @@ This assignment reinforces ideas in the [building blocks](topic_building_blocks.
 
 ### Due date and submission
 
-Due: 
+Due: September 19 at 10:00pm
 
 Please submit (via courseworks) the web address of the GitHub repo containing your work for this assignment; git commits after the due date will cause the assignment to be considered late.
 
