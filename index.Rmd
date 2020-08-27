@@ -9,6 +9,21 @@ Contemporary biostatistics and data analysis depends on the mastery of tools for
 
 This course is being offered in the Fall of 2020 through the Biostatistics Department at the Columbia School of Public Health; the syllabus is available here [[coming soon](resources/P8105_Syllabus.pdf) | [coming soon](resources/P8105_Syllabus.docx)].
 
+### Live Sessions
+
+Live (synchronous) sessions can be accessed through this [Zoom link] (https://columbiacuimc.zoom.us/j/97364164791) (passcode: 764753), and will be held on the following dates:
+
+9/8 (What is Data Science?)
+9/15 (Building Blocks)
+9/24 (Data Wrangling I)
+10/6 (Visualization & EDA)
+10/13 (Case Study)
+10/20 (Data Wrangling II)
+10/29 (Interactivity)
+11/10 (Iteration)
+11/24 (Linear Models)
+TBD (Extra Topics)
+
 ### People
 
 * Jeff Goldsmith (Instructor; ajg2202)
