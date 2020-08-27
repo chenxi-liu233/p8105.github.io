@@ -13,7 +13,6 @@ This course is being offered in the Fall of 2020 through the Biostatistics Depar
 
 * Jeff Goldsmith (Instructor; ajg2202)
 * Margaret Gacheru (Lead TA; mg3861)
-* TBD (UNI)
 * Hana Akbarnejad (ha2546)
 * Bryan Bunning (bjb2178)
 * Junxian Chen (jc5314)
@@ -21,7 +20,7 @@ This course is being offered in the Fall of 2020 through the Biostatistics Depar
 * Sibei Liu (sl4660)
 * Robert Tumasian III (rat2134)
 * Yuanzhi Yu (yy3019)
-
+* Duzhi Zhao (dz2426)
 
 ### Calendar
 <center>
