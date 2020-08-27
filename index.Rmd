@@ -13,7 +13,7 @@ This course is being offered in the Fall of 2020 through the Biostatistics Depar
 
 * Jeff Goldsmith (Instructor; ajg2202)
 * Margaret Gacheru (Lead TA; mg3861)
-* Angel Garcia de la Garza (Lead TA; ag3914)
+* TBD (UNI)
 * Hana Akbarnejad (ha2546)
 * Bryan Bunning (bjb2178)
 * Junxian Chen (jc5314)
@@ -24,7 +24,6 @@ This course is being offered in the Fall of 2020 through the Biostatistics Depar
 
 
 ### Calendar
-
 <center>
 <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showDate=0&amp;showPrint=0&amp;showCalendars=0&amp;mode=WEEK&amp;height=400&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=bst.p8105%40gmail.com&amp;color=%231B887A&amp;ctz=America%2FNew_York" style="border-width:0" width="800" height="400" frameborder="0" scrolling="no" align="middle"></iframe>
 </center>
