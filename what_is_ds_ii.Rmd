@@ -6,11 +6,9 @@ output:
     toc_float: true
 ---
 
-We have, by now, established some fundamental tools for doing data science. It's important to revisit our definition, and especially our discussion of connotation, before moving forward. 
+We have, by now, established some fundamental tools for doing data science. It's important to revisit our definition, and especially our discussion of connotation, before moving forward.
 
-The slack channel for today's example is [here](https://p8105fall2019.slack.com/messages/CNU5YKBHR).
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   fig.width = 6,
@@ -23,10 +21,37 @@ library(tidyverse)
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
 
-## Some slides
+## Overview {.tabset .tabset-pills}
 
-<script async class="speakerdeck-embed" data-id="69791e0a56b14efd9f741fc10cea30f9" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
-<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-science-revisited" title="'Data Science' Revisited" target="_blank">"Data Science" Revisited</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+### Learning Objectives
+
+Pull together skills learned through this point to produce analytical summaries and reports.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/69791e0a56b14efd9f741fc10cea30f9" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-science-revisited" title="Writing with data" target="_blank">What is Data Science? Revisited</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
 
 
 ## Example

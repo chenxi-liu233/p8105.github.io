@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -456,14 +462,36 @@ div.tocify {
 
 
 <p>We have, by now, established some fundamental tools for doing data science. It’s important to revisit our definition, and especially our discussion of connotation, before moving forward.</p>
-<p>The slack channel for today’s example is <a href="https://p8105fall2019.slack.com/messages/CNU5YKBHR">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="69791e0a56b14efd9f741fc10cea30f9" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Pull together skills learned through this point to compile analytical summaries and reports.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/69791e0a56b14efd9f741fc10cea30f9" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
-<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-science-revisited" title="'Data Science' Revisited" target="_blank">“Data Science” Revisited</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-science-revisited" title="Writing with data" target="_blank">What is Data Science? Revisited</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
