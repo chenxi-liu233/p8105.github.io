@@ -467,7 +467,7 @@ div.tocify {
 <h2>Overview</h2>
 <div id="learning-objectives" class="section level3">
 <h3>Learning Objectives</h3>
-<p>We’ll going to get up-to-speed on the basic tools in R. As part of that, we’ll define and establish some good habits.</p>
+<p>We’ll be getting up-to-speed on the basic tools in R. As part of that, we’ll define and establish some good habits.</p>
 </div>
 <div id="slide-deck" class="section level3">
 <h3>Slide Deck</h3>
@@ -500,7 +500,8 @@ div.tocify {
 <div id="basic-rmd" class="section level3">
 <h3>Basic RMD</h3>
 <p>Below is a first RMD file. To follow along, create a .Rmd file using File &gt; New File &gt; R Markdown, and replace the default text with what’s below; you can also download the template <a href="resources/template.Rmd">here</a>. Don’t forget to keep this in a directory you can find again later!</p>
-<pre><code>---
+<pre><code>
+---
 title: &quot;Simple document&quot;
 output: html_document
 ---
@@ -656,7 +657,7 @@ date: 2019-09-10</code></pre>
 <h2>New workflow</h2>
 <p>All of this suggests a slight modification to the previous workflow:</p>
 <ul>
-<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
 <li>Put an R Project in the directory</li>
 <li>Keep everything related to the analysis – data inputs, scripts / <strong>R Markdown files</strong>, reports, output – in there, <strong>and use R Markdown as much as possible</strong></li>
 <li>Periodically check for reproducibility of the analysis</li>
@@ -694,6 +695,8 @@ example_df = tibble(
 The variable `vec_numeric` has class `r class(pull(example_df, vec_numeric))`, and the variable `vec_factor` has class `r class(pull(example_df, vec_factor))`.</code></pre>
 <p>And here’s one for basic plots:</p>
 <pre><code>---
+---
+---
 title: &quot;Basic Plots&quot;
 author: &quot;Jeff Goldsmith&quot;
 date: 2019-09-10
@@ -800,7 +803,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
