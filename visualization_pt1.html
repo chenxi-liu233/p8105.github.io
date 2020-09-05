@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -457,25 +463,44 @@ div.tocify {
 
 
 <p>Good visualization is a critical step in data analysis.</p>
-<p>This is the first module in the <a href="topic_visualization_and_eda.html">Visualization and EDA</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN01ALHR7">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="7272d2325e0d4f27a6bca25afbf149ce" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the first module in the <a href="topic_visualization_and_eda.html">Visualization and EDA</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create effective graphics using ggplot and implement best practices for effective graphical communication.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/7272d2325e0d4f27a6bca25afbf149ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-visualization" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>First, I’ll create a GitHub repo + local R project for today’s work (I’m calling mine <code>viz_and_eda</code>). Occasionally, we’ll use the same datasets we saw in <a href="topic_data_wrangling_i.html">Data Wrangling I</a>, so I’ll add sub-directory called <code>data</code> and put <a href="./resources/data_import_examples.zip">these datasets</a> in there. Lastly I’ll start an R Markdown file for today, and load the <code>tidyverse</code> package in “setup” code chunk.</p>
 <pre class="r"><code>library(tidyverse)
 library(ggridges)
-## 
-## Attaching package: &#39;ggridges&#39;
-## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     scale_discrete_manual</code></pre>
+## Warning: package &#39;ggridges&#39; was built under R version 3.6.3</code></pre>
 <p>We’ll be working with NOAA weather data, which is downloaded using <code>rnoaa::meteo_pull_monitors</code> function in the code chunk below; similar code underlies the weather dataset used elsewhere in the course. Because this process can take some time, I’ll cache the code chunk.</p>
 <pre class="r"><code>weather_df = 
   rnoaa::meteo_pull_monitors(c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
@@ -612,7 +637,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
   geom_histogram(position = &quot;dodge&quot;, binwidth = 2)
 ## Warning: Removed 3 rows containing non-finite values (stat_bin).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
-<p>The <code>position = &quot;dodge&quot;</code> places the bars for each group side-by-side, but this gets sort of hard to understand. I often prefer density plots in place of histograms.</p>
+<p>The <code>position = "dodge"</code> places the bars for each group side-by-side, but this gets sort of hard to understand. I often prefer density plots in place of histograms.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
   geom_density(alpha = .4, adjust = .5, color = &quot;blue&quot;)
 ## Warning: Removed 3 rows containing non-finite values (stat_density).</code></pre>
@@ -626,6 +651,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
 <pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + 
   geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
   stat_summary(fun.y = median, geom = &quot;point&quot;, color = &quot;blue&quot;, size = 4)
+## Warning: `fun.y` is deprecated. Use `fun` instead.
 ## Warning: Removed 3 rows containing non-finite values (stat_ydensity).
 ## Warning: Removed 3 rows containing non-finite values (stat_summary).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
@@ -662,7 +688,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
   geom_point(aes(color = name), alpha = .5) 
 
 ggsave(&quot;weather_plot.pdf&quot;, weather_plot, width = 8, height = 5)</code></pre>
-<p>Embedding plots in an R Markdown document can also take a while to get used to, because there are several things to adjust. First is the size of the figure created by R, which is controlled using two of the three chunk options <code>fig.width</code>, <code>fig.height</code>, and <code>fig.asp</code>. I prefer a common width and plots that are a little wider than they are tall, so I set options to <code>fig.width = 6</code> and <code>fig.asp = .6</code>. Second is the size of the figure inserted into your document, which is controlled using <code>out.width</code> or <code>out.height</code>. I like to have a little padding around the sides of my figures, so I set <code>out.width = &quot;90%&quot;</code>. I do all this by including the following in a code snippet at the outset of my R Markdown documents.</p>
+<p>Embedding plots in an R Markdown document can also take a while to get used to, because there are several things to adjust. First is the size of the figure created by R, which is controlled using two of the three chunk options <code>fig.width</code>, <code>fig.height</code>, and <code>fig.asp</code>. I prefer a common width and plots that are a little wider than they are tall, so I set options to <code>fig.width = 6</code> and <code>fig.asp = .6</code>. Second is the size of the figure inserted into your document, which is controlled using <code>out.width</code> or <code>out.height</code>. I like to have a little padding around the sides of my figures, so I set <code>out.width = "90%"</code>. I do all this by including the following in a code snippet at the outset of my R Markdown documents.</p>
 <pre class="r"><code>knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = .6,

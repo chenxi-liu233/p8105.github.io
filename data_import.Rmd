@@ -8,7 +8,7 @@ output:
 
 Importing is the first step in wrangling.
 
-This is the first module in the [Data Wrangling I](topic_data_wrangling_i.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CN898UWNB).
+This is the first module in the [Data Wrangling I](topic_data_wrangling_i.html) topic.
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
@@ -19,11 +19,37 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Some slides
+## Overview {.tabset .tabset-pills}
 
-<script async class="speakerdeck-embed" data-id="d59e5ea4d1674e6785ec9aea6620b7b2" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+### Learning Objectives
+
+Read data into R from a variety of sources and parse variable types.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/d59e5ea4d1674e6785ec9aea6620b7b2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-import" title="Data Import" target="_blank">Data Import</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
 
 ## Example
 

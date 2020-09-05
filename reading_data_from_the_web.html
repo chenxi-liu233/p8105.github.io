@@ -462,14 +462,37 @@ div.tocify {
 
 
 <p>In <a href="data_import.html">data import</a>, we saw how to load data from a variety of formats; this is a fairly standard way to get data that have been gathered as part of a study. In a lot of cases, though, you’re going to have to go out and get the data you want or need. That’s what we’re covering now.</p>
-<p>This is the first module in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN8998SH5">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="849dc71f1d784a4a9af780e5c4ba16a2" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the first module in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Gather data from online sources (i.e. “scrape”) using APIs, rvest, and httr.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/849dc71f1d784a4a9af780e5c4ba16a2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-reading-data-from-the-web" title="Reading Data from the Web" target="_blank">Reading Data from the Web</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
@@ -477,6 +500,8 @@ div.tocify {
 <p>There are some new additions to our standard packages (<code>rvest</code> and <code>httr</code>); I’m loading everything we need now. Now’s also the time to “install” the <a href="http://selectorgadget.com">Selector Gadget</a>.</p>
 <pre class="r"><code>library(tidyverse)
 library(rvest)
+## Warning: package &#39;rvest&#39; was built under R version 3.6.3
+## Warning: package &#39;xml2&#39; was built under R version 3.6.3
 library(httr)</code></pre>
 <div id="extracting-tables" class="section level3">
 <h3>Extracting tables</h3>
@@ -525,15 +550,19 @@ drug_use_xml
 
 table_marj
 ## # A tibble: 56 x 16
-##   State `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-201…
-##   &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;           
-## 1 Tota… 12.90a           13.36            0.002          13.28b          
-## 2 Nort… 13.88a           14.66            0.005          13.98           
-## 3 Midw… 12.40b           12.76            0.082          12.45           
-## 4 South 11.24a           11.64            0.029          12.02           
-## 5 West  15.27            15.62            0.262          15.53a          
-## 6 Alab… 9.98             9.60             0.426          9.90            
-## # … with 50 more rows, and 11 more variables: `12-17(2014-2015)` &lt;chr&gt;,
+##    State `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-201~
+##    &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;           
+##  1 Tota~ 12.90a           13.36            0.002          13.28b          
+##  2 Nort~ 13.88a           14.66            0.005          13.98           
+##  3 Midw~ 12.40b           12.76            0.082          12.45           
+##  4 South 11.24a           11.64            0.029          12.02           
+##  5 West  15.27            15.62            0.262          15.53a          
+##  6 Alab~ 9.98             9.60             0.426          9.90            
+##  7 Alas~ 19.60a           21.92            0.010          17.30           
+##  8 Ariz~ 13.69            13.12            0.364          15.12           
+##  9 Arka~ 11.37            11.59            0.678          12.79           
+## 10 Cali~ 14.49            15.25            0.103          15.03           
+## # ... with 46 more rows, and 11 more variables: `12-17(2014-2015)` &lt;chr&gt;,
 ## #   `12-17(P Value)` &lt;chr&gt;, `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;,
 ## #   `18-25(P Value)` &lt;chr&gt;, `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;,
 ## #   `26+(P Value)` &lt;chr&gt;, `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;,
@@ -579,7 +608,7 @@ hpsaga_df =
     title = title_vec,
     rev = gross_rev_vec,
     runtime = runtime_vec)</code></pre>
-<p><strong><em>Learning Assessment:</em></strong> <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">This page</a> contains the 10 most recent reviews of the movie “Napoleon Dynamite”. Use a process similar to the one above to extract the titles of the reviews. Note: getting the star ratings from Amazon is trickier, but the CSS path <code>&quot;#cm_cr-review_list .review-rating&quot;</code> helps – I discovered this after about an hour of googling around.</p>
+<p><strong><em>Learning Assessment:</em></strong> <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">This page</a> contains the 10 most recent reviews of the movie “Napoleon Dynamite”. Use a process similar to the one above to extract the titles of the reviews. Note: getting the star ratings from Amazon is trickier, but the CSS path <code>"#cm_cr-review_list .review-rating"</code> helps – I discovered this after about an hour of googling around.</p>
 <details>
 <p><summary> Solution </summary></p>
 <p>The code below will give me relevant information for the ten most recent reviews on Amazon:</p>

@@ -8,9 +8,9 @@ output:
 
 Most of the tools we examined in [Data Wrangling I](topic_data_wrangling_i.html) were general purpose things -- what tidy data is, using `dplyr` and `tidyr` for manipulation of data tables. Two variable types, strings and factors, present enough challenges to examine in some detail. Now might also be a good time to read up on the [history](https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/) of strings and factors in R!
 
-This is the second module in the [Data Wrangling II](topic_data_wrangling_ii.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CN8998SH5).
+This is the second module in the [Data Wrangling II](topic_data_wrangling_ii.html) topic.
 
-```{r, include = FALSE}
+```{r, include = FALSE,message=FALSE,warning=FALSE}
 library(tidyverse)
 library(viridis)
 
@@ -33,12 +33,37 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
+## Overview {.tabset .tabset-pills}
 
-## Some slides
+### Learning Objectives
 
-<script async class="speakerdeck-embed" data-id="bfb454627b71408889958f0893413097" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+Edit/manipulate strings and take control of factors.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/bfb454627b71408889958f0893413097" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-strings-and-factors" title="Strings and Factors" target="_blank">Strings and Factors</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
 
 ## Example
 

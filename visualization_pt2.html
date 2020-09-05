@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -457,14 +463,37 @@ div.tocify {
 
 
 <p>Good visualization is a critical step in data analysis.</p>
-<p>This is the second module in the <a href="topic_visualization_and_eda.html">Visualization and EDA</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN01ALHR7">here</a>. Note that the slides and Other Materials / Extra Reading is the same as in <a href="visualization_pt1.html">Visualization Pt 1</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="7272d2325e0d4f27a6bca25afbf149ce" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the second module in the <a href="topic_visualization_and_eda.html">Visualization and EDA</a> topic. Note that the slides and Other Materials / Extra Reading is the same as in <a href="visualization_pt1.html">Visualization Pt 1</a>.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create effective graphics using ggplot and implement best practices for effective graphical communication.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/7272d2325e0d4f27a6bca25afbf149ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-visualization" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
@@ -472,8 +501,22 @@ div.tocify {
 <pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>Next I’ll load the relevant packages for this page.</p>
 <pre class="r"><code>library(tidyverse)
+## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3
+## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --
+## v ggplot2 3.3.0     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3
+## Warning: package &#39;tidyr&#39; was built under R version 3.6.3
+## Warning: package &#39;forcats&#39; was built under R version 3.6.3
+## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
 library(ggridges)
-library(patchwork)</code></pre>
+## Warning: package &#39;ggridges&#39; was built under R version 3.6.3
+library(patchwork)
+## Warning: package &#39;patchwork&#39; was built under R version 3.6.3</code></pre>
 <p>We’ll still work with NOAA weather data, which is loaded using the same code as in <a href="visualization_pt1.html">Visualization Pt 1</a>.</p>
 <pre class="r"><code>weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -614,7 +657,7 @@ ggp_temp_plot
   theme(legend.position = &quot;bottom&quot;)
 ## Warning: Removed 15 rows containing missing values (geom_point).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
-<p>Quick tip: <code>legend.position = &quot;none&quot;</code> will remove the legend. This is helpful when multiple plots use the same color scheme or when the legend is obnoxious for some other reason.</p>
+<p>Quick tip: <code>legend.position = "none"</code> will remove the legend. This is helpful when multiple plots use the same color scheme or when the legend is obnoxious for some other reason.</p>
 <p>While we’re on the subject of <code>theme</code>, you can change the default theme (which is <code>theme_gray</code>) to something else. Here’s <code>theme_bw()</code>:</p>
 <pre class="r"><code>ggp_temp_plot + 
   theme_bw() + 

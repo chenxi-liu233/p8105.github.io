@@ -462,20 +462,55 @@ div.tocify {
 
 
 <p>Once you’ve imported data, you’re going to need to do some cleaning up.</p>
-<p>This is the secode module in the <a href="topic_data_wrangling_i.html">Data Wrangling I</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN898UWNB">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="3b324ada29974681999fe129bb08a3ce" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the secode module in the <a href="topic_data_wrangling_i.html">Data Wrangling I</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Clean and organize data using <code>dplyr</code> verbs and piping.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/3b324ada29974681999fe129bb08a3ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-manipulation" title="Data Manipulation" target="_blank">Data Manipulation</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
-<p>For this example, I’ll start a new R Markdown file to the repo / project I started for the <a href="topic_data_wrangling_i.html">Data Wrangling I</a> topic; this will make it easy to load example data sets using the code I wrote in <a href="data_import.html">data import</a>.</p>
-<p>Once again we’re going to be using the <code>tidyverse</code>, so we’ll load that at the outset. We’re going to be looking at a lot of output, so I’ll print only three lines of each tibble by default. Lastly, we’ll focus on the data in <code>FAS_litters.csv</code> and <code>FAS_pups.csv</code>, so we’ll load those data and clean up the column names using what we learned in <a href="data_import.html">data import</a>.</p>
+<p>For this example, I’ll start a new R Markdown file to the repo / project I started for the <a href="topic_data_wrangling_i.html">Data Wrangling I</a> topic; this will make it easy to load example data sets using the code I wrote in <a href="data_import.html">Data Import</a>.</p>
+<p>Once again we’re going to be using the <code>tidyverse</code>, so we’ll load that at the outset. We’re going to be looking at a lot of output, so I’ll print only three lines of each tibble by default. Lastly, we’ll focus on the data in <code>FAS_litters.csv</code> and <code>FAS_pups.csv</code>, so we’ll load those data and clean up the column names using what we learned in <a href="data_import.html">Data Import</a>.</p>
 <pre class="r"><code>library(tidyverse)
+## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3
+## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --
+## v ggplot2 3.3.0     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3
+## Warning: package &#39;tidyr&#39; was built under R version 3.6.3
+## Warning: package &#39;forcats&#39; was built under R version 3.6.3
+## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
 
 options(tibble.print_min = 3)
 
@@ -497,7 +532,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 Con7  #85                 19.7               3
 ## 2 Con7  #1/2/95/2           27                 8
 ## 3 Con7  #5/5/3/83/3-3       26                 6
-## # … with 46 more rows</code></pre>
+## # ... with 46 more rows</code></pre>
 <p>You can specify the specify a range of columns to keep:</p>
 <pre class="r"><code>select(litters_data, group:gd_of_birth)
 ## # A tibble: 49 x 5
@@ -506,7 +541,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 Con7  #85                 19.7        34.7          20
 ## 2 Con7  #1/2/95/2           27          42            19
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19
-## # … with 46 more rows</code></pre>
+## # ... with 46 more rows</code></pre>
 <p>You can also specify columns you’d like to remove:</p>
 <pre class="r"><code>select(litters_data, -pups_survive)
 ## # A tibble: 49 x 7
@@ -515,7 +550,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 Con7  #85                 19.7        34.7          20               3
 ## 2 Con7  #1/2/95/2           27          42            19               8
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 46 more rows, and 1 more variable: pups_dead_birth &lt;int&gt;</code></pre>
+## # ... with 46 more rows, and 1 more variable: pups_dead_birth &lt;int&gt;</code></pre>
 <p>You can rename variables as part of this process:</p>
 <pre class="r"><code>select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ## # A tibble: 49 x 2
@@ -524,7 +559,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 Con7  #85          
 ## 2 Con7  #1/2/95/2    
 ## 3 Con7  #5/5/3/83/3-3
-## # … with 46 more rows</code></pre>
+## # ... with 46 more rows</code></pre>
 <p>If all you want to do is rename something, you can use <code>rename</code> instead of <code>select</code>. This will rename the variables you care about, and keep everything else:</p>
 <pre class="r"><code>rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ## # A tibble: 49 x 8
@@ -533,7 +568,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 Con7  #85                 19.7        34.7          20               3
 ## 2 Con7  #1/2/95/2           27          42            19               8
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 46 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 46 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
 ## #   pups_survive &lt;int&gt;</code></pre>
 <p>There are some handy helper functions for <code>select</code>; read about all of them using <code>?select_helpers</code>. The one I use most frequently is <code>everything()</code>, which is handy for reorganizing columns without discarding anything:</p>
 <pre class="r"><code>select(litters_data, litter_number, group, everything())
@@ -543,7 +578,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 #85           Con7        19.7        34.7          20               3
 ## 2 #1/2/95/2     Con7        27          42            19               8
 ## 3 #5/5/3/83/3-3 Con7        26          41.4          19               6
-## # … with 46 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 46 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
 ## #   pups_survive &lt;int&gt;</code></pre>
 <p>In larger datasets, I also use <code>starts_with()</code>, <code>ends_with()</code>, and <code>contains()</code> often.</p>
 <p>Lastly, like other functions in <code>dplyr</code>, <code>select</code> will export a dataframe even if you only select one column. Mostly this is fine, but sometimes you want the vector stored in the column. To pull a single variable, use <code>pull</code>.</p>
@@ -558,7 +593,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 #85               1       4
 ## 2 #85               1       4
 ## 3 #1/2/95/2         1       5
-## # … with 310 more rows</code></pre>
+## # ... with 310 more rows</code></pre>
 </details>
 </div>
 <div id="filter" class="section level3">
@@ -571,8 +606,8 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 <li><code>pups_born_alive &gt;= 2</code></li>
 <li><code>pups_survive != 4</code></li>
 <li><code>!(pups_survive == 4)</code></li>
-<li><code>group %in% c(&quot;Con7&quot;, &quot;Con8&quot;)</code></li>
-<li><code>group == &quot;Con7&quot; &amp; gd_of_birth == 20</code></li>
+<li><code>group %in% c("Con7", "Con8")</code></li>
+<li><code>group == "Con7" &amp; gd_of_birth == 20</code></li>
 </ul>
 <p>A very common filtering step requires you to omit missing observations. You <em>can</em> do this with <code>filter</code>, but I recommend using <code>drop_na</code> from the <code>tidyr</code> package:</p>
 <ul>
@@ -595,7 +630,7 @@ pups_data = janitor::clean_names(pups_data)</code></pre>
 ## 1 #85               1       4      13        7      11
 ## 2 #85               1       4      13        7      12
 ## 3 #1/2/95/2         1       5      13        7       9
-## # … with 152 more rows
+## # ... with 152 more rows
 filter(pups_data, sex == 2, pd_walk &lt; 11)
 ## # A tibble: 127 x 6
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk
@@ -603,7 +638,7 @@ filter(pups_data, sex == 2, pd_walk &lt; 11)
 ## 1 #1/2/95/2         2       4      13        7       9
 ## 2 #1/2/95/2         2       4      13        7      10
 ## 3 #1/2/95/2         2       5      13        8      10
-## # … with 124 more rows</code></pre>
+## # ... with 124 more rows</code></pre>
 </details>
 </div>
 <div id="mutate" class="section level3">
@@ -620,7 +655,7 @@ filter(pups_data, sex == 2, pd_walk &lt; 11)
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 46 more rows, and 3 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 46 more rows, and 3 more variables: pups_dead_birth &lt;int&gt;,
 ## #   pups_survive &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
 <p>A few things in this example are worth noting:</p>
 <ul>
@@ -645,7 +680,7 @@ filter(pups_data, sex == 2, pd_walk &lt; 11)
 ## 1 #85               1       4      13        7      11            0
 ## 2 #85               1       4      13        7      12            0
 ## 3 #1/2/95/2         1       5      13        7       9            0
-## # … with 310 more rows
+## # ... with 310 more rows
 mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 ## # A tibble: 313 x 7
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk pd_sum
@@ -653,7 +688,7 @@ mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 ## 1 #85               1       4      13        7      11     35
 ## 2 #85               1       4      13        7      12     36
 ## 3 #1/2/95/2         1       5      13        7       9     34
-## # … with 310 more rows</code></pre>
+## # ... with 310 more rows</code></pre>
 </details>
 </div>
 <div id="arrange" class="section level3">
@@ -669,11 +704,11 @@ mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 ##  4 Con7  #4/2/95/3-3         NA          NA            20               6
 ##  5 Con7  #2/2/95/3-2         NA          NA            20               6
 ##  6 Con7  #1/2/95/2           27          42            19               8
-##  7 Con7  #1/5/3/83/3-…       NA          NA            20               9
+##  7 Con7  #1/5/3/83/3-~       NA          NA            20               9
 ##  8 Con8  #2/2/95/2           NA          NA            19               5
 ##  9 Con8  #1/6/2/2/95-2       NA          NA            20               7
 ## 10 Con8  #3/6/2/2/95-3       NA          NA            20               7
-## # … with 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
+## # ... with 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
 </div>
 <div id="section" class="section level3">
 <h3><code>%&gt;%</code></h3>
@@ -701,7 +736,7 @@ litters_data_with_vars_without_missing
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
 ## #   wt_gain &lt;dbl&gt;</code></pre>
 <p>Below, we try the second option:</p>
 <pre class="r"><code>litters_data_clean = 
@@ -726,7 +761,7 @@ litters_data_clean
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
 ## #   wt_gain &lt;dbl&gt;</code></pre>
 <p>These are both confusing and bad: the first gets confusing and clutters our workspace, and the second has to be read inside out.</p>
 <p>Piping solves this problem. It allows you to turn the nested approach into a sequential chain by passing the result of one function call as an argument to the next function call:</p>
@@ -746,7 +781,7 @@ litters_data
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
-## # … with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
+## # ... with 28 more rows, and 2 more variables: pups_dead_birth &lt;int&gt;,
 ## #   wt_gain &lt;dbl&gt;</code></pre>
 <p>All three approaches result in the same dataset, but the piped commands are by far the most straightforward. The easiest way to read <code>%&gt;%</code> is “then”; the keyboard shortcuts are Ctrl + Shift + M (Windows) and Cmd + Shift + M (Mac).</p>
 <p>The functions in <code>dplyr</code> (and much of the <code>tidyverse</code>) are designed to work smoothly with the pipe operator. By default, the pipe will take the result of one function call and use that as the first argument of the next function call; by design, functions in <code>dplyr</code> will take a tibble as an input and return a tibble as a result. As a consequence, functions in <code>dplyr</code> are easy to connect in a data cleaning chain. You can make this more explicit by using <code>.</code> as a placeholder for the result of the preceding call:</p>
@@ -790,7 +825,7 @@ litters_data
 ## 1 #85               1      13        7      11 FALSE       
 ## 2 #85               1      13        7      12 FALSE       
 ## 3 #1/2/95/2         1      13        7       9 FALSE       
-## # … with 152 more rows</code></pre>
+## # ... with 152 more rows</code></pre>
 </details>
 </div>
 </div>

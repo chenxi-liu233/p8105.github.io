@@ -8,7 +8,7 @@ output:
 
 Once you've imported data, you're going to need to do some cleaning up.
 
-This is the secode module in the [Data Wrangling I](topic_data_wrangling_i.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CN898UWNB).
+This is the secode module in the [Data Wrangling I](topic_data_wrangling_i.html) topic.
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
@@ -19,17 +19,43 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Some slides
+## Overview {.tabset .tabset-pills}
 
-<script async class="speakerdeck-embed" data-id="3b324ada29974681999fe129bb08a3ce" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+### Learning Objectives
+
+Clean and organize data using `dplyr` verbs and piping.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/3b324ada29974681999fe129bb08a3ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-manipulation" title="Data Manipulation" target="_blank">Data Manipulation</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
 
 ## Example
 
-For this example, I'll start a new R Markdown file to the repo / project I started for the [Data Wrangling I](topic_data_wrangling_i.html) topic; this will make it easy to load example data sets using the code I wrote in [data import](data_import.html).
+For this example, I'll start a new R Markdown file to the repo / project I started for the [Data Wrangling I](topic_data_wrangling_i.html) topic; this will make it easy to load example data sets using the code I wrote in [Data Import](data_import.html).
 
-Once again we're going to be using the `tidyverse`, so we'll load that at the outset. We're going to be looking at a lot of output, so I'll print only three lines of each tibble by default. Lastly, we'll focus on the data in `FAS_litters.csv` and `FAS_pups.csv`, so we'll load those data and clean up the column names using what we learned in [data import](data_import.html).
+Once again we're going to be using the `tidyverse`, so we'll load that at the outset. We're going to be looking at a lot of output, so I'll print only three lines of each tibble by default. Lastly, we'll focus on the data in `FAS_litters.csv` and `FAS_pups.csv`, so we'll load those data and clean up the column names using what we learned in [Data Import](data_import.html).
 
 ```{r}
 library(tidyverse)

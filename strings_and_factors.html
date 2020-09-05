@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -456,20 +462,52 @@ div.tocify {
 
 
 <p>Most of the tools we examined in <a href="topic_data_wrangling_i.html">Data Wrangling I</a> were general purpose things – what tidy data is, using <code>dplyr</code> and <code>tidyr</code> for manipulation of data tables. Two variable types, strings and factors, present enough challenges to examine in some detail. Now might also be a good time to read up on the <a href="https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/">history</a> of strings and factors in R!</p>
-<p>This is the second module in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN8998SH5">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="bfb454627b71408889958f0893413097" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the second module in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Edit/manipulate strings and take control of factors.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/bfb454627b71408889958f0893413097" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-strings-and-factors" title="Strings and Factors" target="_blank">Strings and Factors</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>I’ll write code for today’s content in a new R Markdown document called <code>strings_and_factors.Rmd</code>, and put it in the same directory / GitHub repo as <code>reading_data.Rmd</code>. Since we’ll revisit some scraped examples, I’ll load <code>rvest</code> now; we’ll also use some datasets in <code>p8105.datasets</code> so I’ll load that as well. And finally, we’ll use some of <a href="./resources/data_import_examples.zip">these examples</a>, so I’ll make sure I have them in a <code>data</code> subdirectory..</p>
-<pre class="r"><code>library(rvest)
-library(p8105.datasets)</code></pre>
+<pre class="r"><code>library(rvest)</code></pre>
+<pre><code>## Loading required package: xml2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     pluck</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
+<pre class="r"><code>library(p8105.datasets)</code></pre>
 <div id="strings-and-regex" class="section level3">
 <h3>Strings and regex</h3>
 <p>Lots of the examples below are drawn from materials by <a href="https://docs.google.com/presentation/d/1rLNJVyWuIEQqkqTWUlCY4G-l7H610wM1IRz3CL67Gec">Jeff Leek</a>.</p>
@@ -568,7 +606,7 @@ print(pulse_data, n = 12)</code></pre>
 ## 10 10022 01m    58.5 male      3
 ## 11 10022 06m    58.5 male      8
 ## 12 10022 12m    58.5 male     NA
-## # … with 4,336 more rows</code></pre>
+## # ... with 4,336 more rows</code></pre>
 </div>
 <div id="nsduh" class="section level3">
 <h3>NSDUH</h3>
@@ -598,9 +636,9 @@ table_marj =
   filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
 <p>We used <code>stringr</code> and regular expressions a couple of times above:</p>
 <ul>
-<li>in <code>separate</code>, we split age and year at the open parentheses using <code>&quot;\\(&quot;</code></li>
+<li>in <code>separate</code>, we split age and year at the open parentheses using <code>"\\("</code></li>
 <li>we stripped out the close parenthesis in <code>mutate</code></li>
-<li>to remove character superscripts, we replaced any character using <code>&quot;[a-c]$&quot;</code></li>
+<li>to remove character superscripts, we replaced any character using <code>"[a-c]$"</code></li>
 </ul>
 <p>Let’s quickly visualize these data for the 12-17 age group; to make the plot readable, we’ll treat <code>State</code> as a factor are reorder according to the median <code>percent</code> value.</p>
 <pre class="r"><code>data_marj %&gt;%
@@ -621,29 +659,29 @@ urls = str_c(url_base, 1:5)
 read_html(urls[1]) %&gt;% 
   html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
   html_text()</code></pre>
-<pre><code>##  [1] &quot;Good comedy\n            &quot;               
-##  [2] &quot;Awesome\n            &quot;                   
-##  [3] &quot;yes\n            &quot;                       
-##  [4] &quot;Gotta watch it!\n            &quot;           
-##  [5] &quot;Great movie\n            &quot;               
-##  [6] &quot;Duh\n            &quot;                       
-##  [7] &quot;Great video\n            &quot;               
-##  [8] &quot;Give me some of your tots\n            &quot; 
-##  [9] &quot;Nostalgic\n            &quot;                 
-## [10] &quot;Make you giggle type movie\n            &quot;</code></pre>
+<pre><code>##  [1] &quot;\n\n\n\n\n\n\n\n  \n  \n    If you like lame humor, this is for you\n  \n&quot;
+##  [2] &quot;\n\n\n\n\n\n\n\n  \n  \n    This movie is a classic!\n  \n&quot;               
+##  [3] &quot;\n\n\n\n\n\n\n\n  \n  \n    Poor audio, more chopped than a pork!\n  \n&quot;  
+##  [4] &quot;\n\n\n\n\n\n\n\n  \n  \n    Family friendly\n  \n&quot;                        
+##  [5] &quot;\n\n\n\n\n\n\n\n  \n  \n    16 years later it’s still affective!\n  \n&quot;   
+##  [6] &quot;\n\n\n\n\n\n\n\n  \n  \n    LOVE\n  \n&quot;                                   
+##  [7] &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious!\n  \n&quot;                             
+##  [8] &quot;\n\n\n\n\n\n\n\n  \n  \n    BOW TO YOUR SENSEI!!!\n  \n&quot;                  
+##  [9] &quot;\n\n\n\n\n\n\n\n  \n  \n    An innocent, Cult favorite.\n  \n&quot;            
+## [10] &quot;\n\n\n\n\n\n\n\n  \n  \n    Love the movie but doesn&#39;t work great\n  \n&quot;</code></pre>
 <pre class="r"><code>read_html(urls[2]) %&gt;% 
   html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
   html_text()</code></pre>
-<pre><code>##  [1] &quot;This movie is so stupid.\n            &quot;               
-##  [2] &quot;Hilarious\n            &quot;                              
-##  [3] &quot;Waste of money\n            &quot;                         
-##  [4] &quot;Good movie\n            &quot;                             
-##  [5] &quot;A classic\n            &quot;                              
-##  [6] &quot;FRIKKEN SWEET MOVIE, GAWSH.\n            &quot;            
-##  [7] &quot;You gonna eat the rest of your tots?\n            &quot;   
-##  [8] &quot;Tina you fat lard come get some dinner!\n            &quot;
-##  [9] &quot;Great family movie\n            &quot;                     
-## [10] &quot;Teens love it\n            &quot;</code></pre>
+<pre><code>##  [1] &quot;\n\n\n\n\n\n\n\n  \n  \n    Vote for Pedro!!!\n  \n&quot;            
+##  [2] &quot;\n\n\n\n\n\n\n\n  \n  \n    Good movie for everyone\n  \n&quot;      
+##  [3] &quot;\n\n\n\n\n\n\n\n  \n  \n    Dynamite\n  \n&quot;                     
+##  [4] &quot;\n\n\n\n\n\n\n\n  \n  \n    Classic\n  \n&quot;                      
+##  [5] &quot;\n\n\n\n\n\n\n\n  \n  \n    Rip off\n  \n&quot;                      
+##  [6] &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious Movie!\n  \n&quot;             
+##  [7] &quot;\n\n\n\n\n\n\n\n  \n  \n    A must watch.\n  \n&quot;                
+##  [8] &quot;\n\n\n\n\n\n\n\n  \n  \n    Favorite movie\n  \n&quot;               
+##  [9] &quot;\n\n\n\n\n\n\n\n  \n  \n    silly.. always makes me laugh\n  \n&quot;
+## [10] &quot;\n\n\n\n\n\n\n\n  \n  \n    Sweet\n  \n&quot;</code></pre>
 <p>It would get really tedious to try to scrape all (~1400) reviews by copying code over and over; before long we’ll learn about writing R functions to reuse code and make this much easier!</p>
 </div>
 <div id="thoughts-on-factors" class="section level3">
