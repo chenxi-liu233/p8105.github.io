@@ -10,9 +10,9 @@ We’ve noted that functions are helpful when you repeat code more than twice; w
 
 Meanwhile, R's data structures, especially data frames, are surprisingly flexible. This is useful when the "observations" you want to store become more complex than single values; for example, each row many contain a few scalar observations as well a complete data set. In these cases, _list columns_ are an appropriate column type, and `map` functions provide a way to interact with those columns.
 
-This is the second module in the [Iteration](topic_iteration.html) topic; the relevant slack channel is [here](https://p8105fall2019.slack.com/messages/CN8KK99NJ).
+This is the second module in the [Iteration](topic_iteration.html) topic.
 
-```{r, include = FALSE}
+```{r, include = FALSE,message=FALSE,warning=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   fig.width = 6,
@@ -25,12 +25,37 @@ library(tidyverse)
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
 
+## Overview {.tabset .tabset-pills}
 
-## Some slides
+### Learning Objectives
 
-<script async class="speakerdeck-embed" data-id="f0d309fcbf2c4d5d9d121eee4a6144ee" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+Use loops, apply and map functions, and simulate datasets in R.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/f0d309fcbf2c4d5d9d121eee4a6144ee" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-iteration-and-listcols" title="Iteration and List Columns" target="_blank">Iteration and List Columns</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
 
 ## Example
 

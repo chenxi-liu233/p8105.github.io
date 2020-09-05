@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
 
-<title>Writing functions</title>
+<title>Writing Functions</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -450,26 +456,60 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Writing functions</h1>
+<h1 class="title toc-ignore">Writing Functions</h1>
 
 </div>
 
 
 <p>If you use the same code twice, you need a function – this will improve code readability, facilitate troubleshooting, and reduce chances for mistakes. This content looks at the best approaches for writing R functions.</p>
-<p>This is the first module in the <a href="topic_iteration.html">Iteration</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CN8KK99NJ">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="3f91d97c70e641cea46366ac9d90c929" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is the first module in the <a href="topic_iteration.html">Iteration</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create simple R functions to abstract common processes.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/3f91d97c70e641cea46366ac9d90c929" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
 <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-functions" title="Writing Functions" target="_blank">Writing Functions</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>For this topic, I’ll create a GitHub repo + directory / R Project called <code>iteration</code>. I’ll write code for today’s content in a new R Markdown document called <code>writing_functions.Rmd</code>, and I’m going to load the usual packages. I’m also setting the seed so that the output on this page is fixed.</p>
 <pre class="r"><code>library(tidyverse)
 library(rvest)
+## Warning: package &#39;rvest&#39; was built under R version 3.6.3
+## Loading required package: xml2
+## Warning: package &#39;xml2&#39; was built under R version 3.6.3
+## 
+## Attaching package: &#39;rvest&#39;
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     pluck
+## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding
 
 set.seed(1)</code></pre>
 <div id="my-first-function" class="section level3">
@@ -478,11 +518,11 @@ set.seed(1)</code></pre>
 <pre class="r"><code>x_vec = rnorm(25, mean = 5, sd = 3)
 
 (x_vec - mean(x_vec)) / sd(x_vec)
-##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872
-##  [6] -1.04107494  0.33550276  0.59957343  0.42849461 -0.49894708
-## [11]  1.41364561  0.23279252 -0.83138529 -2.50852027  1.00648110
-## [16] -0.22481531 -0.19456260  0.81587675  0.68682298  0.44756609
-## [21]  0.78971253  0.64568566 -0.09904161 -2.27133861  0.47485186</code></pre>
+##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
+## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
+## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
+## [25]  0.47485186</code></pre>
 <p>If I want to repeat this (admittedly simple) process for lots of samples, I might want to have a function that takes the sample as an <em>argument</em>, computes the vector of Z scores in the <em>body</em>, and <em>returns</em> the result. I define such a function below.</p>
 <pre class="r"><code>z_scores = function(x) {
   
@@ -492,21 +532,19 @@ set.seed(1)</code></pre>
 }
 
 z_scores(x_vec)
-##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872
-##  [6] -1.04107494  0.33550276  0.59957343  0.42849461 -0.49894708
-## [11]  1.41364561  0.23279252 -0.83138529 -2.50852027  1.00648110
-## [16] -0.22481531 -0.19456260  0.81587675  0.68682298  0.44756609
-## [21]  0.78971253  0.64568566 -0.09904161 -2.27133861  0.47485186</code></pre>
+##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
+## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
+## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
+## [25]  0.47485186</code></pre>
 <p>I can try this with a few samples and confirm that it works. I should also try to think of ways this code might break; the attempts below try a variety of inputs to see what happens.</p>
 <pre class="r"><code>z_scores(3)
 ## [1] NA
 z_scores(&quot;my name is jeff&quot;)
-## Warning in mean.default(x): argument is not numeric or logical: returning
-## NA
+## Warning in mean.default(x): argument is not numeric or logical: returning NA
 ## Error in x - mean(x): non-numeric argument to binary operator
 z_scores(iris)
-## Warning in mean.default(x): argument is not numeric or logical: returning
-## NA
+## Warning in mean.default(x): argument is not numeric or logical: returning NA
 ## Warning in Ops.factor(left, right): &#39;-&#39; not meaningful for factors
 ## Error in is.data.frame(x): (list) object cannot be coerced to type &#39;double&#39;
 z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))
@@ -664,14 +702,19 @@ dynamite_reviews = bind_rows(
 
 dynamite_reviews
 ## # A tibble: 50 x 3
-##   title                           stars text                               
-##   &lt;chr&gt;                           &lt;dbl&gt; &lt;chr&gt;                              
-## 1 &quot;Good comedy\n            &quot;         4 Format: Prime VideoVerified Purcha…
-## 2 &quot;Awesome\n            &quot;             5 Format: Prime VideoVerified Purcha…
-## 3 &quot;yes\n            &quot;                 5 Format: Prime VideoVerified Purcha…
-## 4 &quot;Gotta watch it!\n            &quot;     5 Format: Prime VideoVerified Purcha…
-## 5 &quot;Great movie\n            &quot;         5 Format: Blu-rayVerified Purchase   
-## # … with 45 more rows</code></pre>
+##    title                                                     stars text         
+##    &lt;chr&gt;                                                     &lt;dbl&gt; &lt;chr&gt;        
+##  1 &quot;\n\n\n\n\n\n\n\n  \n  \n    If you like lame humor, thi~     3 Verified Pur~
+##  2 &quot;\n\n\n\n\n\n\n\n  \n  \n    This movie is a classic!\n ~     5 Verified Pur~
+##  3 &quot;\n\n\n\n\n\n\n\n  \n  \n    Poor audio, more chopped th~     1 Verified Pur~
+##  4 &quot;\n\n\n\n\n\n\n\n  \n  \n    Family friendly\n  \n&quot;           5 Verified Pur~
+##  5 &quot;\n\n\n\n\n\n\n\n  \n  \n    16 years later it’s still a~     4 Verified Pur~
+##  6 &quot;\n\n\n\n\n\n\n\n  \n  \n    LOVE\n  \n&quot;                      5 Verified Pur~
+##  7 &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious!\n  \n&quot;                5 Verified Pur~
+##  8 &quot;\n\n\n\n\n\n\n\n  \n  \n    BOW TO YOUR SENSEI!!!\n  \n&quot;     5 Verified Pur~
+##  9 &quot;\n\n\n\n\n\n\n\n  \n  \n    An innocent, Cult favorite.~     5 Verified Pur~
+## 10 &quot;\n\n\n\n\n\n\n\n  \n  \n    Love the movie but doesn&#39;t ~     1 Verified Pur~
+## # ... with 40 more rows</code></pre>
 </div>
 <div id="loading-lotr-data" class="section level4">
 <h4>Loading LoTR data</h4>
