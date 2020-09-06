@@ -467,11 +467,11 @@ div.tocify {
 </div>
 <div id="due-date" class="section level3">
 <h3>Due date</h3>
-<p>Due: September 5 at 10:00am.</p>
+<p>Due: September 12 at 10:00pm.</p>
 </div>
 <div id="problem-1" class="section level3">
 <h3>Problem 1</h3>
-<p>Download and install the latest versions of <a href="https://cran.r-project.org">R</a> (3.6.1) and <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a> (1.2.1335).</p>
+<p>Download and install the latest versions of <a href="https://cran.r-project.org">R</a> (4.0.2) and <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a> (1.3.1073).</p>
 <p>Open RStudio and install several packages (and their dependencies) using the code below:</p>
 <pre class="r"><code>install.packages(
   c(&quot;tidyverse&quot;, &quot;knitr&quot;, &quot;rmarkdown&quot;, &quot;janitor&quot;, &quot;broom&quot;, &quot;here&quot;, &quot;readxl&quot;, 
@@ -552,7 +552,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
