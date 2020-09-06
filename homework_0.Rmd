@@ -12,7 +12,7 @@ R and RStudio are required for this course, as are several R packages. Additiona
 
 ### Due date
 
-Due: September 12 at 10:00pm. 
+Due: September 11 at 10:00pm. 
 
 ### Problem 1
 
