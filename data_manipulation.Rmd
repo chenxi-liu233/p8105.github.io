@@ -104,13 +104,25 @@ If all you want to do is rename something, you can use `rename` instead of `sele
 rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ```
 
-There are some handy helper functions for `select`; read about all of them using `?select_helpers`. The one I use most frequently is `everything()`, which is handy for reorganizing columns without discarding anything:
+There are some handy helper functions for `select`; read about all of them using `?select_helpers`. I use `starts_with()`, `ends_with()`, and `contains()` often, especially when there variables are named with suffixes or other standard patterns:
 
 ```{r}
-select(litters_data, litter_number, group, everything())
+select(litters_data, starts_with("gd"))
 ```
 
-In larger datasets, I also use `starts_with()`, `ends_with()`, and `contains()` often.
+I also frequently use is `everything()`, which is handy for reorganizing columns without discarding anything:
+
+```{r}
+select(litters_data, litter_number, pups_survive, everything())
+```
+
+`relocate` does a similar thing (and is sort of like `rename` in that it's handy but not critical):
+
+```{r}
+relocate(litters_data, litter_number, pups_survive)
+```
+
+In larger datasets, 
 
 Lastly, like other functions in `dplyr`, `select` will export a dataframe even if you only select one column. Mostly this is fine, but sometimes you want the vector stored in the column. To pull a single variable, use `pull`.
 
