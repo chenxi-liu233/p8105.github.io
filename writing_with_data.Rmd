@@ -48,7 +48,7 @@ We'll be getting up-to-speed on the basic tools in R. As part of that, we'll def
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/5dEZSYq11VU"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
