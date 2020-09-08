@@ -11,7 +11,7 @@ This course is being offered in the Fall of 2020 through the Biostatistics Depar
 
 ### Live Sessions
 
-Live (synchronous) sessions can be accessed through this [Zoom link](https://columbiacuimc.zoom.us/j/97364164791) (passcode: 764753), and will be held on the following dates:
+Live (synchronous) sessions will be held on the following dates:
 
 * 9/8 (What is Data Science?)
 * 9/15 (Building Blocks)
@@ -23,6 +23,8 @@ Live (synchronous) sessions can be accessed through this [Zoom link](https://col
 * 11/10 (Iteration)
 * 11/24 (Linear Models)
 * TBD (Extra Topics)
+
+Zoom information for live sessions is available through Courseworks.
 
 ### People
 
