@@ -509,7 +509,7 @@ div.tocify {
 <p>This “problem” focuses on the use of R Markdown to write reproducible reports, GitHub for version control, and R Projects to organize your work.</p>
 <p>To that end:</p>
 <ul>
-<li>create a public GitHub repo + local R Project; we suggest naming this repo / directory <code>p8105_hw1_YOURUNI</code> (e.g. <code>p8105_hw1_ajg2202</code> for Jeff), but that’s not required</li>
+<li>create a public GitHub repo + local R Project; we suggest naming this repo / directory <code>p8105_hw1_YOURUNI</code> (e.g. <code>p8105_hw1_ajg2202</code> for Jeff), but that’s not required</li>
 <li>create a single .Rmd file named <code>p8105_hw1_YOURUNI.Rmd</code> that renders to <code>github_document</code></li>
 <li>submit a link to your repo via Courseworks</li>
 </ul>
@@ -548,9 +548,11 @@ div.tocify {
 <div id="problem-2" class="section level3">
 <h3>Problem 2</h3>
 <p>This problem focuses the use of inline R code, plotting, and the behavior of <code>ggplot</code> for variables of different types.</p>
-<p>Use the code below to download the <code>penguins</code> dataset and load it into your R session:</p>
-<pre class="r"><code>install.packages(&quot;palmerpenguins&quot;)
-data(&quot;penguins&quot;, package = &quot;palmerpenguins&quot;)</code></pre>
+<p>Use the code below to download the a package containing the <code>penguins</code> dataset:</p>
+<pre class="r"><code>install.packages(&quot;palmerpenguins&quot;)</code></pre>
+<p>(Note – you only need to run this command once to install the package, and you can do so directly in the console. This code shouldn’t be executed by your RMarkdown file.)</p>
+<p>Next, use the following code (in your RMarkdown file) to load the <code>penguins</code> dataset:</p>
+<pre class="r"><code>data(&quot;penguins&quot;, package = &quot;palmerpenguins&quot;)</code></pre>
 <p>Write a short description of the <code>penguins</code> dataset (not the <code>penguins_raw</code> dataset) using inline R code, including:</p>
 <ul>
 <li>the data in this dataset, including names / values of important variables</li>

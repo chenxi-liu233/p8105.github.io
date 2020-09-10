@@ -80,10 +80,17 @@ In a second code chunk:
 
 This problem focuses the use of inline R code, plotting, and the behavior of `ggplot` for variables of different types.
 
-Use the code below to download the `penguins` dataset and load it into your R session:
+Use the code below to download the a package containing the `penguins` dataset:
 
 ```{r, eval = FALSE}
 install.packages("palmerpenguins")
+```
+
+(Note -- you only need to run this command once to install the package, and you can do so directly in the console. This code shouldn't be executed by your RMarkdown file.)
+
+Next, use the following code (in your RMarkdown file) to load the `penguins` dataset:
+
+```{r, eval = FALSE}
 data("penguins", package = "palmerpenguins")
 ```
 
