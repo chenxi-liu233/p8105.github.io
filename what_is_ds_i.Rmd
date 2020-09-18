@@ -53,7 +53,7 @@ Define "data science" and understand its vital role in public health research.
 
 For the purpose of this class, we'll use the following working definition of data science:
 
->Data science is the use of data to formulate and rigorously answer questions in a process that emphasizes clarity, reproducibility, and collaboration, and that recognizes code as a primary means of communication. 
+>Data science is the study of formulating and rigorously answering questions using a data-centric process that emphasizes clarity, reproducibility, and effective communication. 
 
 In coming modules, we'll learn about wrangling data, making visualizations, and conducting analyses. Throughout, we'll focus on modern tools that facilitate best practices for working with data, including organization, reproducibility, and clear coding. Material will be presented in a way that combines didactic content with hands-on coding elements. Below are two examples we'll return to later in the course. 
 
@@ -80,7 +80,7 @@ weather_df =
       USS0023B17S = "Waterhole_WA"),
     tmin = tmin / 10,
     tmax = tmax / 10) %>%
-  select(name, id, everything())
+  relocate(name)
 ```
 
 As we'll discuss, a major element of working with data is producing visualizations. The plot below shows the maximum temperature at each of the three stations, as well as smooth trends over time to illustrate seasonal effects. This is produced using `ggplot`, a package in the `tidyverse` that we'll talk more about soon. 
