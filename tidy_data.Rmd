@@ -44,7 +44,7 @@ Understanding principles of "tidy" data, using relational databases, and merging
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/CnRgc-2WVRU"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>

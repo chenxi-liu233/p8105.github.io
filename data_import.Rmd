@@ -44,7 +44,7 @@ Read data into R from a variety of sources and parse variable types.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/71pMVzk_KEE"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
