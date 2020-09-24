@@ -11,7 +11,7 @@ The version of the Mr. Trash Wheel data we'll use for this class is available  [
 
 ## Context
 
-[Mr. Trash Wheel](http://baltimorewaterfront.com/healthy-harbor/water-wheel/) is "a [water-wheel vessel](https://en.wikipedia.org/wiki/Mr._Trash_Wheel) that removes trash from the Inner Harbor in Baltimore, Maryland." It (or he) sits at an intake into the Inner Harbor and intercepts litter and debris carried by the Jones Falls River toward the harbor. It has removed over a million pounds of litter since May 2014!
+[Mr. Trash Wheel](https://www.mrtrashwheel.com) is "a [water-wheel vessel](https://en.wikipedia.org/wiki/Mr._Trash_Wheel) that removes trash from the Inner Harbor in Baltimore, Maryland." It (or he) sits at an intake into the Inner Harbor and intercepts litter and debris carried by the Jones Falls River toward the harbor. It has removed over a million pounds of litter since May 2014!
 
 Adam Lindquist, Director of the Healthy Harbor Initiative, describes the operation of the trash wheel and the data collection process below:
 
