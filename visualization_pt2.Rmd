@@ -256,7 +256,7 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
 
 ### Setting options
 
-In addition to figure sizing, I include a few other figure preferences in global options declared at the outset of each .Rmd file (this code chunk just gets copy-and-pasted to every new file).
+In addition to figure sizing, I include a few other figure preferences in global options declared at the outset of each .Rmd file (this code chunk just gets copy-and-pasted to the beginning of every new file).
 
 ```{r, eval = FALSE}
 library(tidyverse)
@@ -267,10 +267,18 @@ knitr::opts_chunk$set(
   out.width = "90%"
 )
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
-There are ways to set color preferences globally as well (for example, to use `viridis` color palettes everywhere), although they're a bit more involved. 
+There are ways to set color preferences globally as well (for example, to use `viridis` color palettes everywhere, all the time), although they're a bit more involved. 
 
 
 ### Data argument in `geom_*`

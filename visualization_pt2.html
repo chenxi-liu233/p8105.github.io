@@ -501,22 +501,16 @@ div.tocify {
 <pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <p>Next I’ll load the relevant packages for this page.</p>
 <pre class="r"><code>library(tidyverse)
-## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3
-## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --
-## v ggplot2 3.3.0     v purrr   0.3.2
-## v tibble  2.1.3     v dplyr   0.8.3
-## v tidyr   1.0.2     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.5.0
-## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3
-## Warning: package &#39;tidyr&#39; was built under R version 3.6.3
-## Warning: package &#39;forcats&#39; was built under R version 3.6.3
-## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## ── Attaching packages ─────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0
+## ── Conflicts ────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 library(ggridges)
-## Warning: package &#39;ggridges&#39; was built under R version 3.6.3
-library(patchwork)
-## Warning: package &#39;patchwork&#39; was built under R version 3.6.3</code></pre>
+library(patchwork)</code></pre>
 <p>We’ll still work with NOAA weather data, which is loaded using the same code as in <a href="visualization_pt1.html">Visualization Pt 1</a>.</p>
 <pre class="r"><code>weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -702,7 +696,7 @@ ggp_temp_plot
 </div>
 <div id="setting-options" class="section level3">
 <h3>Setting options</h3>
-<p>In addition to figure sizing, I include a few other figure preferences in global options declared at the outset of each .Rmd file (this code chunk just gets copy-and-pasted to every new file).</p>
+<p>In addition to figure sizing, I include a few other figure preferences in global options declared at the outset of each .Rmd file (this code chunk just gets copy-and-pasted to the beginning of every new file).</p>
 <pre class="r"><code>library(tidyverse)
 
 knitr::opts_chunk$set(
@@ -711,8 +705,16 @@ knitr::opts_chunk$set(
   out.width = &quot;90%&quot;
 )
 
-theme_set(theme_bw() + theme(legend.position = &quot;bottom&quot;))</code></pre>
-<p>There are ways to set color preferences globally as well (for example, to use <code>viridis</code> color palettes everywhere), although they’re a bit more involved.</p>
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d</code></pre>
+<p>There are ways to set color preferences globally as well (for example, to use <code>viridis</code> color palettes everywhere, all the time), although they’re a bit more involved.</p>
 </div>
 <div id="data-argument-in-geom_" class="section level3">
 <h3>Data argument in <code>geom_*</code></h3>
@@ -934,7 +936,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
