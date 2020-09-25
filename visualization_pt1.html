@@ -480,7 +480,7 @@ div.tocify {
     class="video"> </iframe></p>
 </div>
 <div style="margin-bottom:5px">
-<strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-visualization" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-i" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
 <hr />
@@ -499,21 +499,36 @@ div.tocify {
 <h2>Example</h2>
 <p>First, I’ll create a GitHub repo + local R project for today’s work (I’m calling mine <code>viz_and_eda</code>). Occasionally, we’ll use the same datasets we saw in <a href="topic_data_wrangling_i.html">Data Wrangling I</a>, so I’ll add sub-directory called <code>data</code> and put <a href="./resources/data_import_examples.zip">these datasets</a> in there. Lastly I’ll start an R Markdown file for today, and load the <code>tidyverse</code> package in “setup” code chunk.</p>
 <pre class="r"><code>library(tidyverse)
-library(ggridges)
-## Warning: package &#39;ggridges&#39; was built under R version 3.6.3</code></pre>
+library(ggridges)</code></pre>
 <p>We’ll be working with NOAA weather data, which is downloaded using <code>rnoaa::meteo_pull_monitors</code> function in the code chunk below; similar code underlies the weather dataset used elsewhere in the course. Because this process can take some time, I’ll cache the code chunk.</p>
 <pre class="r"><code>weather_df = 
-  rnoaa::meteo_pull_monitors(c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
-                      var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
-                      date_min = &quot;2017-01-01&quot;,
-                      date_max = &quot;2017-12-31&quot;) %&gt;%
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2017-01-01&quot;,
+    date_max = &quot;2017-12-31&quot;) %&gt;%
   mutate(
-    name = recode(id, USW00094728 = &quot;CentralPark_NY&quot;, 
-                      USC00519397 = &quot;Waikiki_HA&quot;,
-                      USS0023B17S = &quot;Waterhole_WA&quot;),
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USC00519397 = &quot;Waikiki_HA&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
     tmin = tmin / 10,
     tmax = tmax / 10) %&gt;%
   select(name, id, everything())
+## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2020-09-25 14:56:47 (7.519)
+## file min/max dates: 1869-01-01 / 2020-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USC00519397.dly
+## date created (size, mb): 2020-09-25 14:56:52 (1.699)
+## file min/max dates: 1965-01-01 / 2020-03-31
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2020-09-25 14:56:54 (0.877)
+## file min/max dates: 1999-09-01 / 2020-09-30
+
 weather_df
 ## # A tibble: 1,095 x 6
 ##    name           id          date        prcp  tmax  tmin
@@ -528,7 +543,7 @@ weather_df
 ##  8 CentralPark_NY USW00094728 2017-01-08     0  -3.8  -8.8
 ##  9 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9
 ## 10 CentralPark_NY USW00094728 2017-01-10     0   7.8  -6  
-## # ... with 1,085 more rows</code></pre>
+## # … with 1,085 more rows</code></pre>
 <p>We’ll start with a basic scatterplot to develop our understanding of <code>ggplot</code>’s data + mappings + geoms approach, and build quickly from there.</p>
 <div id="basic-scatterplot" class="section level3">
 <h3>Basic scatterplot</h3>
@@ -593,16 +608,17 @@ plot_weather + geom_point()</code></pre>
 <p>I can produce the desired plot using the code below:</p>
 <pre class="r"><code>weather_df %&gt;% 
   filter(name == &quot;CentralPark_NY&quot;) %&gt;% 
-  mutate(tmax_fahr = tmax * (9 / 5) + 32,
-         tmin_fahr = tmin * (9 / 5) + 32) %&gt;% 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) %&gt;% 
   ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
   geom_point(alpha = .5) + 
   geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
 <p>Looks like there’s a pretty linear relationship between min and max temperatures in Central Park.</p>
 </details>
 </div>
-<div id="tips-and-tricks" class="section level3">
-<h3>Tips and tricks</h3>
+<div id="odds-and-ends" class="section level3">
+<h3>Odds and ends</h3>
 <p>There are lots of ways you can mix and match elements, depending on your goals. I don’t like the following plot as much (it doesn’t show the data and omits precipitation), but it illustrates that you have lots of freedom in determining which geoms to include and how to compare your groups. If nothing else, you should be starting to get a sense for why you create way more plots for yourself than for others.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
   geom_smooth(se = FALSE) 
@@ -620,7 +636,7 @@ plot_weather + geom_point()</code></pre>
 ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;))</code></pre>
 <details>
 <p><summary> Solution </summary></p>
-<p>In the first attempt, we’re defining the color of the points by hand; In the second attempt, we’re implicitly creating a color variable that has the value <code>blue</code> everywhere; <code>ggplot</code> is then assigning colors according to this variable using the default color scheme.</p>
+<p>In the first attempt, we’re defining the color of the points by hand; in the second attempt, we’re implicitly creating a color variable that has the value <code>blue</code> everywhere; <code>ggplot</code> is then assigning colors according to this variable using the default color scheme.</p>
 </details>
 </div>
 <div id="univariate-plots" class="section level3">
@@ -637,7 +653,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
   geom_histogram(position = &quot;dodge&quot;, binwidth = 2)
 ## Warning: Removed 3 rows containing non-finite values (stat_bin).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
-<p>The <code>position = "dodge"</code> places the bars for each group side-by-side, but this gets sort of hard to understand. I often prefer density plots in place of histograms.</p>
+<p>The <code>position = &quot;dodge&quot;</code> places the bars for each group side-by-side, but this gets sort of hard to understand. I often prefer density plots in place of histograms.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
   geom_density(alpha = .4, adjust = .5, color = &quot;blue&quot;)
 ## Warning: Removed 3 rows containing non-finite values (stat_density).</code></pre>
@@ -688,7 +704,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
   geom_point(aes(color = name), alpha = .5) 
 
 ggsave(&quot;weather_plot.pdf&quot;, weather_plot, width = 8, height = 5)</code></pre>
-<p>Embedding plots in an R Markdown document can also take a while to get used to, because there are several things to adjust. First is the size of the figure created by R, which is controlled using two of the three chunk options <code>fig.width</code>, <code>fig.height</code>, and <code>fig.asp</code>. I prefer a common width and plots that are a little wider than they are tall, so I set options to <code>fig.width = 6</code> and <code>fig.asp = .6</code>. Second is the size of the figure inserted into your document, which is controlled using <code>out.width</code> or <code>out.height</code>. I like to have a little padding around the sides of my figures, so I set <code>out.width = "90%"</code>. I do all this by including the following in a code snippet at the outset of my R Markdown documents.</p>
+<p>Embedding plots in an R Markdown document can also take a while to get used to, because there are several things to adjust. First is the size of the figure created by R, which is controlled using two of the three chunk options <code>fig.width</code>, <code>fig.height</code>, and <code>fig.asp</code>. I prefer a common width and plots that are a little wider than they are tall, so I set options to <code>fig.width = 6</code> and <code>fig.asp = .6</code>. Second is the size of the figure inserted into your document, which is controlled using <code>out.width</code> or <code>out.height</code>. I like to have a little padding around the sides of my figures, so I set <code>out.width = &quot;90%&quot;</code>. I do all this by including the following in a code snippet at the outset of my R Markdown documents.</p>
 <pre class="r"><code>knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = .6,
@@ -789,7 +805,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
