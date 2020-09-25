@@ -665,11 +665,11 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 <p>Violin plots are sometimes nice, but folks complain that they don’t <a href="https://simplystatistics.org/2017/07/13/the-joy-of-no-more-violin-plots/">look like violins</a>.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
-  stat_summary(fun.y = median, geom = &quot;point&quot;, color = &quot;blue&quot;, size = 4)
-## Warning: `fun.y` is deprecated. Use `fun` instead.
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = &quot;median&quot;, color = &quot;blue&quot;)
 ## Warning: Removed 3 rows containing non-finite values (stat_ydensity).
-## Warning: Removed 3 rows containing non-finite values (stat_summary).</code></pre>
+## Warning: Removed 3 rows containing non-finite values (stat_summary).
+## Warning: Removed 3 rows containing missing values (geom_segment).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
 <p>Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They’re implemented in the <a href="https://github.com/clauswilke/ggridges"><code>ggridges</code></a> package, and are nice if you have lots of categories in which the shape of the distribution matters.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = name)) + 

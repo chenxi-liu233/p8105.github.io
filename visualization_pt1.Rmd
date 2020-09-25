@@ -254,8 +254,8 @@ Violin plots are sometimes nice, but folks complain that they don't [look like v
 
 ```{r}
 ggplot(weather_df, aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
-  stat_summary(fun.y = median, geom = "point", color = "blue", size = 4)
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = "median", color = "blue")
 ```
 
 Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They're implemented in the [`ggridges`](https://github.com/clauswilke/ggridges) package, and are nice if you have lots of categories in which the shape of the distribution matters.
