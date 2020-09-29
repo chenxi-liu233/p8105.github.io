@@ -645,9 +645,8 @@ ggp_temp_plot
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
 <p>We used <code>discrete = TRUE</code> because the <code>color</code> aesthetic is mapped to a discrete variable. In other cases (for example, when color mapped to <code>prcp</code>) you can omit this argument to get a continuous color gradient. The <code>viridis::scale_fill_viridis()</code> function is appropriate for the <code>fill</code> aesthetic used in histograms, density plots, and elsewhere.</p>
 </div>
-</div>
-<div id="themes" class="section level2">
-<h2>Themes</h2>
+<div id="themes" class="section level3">
+<h3>Themes</h3>
 <p>Themes are used to modify non-data elements of a plot – they don’t change mappings or how data are render, but control things like background color and location of the the legend. Using themes can help with general plot appearance.</p>
 <p>For example, I frequently change is the legend position. By default this is on the right of the graphic, but I like to shift it to the bottom to ensure the graphic takes up the available left-to-right space.</p>
 <pre class="r"><code>ggp_temp_plot + 
@@ -696,6 +695,7 @@ ggp_temp_plot
 ## Warning: Removed 3 rows containing missing values (geom_point).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 </details>
+</div>
 <div id="setting-options" class="section level3">
 <h3>Setting options</h3>
 <p>In addition to figure sizing, I include a few other figure preferences in global options declared at the outset of each .Rmd file (this code chunk just gets copy-and-pasted to the beginning of every new file).</p>
