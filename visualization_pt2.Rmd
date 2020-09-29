@@ -409,10 +409,7 @@ pup_data =
 litter_data = 
   read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
   janitor::clean_names() %>%
-  select(-pups_survive) %>%
-  separate(group, into = c("dose", "day_of_tx"), sep = 3) %>%
-  mutate(wt_gain = gd18_weight - gd0_weight,
-         day_of_tx = as.numeric(day_of_tx))
+  separate(group, into = c("dose", "day_of_tx"), sep = 3)
 
 fas_data = left_join(pup_data, litter_data, by = "litter_number") 
 
@@ -423,7 +420,7 @@ fas_data %>%
     names_to = "outcome", 
     values_to = "pn_day") %>% 
   drop_na() %>% 
-  mutate(outcome = forcats::fct_reorder(outcome, day_of_tx, median)) %>% 
+  mutate(outcome = forcats::fct_reorder(outcome, pn_day, median)) %>% 
   ggplot(aes(x = dose, y = pn_day)) + 
   geom_violin() + 
   facet_grid(day_of_tx ~ outcome)
