@@ -30,14 +30,14 @@ Create effective graphics using ggplot and implement best practices for effectiv
 
 <div class="vid_container">
   <iframe 
-    src="https://speakerdeck.com/player/7272d2325e0d4f27a6bca25afbf149ce" 
+    src="https://speakerdeck.com/player/093fb87078174226896b975baef19e23" 
     allowfullscreen 
     frameborder="0"
     class="video">
   </iframe>
 </div>
 
-<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-visualization" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-ii" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
 ***
 
@@ -54,17 +54,10 @@ Create effective graphics using ggplot and implement best practices for effectiv
 
 ## Example
 
-I'll create a new .Rmd for this example, and include it in the Git repo / directory for the [Visualization and EDA](topic_visualization_and_eda.html) topic. I'm also going to take advantage of features in additional packages; most of these were installed previously, but it might be necessary to install [`patchwork`](https://github.com/thomasp85/patchwork) using the code below:
-
-```{r, eval = FALSE}
-devtools::install_github("thomasp85/patchwork")
-```
-
-Next I'll load the relevant packages for this page. 
+I'll create a new .Rmd for this example, and include it in the Git repo / directory for the [Visualization and EDA](topic_visualization_and_eda.html) topic. I'm also going to take advantage of features in the `tidyverse` and `patchwork` packages, so I'll load those next.
 
 ```{r}
 library(tidyverse)
-library(ggridges)
 library(patchwork)
 ```
 
@@ -97,7 +90,7 @@ weather_df %>%
 ```
 
 
-### Labels, ticks
+### Labels
 
 There are a variety of useful ways to change the appearance of your plot, especially if your graphic is intended to be viewed by others. One of the most important things you can do is provide informative axis labels, plot titles, and captions, all of which can be controlled using `labs()`.
 
@@ -113,7 +106,11 @@ weather_df %>%
   )
 ```
 
-You'll occasionally want finer control over the location and specification of tick marks on the X or Y axis. These can be manipulated in `scale_x_*` and `scale_y_*` where `*` depends on the type of variable mapped to the `x` and `y` aesthetics. 
+### Scales
+
+Aesthetic mappings determine which variables map to which plot attributes. These mappings have reasonable default behaviors, but can be modified through scales.
+
+For example, you'll occasionally want control over the location and specification of tick marks on the X or Y axis. These can be manipulated in `scale_x_*` and `scale_y_*` where `*` depends on the type of variable mapped to the `x` and `y` aesthetics (i.e. `continuous` vs `discrete`). 
 
 ```{r}
 weather_df %>% 
@@ -129,7 +126,7 @@ weather_df %>%
     labels = c("-15º C", "0", "15"))
 ```
 
-There are a variety of other `scale_x` and `scale_y` options -- it can be helpful to know how and where these are controlled, although I usually would have to google how to do what I want. 
+There are a variety of other `scale_x_*` and `scale_y_*` options -- it can be helpful to know how and where these are controlled, although I usually would have to google how to do what I want. 
 
 ```{r}
 weather_df %>% 
@@ -151,10 +148,7 @@ weather_df %>%
 
 For many graph options there are several ways to produce the desired result, and you should feel free to use whichever is most convenient. For instance, `scale_y_sqrt()` can be added to a `ggplot` object to transform the Y scale, and `xlim()` can be used to control the plot limits in the X axis. 
 
-
-### Colors and themes
-
-Analogously to `scale_x_*` and `scale_y_*`, there are `scale`s corresponding to many other aestheics. Some of the most common are used to control the `color` aesthetic. For example, arguments to `scale_color_hue()` control the color scale and the name in the plot legend. 
+Analogously to `scale_x_*` and `scale_y_*`, there are `scale`s corresponding to other aestheics. Some of the most common are used to control the `color` aesthetic. For example, arguments to `scale_color_hue()` control the color scale and the name in the plot legend. 
 
 ```{r}
 weather_df %>% 
@@ -191,7 +185,11 @@ ggp_temp_plot
 
 We used `discrete = TRUE` because the `color` aesthetic is mapped to a discrete variable. In other cases (for example, when color mapped to `prcp`) you can omit this argument to get a continuous color gradient. The `viridis::scale_fill_viridis()` function is appropriate for the `fill` aesthetic used in histograms, density plots, and elsewhere.
 
-Another plot aspect that I frequently change is the legend position. By default this is on the right of the graphic, but I often shift it to the bottom to ensure the graphic takes up the available left-to-right space. 
+## Themes
+
+Themes are used to modify non-data elements of a plot -- they don't change mappings or how data are render, but control things like background color and location of the the legend. Using themes can help with general plot appearance.
+
+For example, I frequently change is the legend position. By default this is on the right of the graphic, but I like to shift it to the bottom to ensure the graphic takes up the available left-to-right space. 
 
 ```{r}
 ggp_temp_plot + 
@@ -200,7 +198,7 @@ ggp_temp_plot +
 
 Quick tip: `legend.position = "none"` will remove the legend. This is helpful when multiple plots use the same color scheme or when the legend is obnoxious for some other reason.
 
-While we're on the subject of `theme`, you can change the default theme (which is `theme_gray`) to something else. Here's `theme_bw()`:
+While you can manage specific theme elements individually, I recommend using a built-in theme. By default this is `theme_gray`; here's `theme_bw()`:
 
 ```{r}
 ggp_temp_plot + 
@@ -278,7 +276,7 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-There are ways to set color preferences globally as well (for example, to use `viridis` color palettes everywhere, all the time), although they're a bit more involved. 
+There are ways to set color preferences globally as well (for example, to use `viridis` color palettes everywhere, all the time, without setting these options in your RMarkdown file), although they're a bit more involved. 
 
 
 ### Data argument in `geom_*`
@@ -391,8 +389,9 @@ pulse_data =
     names_prefix = "bdi_score_",
     values_to = "bdi") %>%
   select(id, visit, everything()) %>%
-  mutate(visit = recode(visit, "bl" = "00m"),
-         visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) %>%
+  mutate(
+    visit = recode(visit, "bl" = "00m"),
+    visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) %>%
   arrange(id, visit)
 
 ggplot(pulse_data, aes(x = visit, y = bdi)) + 
@@ -440,9 +439,10 @@ Oh man is there a lot of stuff about visualization ...
 * There are overviews on good and bad graphics
     * Including an early paper on ["How to display data badly"](http://www.jstor.org/stable/2683253?seq=1#page_scan_tab_contents)
     * Karl Broman's [top ten worst graphs](https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/)
-    * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf)
+    * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2018.pdf)
     * Also Hadley Wickham's [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) on the philosophy underlying `ggplot`
 * There are tutorials on making graphics using `ggplot`
+    * The [ggplot2](https://ggplot2-book.org) book
     * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](and http://r4ds.had.co.nz/graphics-for-communication.html)
     * Jenny Bryan's [intro to ggplot](http://stat545.com/cm006_tibbles-dplyr-ggplot2.html) and her [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
     * From [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data)
