@@ -11,7 +11,7 @@
 
 
 
-<title>Exploratory analysis using group_by</title>
+<title>Exploratory analysis using data summaries</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -456,7 +456,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Exploratory analysis using <code>group_by</code></h1>
+<h1 class="title toc-ignore">Exploratory analysis using data summaries</h1>
 
 </div>
 
@@ -467,7 +467,7 @@ div.tocify {
 <h2>Overview</h2>
 <div id="learning-objectives" class="section level3">
 <h3>Learning Objectives</h3>
-<p>Conduct exploratory analyses using <code>dplyr</code> verbs (group_by and summarize).</p>
+<p>Conduct exploratory analyses using <code>dplyr</code> verbs (<code>group_by</code> and <code>summarize</code>), along with numeric data summaries.</p>
 </div>
 <div id="slide-deck" class="section level3">
 <h3>Slide Deck</h3>
@@ -497,34 +497,34 @@ div.tocify {
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>We’ll continue in the same Git repo / R project that we used for visualization, and use essentially the same <code>weather_df</code> dataset – the only exception is the addition of <code>month</code> variable, created using <code>lubridate::floor_date()</code>.</p>
-<pre class="r"><code>weather_df = 
-  rnoaa::meteo_pull_monitors(c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
-                      var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
-                      date_min = &quot;2017-01-01&quot;,
-                      date_max = &quot;2017-12-31&quot;) %&gt;%
+<pre class="r"><code>weather_df =  
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2017-01-01&quot;,
+    date_max = &quot;2017-12-31&quot;) %&gt;%
   mutate(
-    name = recode(id, USW00094728 = &quot;CentralPark_NY&quot;, 
-                      USC00519397 = &quot;Waikiki_HA&quot;,
-                      USS0023B17S = &quot;Waterhole_WA&quot;),
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USC00519397 = &quot;Waikiki_HA&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
     tmin = tmin / 10,
     tmax = tmax / 10,
     month = lubridate::floor_date(date, unit = &quot;month&quot;)) %&gt;%
-  select(name, id, date, month, everything())
-## Registered S3 method overwritten by &#39;crul&#39;:
-##   method                 from
-##   as.character.form_file httr
+  select(name, id, everything())
 ## Registered S3 method overwritten by &#39;hoardr&#39;:
 ##   method           from
 ##   print.cache_info httr
-## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USW00094728.dly
-## file last updated:  2018-09-27 09:31:54
-## file min/max dates: 1869-01-01 / 2018-09-30
-## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USC00519397.dly
-## file last updated:  2018-09-27 09:32:03
-## file min/max dates: 1965-01-01 / 2018-09-30
-## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USS0023B17S.dly
-## file last updated:  2018-09-27 09:32:07
-## file min/max dates: 1999-09-01 / 2018-09-30</code></pre>
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2020-09-25 14:56:47 (7.519)
+## file min/max dates: 1869-01-01 / 2020-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USC00519397.dly
+## date created (size, mb): 2020-09-25 14:56:52 (1.699)
+## file min/max dates: 1965-01-01 / 2020-03-31
+## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2020-09-25 14:56:54 (0.877)
+## file min/max dates: 1999-09-01 / 2020-09-30</code></pre>
 <div id="group_by" class="section level3">
 <h3><code>group_by</code></h3>
 <p>Datasets are often comprised of groups defined by one or more (categorical) variable; <code>group_by()</code> makes these groupings explicit so that they can be included in subsequent operations. For example, we might group <code>weather_df</code> by <code>name</code> and <code>month</code>:</p>
@@ -532,15 +532,15 @@ div.tocify {
   group_by(name, month)
 ## # A tibble: 1,095 x 7
 ## # Groups:   name, month [36]
-##   name           id          date       month       prcp  tmax  tmin
-##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 CentralPark_NY USW00094728 2017-01-01 2017-01-01     0   8.9   4.4
-## 2 CentralPark_NY USW00094728 2017-01-02 2017-01-01    53   5     2.8
-## 3 CentralPark_NY USW00094728 2017-01-03 2017-01-01   147   6.1   3.9
-## 4 CentralPark_NY USW00094728 2017-01-04 2017-01-01     0  11.1   1.1
-## 5 CentralPark_NY USW00094728 2017-01-05 2017-01-01     0   1.1  -2.7
-## 6 CentralPark_NY USW00094728 2017-01-06 2017-01-01    13   0.6  -3.8
-## # ... with 1,089 more rows</code></pre>
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2017-01-01     0   8.9   4.4 2017-01-01
+## 2 CentralPark_NY USW00094728 2017-01-02    53   5     2.8 2017-01-01
+## 3 CentralPark_NY USW00094728 2017-01-03   147   6.1   3.9 2017-01-01
+## 4 CentralPark_NY USW00094728 2017-01-04     0  11.1   1.1 2017-01-01
+## 5 CentralPark_NY USW00094728 2017-01-05     0   1.1  -2.7 2017-01-01
+## 6 CentralPark_NY USW00094728 2017-01-06    13   0.6  -3.8 2017-01-01
+## # … with 1,089 more rows</code></pre>
 <p>Several important functions respect grouping structures. You will frequently use <code>summarize</code> to create one-number summaries within each group, or use <code>mutate</code> to define variables within groups. The rest of this example shows these functions in action.</p>
 <p>Because these (and other) functions will use grouping information if it exists, it is sometimes necessary to remove groups using <code>ungroup()</code>.</p>
 </div>
@@ -549,9 +549,10 @@ div.tocify {
 <p>As an intro to <code>summarize</code>, let’s count the number of observations in each month in the complete <code>weather_df</code> dataset.</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(month) %&gt;%
-  summarize(n = n())
+  summarize(n_obs = n())
+## `summarise()` ungrouping output (override with `.groups` argument)
 ## # A tibble: 12 x 2
-##    month          n
+##    month      n_obs
 ##    &lt;date&gt;     &lt;int&gt;
 ##  1 2017-01-01    93
 ##  2 2017-02-01    84
@@ -565,25 +566,41 @@ div.tocify {
 ## 10 2017-10-01    93
 ## 11 2017-11-01    90
 ## 12 2017-12-01    93</code></pre>
-<p>The result is a dataframe that includes the grouping variable and the desired summary.</p>
-<p>In this case, you could use <code>count()</code> in place of <code>group_by()</code> and <code>summarize()</code> if you remember that this function exists. I’ll also make use of the <code>name</code> argument in count, which defaults to <code>"n"</code>.</p>
+<p>We can group by more than one variable, too.</p>
 <pre class="r"><code>weather_df %&gt;%
-  count(month, name = &quot;n_days&quot;)
+  group_by(name, month) %&gt;%
+  summarize(n_obs = n())
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)
+## # A tibble: 36 x 3
+## # Groups:   name [3]
+##   name           month      n_obs
+##   &lt;chr&gt;          &lt;date&gt;     &lt;int&gt;
+## 1 CentralPark_NY 2017-01-01    31
+## 2 CentralPark_NY 2017-02-01    28
+## 3 CentralPark_NY 2017-03-01    31
+## 4 CentralPark_NY 2017-04-01    30
+## 5 CentralPark_NY 2017-05-01    31
+## 6 CentralPark_NY 2017-06-01    30
+## # … with 30 more rows</code></pre>
+<p>In both cases, the result is a dataframe that includes the grouping variable(s) and the desired summary.</p>
+<p>To count things, you could use <code>count()</code> in place of <code>group_by()</code> and <code>summarize()</code> if you remember that this function exists. I’ll also make use of the <code>name</code> argument in count, which defaults to <code>&quot;n&quot;</code>.</p>
+<pre class="r"><code>weather_df %&gt;%
+  count(month, name = &quot;n_obs&quot;)
 ## # A tibble: 12 x 2
-##    month      n_days
-##    &lt;date&gt;      &lt;int&gt;
-##  1 2017-01-01     93
-##  2 2017-02-01     84
-##  3 2017-03-01     93
-##  4 2017-04-01     90
-##  5 2017-05-01     93
-##  6 2017-06-01     90
-##  7 2017-07-01     93
-##  8 2017-08-01     93
-##  9 2017-09-01     90
-## 10 2017-10-01     93
-## 11 2017-11-01     90
-## 12 2017-12-01     93</code></pre>
+##    month      n_obs
+##    &lt;date&gt;     &lt;int&gt;
+##  1 2017-01-01    93
+##  2 2017-02-01    84
+##  3 2017-03-01    93
+##  4 2017-04-01    90
+##  5 2017-05-01    93
+##  6 2017-06-01    90
+##  7 2017-07-01    93
+##  8 2017-08-01    93
+##  9 2017-09-01    90
+## 10 2017-10-01    93
+## 11 2017-11-01    90
+## 12 2017-12-01    93</code></pre>
 <p><code>count()</code> is a useful tidyverse alternative to Base R’s <code>table</code> function. Both functions produce summaries of how often values appear, but <code>table</code>’s output is of class <code>table</code> and is hard to do any additional work with, while <code>count</code> produces a dataframe you can use or manipulate directly. For an example, run the code below and try to do something useful with the result…</p>
 <pre class="r"><code>weather_df %&gt;%
   pull(month) %&gt;% 
@@ -594,6 +611,7 @@ div.tocify {
   summarize(
     n_obs = n(),
     n_days = n_distinct(date))
+## `summarise()` ungrouping output (override with `.groups` argument)
 ## # A tibble: 12 x 3
 ##    month      n_obs n_days
 ##    &lt;date&gt;     &lt;int&gt;  &lt;int&gt;
@@ -623,6 +641,7 @@ div.tocify {
   filter(name != &quot;Waikiki_HA&quot;) %&gt;% 
   group_by(name, cold) %&gt;% 
   summarize(count = n())
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)
 ## # A tibble: 4 x 3
 ## # Groups:   name [2]
 ##   name           cold     count
@@ -656,6 +675,7 @@ div.tocify {
     mean_prec = mean(prcp, na.rm = TRUE),
     median_tmax = median(tmax),
     sd_tmax = sd(tmax))
+## `summarise()` ungrouping output (override with `.groups` argument)
 ## # A tibble: 12 x 5
 ##    month      mean_tmax mean_prec median_tmax sd_tmax
 ##    &lt;date&gt;         &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;
@@ -663,9 +683,9 @@ div.tocify {
 ##  2 2017-02-01      12.2     57.9          8.3   12.1 
 ##  3 2017-03-01      13.0     54.6          8.3   12.4 
 ##  4 2017-04-01      17.3     32.9         18.3   11.2 
-##  5 2017-05-01      NA       28.4         NA    NaN   
+##  5 2017-05-01      NA       28.4         NA     NA   
 ##  6 2017-06-01      23.5     18.7         27.2    8.73
-##  7 2017-07-01      NA       12.7         NA    NaN   
+##  7 2017-07-01      NA       12.7         NA     NA   
 ##  8 2017-08-01      26.3     10.2         27.2    5.87
 ##  9 2017-09-01      23.8      9.94        26.1    8.42
 ## 10 2017-10-01      20.1     41.5         22.2    9.75
@@ -677,6 +697,7 @@ div.tocify {
   summarize(
     mean_tmax = mean(tmax),
     median_tmax = median(tmax))
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)
 ## # A tibble: 36 x 4
 ## # Groups:   name [3]
 ##   name           month      mean_tmax median_tmax
@@ -687,7 +708,23 @@ div.tocify {
 ## 4 CentralPark_NY 2017-04-01     18.3         18.3
 ## 5 CentralPark_NY 2017-05-01     20.1         19.4
 ## 6 CentralPark_NY 2017-06-01     26.3         27.2
-## # ... with 30 more rows</code></pre>
+## # … with 30 more rows</code></pre>
+<p>If you want to summarize multiple columns using the same summary, the <code>across</code> function is helpful.</p>
+<pre class="r"><code>weather_df %&gt;%
+  group_by(name, month) %&gt;%
+  summarize(across(tmin:prcp, mean))
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)
+## # A tibble: 36 x 5
+## # Groups:   name [3]
+##   name           month        tmin  tmax  prcp
+##   &lt;chr&gt;          &lt;date&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 CentralPark_NY 2017-01-01  0.748  5.98  39.5
+## 2 CentralPark_NY 2017-02-01  1.45   9.28  22.5
+## 3 CentralPark_NY 2017-03-01 -0.177  8.22  43.0
+## 4 CentralPark_NY 2017-04-01  9.66  18.3   32.5
+## 5 CentralPark_NY 2017-05-01 12.2   20.1   52.3
+## 6 CentralPark_NY 2017-06-01 18.2   26.3   40.4
+## # … with 30 more rows</code></pre>
 <p>The fact that <code>summarize()</code> produces a dataframe is important (and consistent with other functions in the <code>tidyverse</code>). You can incorporate grouping and summarizing within broader analysis pipelines. For example, we can take create a plot based on the monthly summary:</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name, month) %&gt;%
@@ -695,8 +732,9 @@ div.tocify {
   ggplot(aes(x = month, y = mean_tmax, color = name)) + 
     geom_point() + geom_line() + 
     theme(legend.position = &quot;bottom&quot;)
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)
 ## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
-<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 <p>The results of <code>group_by()</code> and <code>summarize()</code> are generally tidy, but presenting reader-friendly results for this kind of exploratory analysis often benefits from some un-tidying. For example, the table below shows month-by-month average max temperatures in a more human-readable format.</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name, month) %&gt;%
@@ -704,7 +742,8 @@ div.tocify {
   pivot_wider(
     names_from = name,
     values_from = mean_tmax) %&gt;% 
-  knitr::kable(digits = 1)</code></pre>
+  knitr::kable(digits = 1)
+## `summarise()` regrouping output by &#39;name&#39; (override with `.groups` argument)</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -796,11 +835,13 @@ div.tocify {
 <p>Suppose you want to compare the daily max temperature to the annual average max temperature for each station separately, and to plot the result. You could do so using:</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name) %&gt;%
-  mutate(centered_tmax = tmax - mean(tmax)) %&gt;% 
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) %&gt;% 
   ggplot(aes(x = date, y = centered_tmax, color = name)) + 
     geom_point() 
-## Warning: Removed 365 rows containing missing values (geom_point).</code></pre>
-<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+## Warning: Removed 3 rows containing missing values (geom_point).</code></pre>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
 </div>
 <div id="window-functions" class="section level3">
 <h3>Window functions</h3>
@@ -812,45 +853,45 @@ div.tocify {
   mutate(temp_ranking = min_rank(tmax))
 ## # A tibble: 1,095 x 8
 ## # Groups:   name, month [36]
-##   name           id         date       month       prcp  tmax  tmin temp_ranking
-##   &lt;chr&gt;          &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;int&gt;
-## 1 CentralPark_NY USW000947~ 2017-01-01 2017-01-01     0   8.9   4.4           22
-## 2 CentralPark_NY USW000947~ 2017-01-02 2017-01-01    53   5     2.8           12
-## 3 CentralPark_NY USW000947~ 2017-01-03 2017-01-01   147   6.1   3.9           15
-## 4 CentralPark_NY USW000947~ 2017-01-04 2017-01-01     0  11.1   1.1           27
-## 5 CentralPark_NY USW000947~ 2017-01-05 2017-01-01     0   1.1  -2.7            5
-## 6 CentralPark_NY USW000947~ 2017-01-06 2017-01-01    13   0.6  -3.8            4
-## # ... with 1,089 more rows</code></pre>
+##   name           id         date        prcp  tmax  tmin month      temp_ranking
+##   &lt;chr&gt;          &lt;chr&gt;      &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;            &lt;int&gt;
+## 1 CentralPark_NY USW000947… 2017-01-01     0   8.9   4.4 2017-01-01           22
+## 2 CentralPark_NY USW000947… 2017-01-02    53   5     2.8 2017-01-01           12
+## 3 CentralPark_NY USW000947… 2017-01-03   147   6.1   3.9 2017-01-01           15
+## 4 CentralPark_NY USW000947… 2017-01-04     0  11.1   1.1 2017-01-01           27
+## 5 CentralPark_NY USW000947… 2017-01-05     0   1.1  -2.7 2017-01-01            5
+## 6 CentralPark_NY USW000947… 2017-01-06    13   0.6  -3.8 2017-01-01            4
+## # … with 1,089 more rows</code></pre>
 <p>This sort of ranking is useful when filtering data based on rank. We could, for example, keep only the day with the lowest max temperature within each month:</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name, month) %&gt;%
   filter(min_rank(tmax) &lt; 2)
 ## # A tibble: 42 x 7
 ## # Groups:   name, month [36]
-##   name           id          date       month       prcp  tmax  tmin
-##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 CentralPark_NY USW00094728 2017-01-09 2017-01-01     0  -4.9  -9.9
-## 2 CentralPark_NY USW00094728 2017-02-10 2017-02-01     0   0    -7.1
-## 3 CentralPark_NY USW00094728 2017-03-15 2017-03-01     0  -3.2  -6.6
-## 4 CentralPark_NY USW00094728 2017-04-01 2017-04-01     0   8.9   2.8
-## 5 CentralPark_NY USW00094728 2017-05-13 2017-05-01   409  11.7   7.2
-## 6 CentralPark_NY USW00094728 2017-06-06 2017-06-01    15  14.4  11.1
-## # ... with 36 more rows</code></pre>
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9 2017-01-01
+## 2 CentralPark_NY USW00094728 2017-02-10     0   0    -7.1 2017-02-01
+## 3 CentralPark_NY USW00094728 2017-03-15     0  -3.2  -6.6 2017-03-01
+## 4 CentralPark_NY USW00094728 2017-04-01     0   8.9   2.8 2017-04-01
+## 5 CentralPark_NY USW00094728 2017-05-13   409  11.7   7.2 2017-05-01
+## 6 CentralPark_NY USW00094728 2017-06-06    15  14.4  11.1 2017-06-01
+## # … with 36 more rows</code></pre>
 <p>We could also keep the three days with the highest max temperature:</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name, month) %&gt;%
   filter(min_rank(desc(tmax)) &lt; 4)
 ## # A tibble: 149 x 7
 ## # Groups:   name, month [36]
-##   name           id          date       month       prcp  tmax  tmin
-##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 CentralPark_NY USW00094728 2017-01-12 2017-01-01    13  18.9   8.3
-## 2 CentralPark_NY USW00094728 2017-01-13 2017-01-01     0  16.7   0  
-## 3 CentralPark_NY USW00094728 2017-01-26 2017-01-01     5  13.3   6.1
-## 4 CentralPark_NY USW00094728 2017-02-19 2017-02-01     0  18.3  11.7
-## 5 CentralPark_NY USW00094728 2017-02-23 2017-02-01     0  18.3   6.7
-## 6 CentralPark_NY USW00094728 2017-02-24 2017-02-01     0  21.1  14.4
-## # ... with 143 more rows</code></pre>
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2017-01-12    13  18.9   8.3 2017-01-01
+## 2 CentralPark_NY USW00094728 2017-01-13     0  16.7   0   2017-01-01
+## 3 CentralPark_NY USW00094728 2017-01-26     5  13.3   6.1 2017-01-01
+## 4 CentralPark_NY USW00094728 2017-02-19     0  18.3  11.7 2017-02-01
+## 5 CentralPark_NY USW00094728 2017-02-23     0  18.3   6.7 2017-02-01
+## 6 CentralPark_NY USW00094728 2017-02-24     0  21.1  14.4 2017-02-01
+## # … with 143 more rows</code></pre>
 <p>In both of these, we’ve skipped a <code>mutate()</code> statement that would create a ranking variable, and gone straight to filtering based on the result.</p>
 <p>Offsets, especially lags, are used to compare an observation to it’s previous value. This is useful, for example, to find the day-by-day change in max temperature within each station over the year:</p>
 <pre class="r"><code>weather_df %&gt;%
@@ -858,21 +899,23 @@ div.tocify {
   mutate(temp_change = tmax - lag(tmax))
 ## # A tibble: 1,095 x 8
 ## # Groups:   name [3]
-##   name           id          date       month       prcp  tmax  tmin temp_change
-##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;
-## 1 CentralPark_NY USW00094728 2017-01-01 2017-01-01     0   8.9   4.4       NA   
-## 2 CentralPark_NY USW00094728 2017-01-02 2017-01-01    53   5     2.8       -3.9 
-## 3 CentralPark_NY USW00094728 2017-01-03 2017-01-01   147   6.1   3.9        1.10
-## 4 CentralPark_NY USW00094728 2017-01-04 2017-01-01     0  11.1   1.1        5   
-## 5 CentralPark_NY USW00094728 2017-01-05 2017-01-01     0   1.1  -2.7      -10   
-## 6 CentralPark_NY USW00094728 2017-01-06 2017-01-01    13   0.6  -3.8       -0.5 
-## # ... with 1,089 more rows</code></pre>
+##   name           id          date        prcp  tmax  tmin month      temp_change
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;           &lt;dbl&gt;
+## 1 CentralPark_NY USW00094728 2017-01-01     0   8.9   4.4 2017-01-01       NA   
+## 2 CentralPark_NY USW00094728 2017-01-02    53   5     2.8 2017-01-01       -3.9 
+## 3 CentralPark_NY USW00094728 2017-01-03   147   6.1   3.9 2017-01-01        1.10
+## 4 CentralPark_NY USW00094728 2017-01-04     0  11.1   1.1 2017-01-01        5   
+## 5 CentralPark_NY USW00094728 2017-01-05     0   1.1  -2.7 2017-01-01      -10   
+## 6 CentralPark_NY USW00094728 2017-01-06    13   0.6  -3.8 2017-01-01       -0.5 
+## # … with 1,089 more rows</code></pre>
 <p>This kind of variable might be used to quantify the day-by-day variability in max temperature, or to identify the largest one-day increase:</p>
 <pre class="r"><code>weather_df %&gt;%
   group_by(name) %&gt;%
   mutate(temp_change = tmax - lag(tmax)) %&gt;%
-  summarize(temp_change_sd = sd(temp_change, na.rm = TRUE),
-            temp_change_max = max(temp_change, na.rm = TRUE))
+  summarize(
+    temp_change_sd = sd(temp_change, na.rm = TRUE),
+    temp_change_max = max(temp_change, na.rm = TRUE))
+## `summarise()` ungrouping output (override with `.groups` argument)
 ## # A tibble: 3 x 3
 ##   name           temp_change_sd temp_change_max
 ##   &lt;chr&gt;                   &lt;dbl&gt;           &lt;dbl&gt;
@@ -918,25 +961,24 @@ This quick summary suggests a relatively large drop in the typical BDI score fro
 <p><summary> Solution </summary></p>
 <p>The code chunk below imports the litters and pups data, joins them, produces the desired information, un-tidies the result, and exports a table using <code>knitr::kable</code>.</p>
 <pre class="r"><code>pup_data = 
-  read_csv(&quot;./data/FAS_pups.csv&quot;, col_types = &quot;ciiiii&quot;) %&gt;%
+  read_csv(&quot;./data/FAS_pups.csv&quot;) %&gt;%
   janitor::clean_names() %&gt;%
   mutate(sex = recode(sex, `1` = &quot;male&quot;, `2` = &quot;female&quot;)) 
 
 litter_data = 
-  read_csv(&quot;./data/FAS_litters.csv&quot;, col_types = &quot;ccddiiii&quot;) %&gt;%
+  read_csv(&quot;./data/FAS_litters.csv&quot;) %&gt;%
   janitor::clean_names() %&gt;%
-  select(-pups_survive) %&gt;%
-  separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3) %&gt;%
-  mutate(wt_gain = gd18_weight - gd0_weight,
-         day_of_tx = as.numeric(day_of_tx))
+  separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3)
 
 fas_data = left_join(pup_data, litter_data, by = &quot;litter_number&quot;) 
 
 fas_data %&gt;% 
   group_by(dose, day_of_tx) %&gt;% 
+  drop_na(dose) %&gt;% 
   summarize(mean_pivot = mean(pd_pivot, na.rm = TRUE)) %&gt;% 
-  filter(!is.na(dose)) %&gt;% 
-  spread(key = dose, value = mean_pivot) %&gt;% 
+  pivot_wider(
+    names_from = dose, 
+    values_from = mean_pivot) %&gt;% 
   knitr::kable(digits = 3)</code></pre>
 <p>These results may suggest that pups in the control group are able to pivot earlier than pups in the low-dose group, but it is unclear if there are differences between the control and moderate-dose groups or if day of treatment is an important predictor.</p>
 </details>
@@ -1009,7 +1051,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
