@@ -48,7 +48,7 @@ Create effective graphics using ggplot and implement best practices for effectiv
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/32RI5q1IXAI"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>

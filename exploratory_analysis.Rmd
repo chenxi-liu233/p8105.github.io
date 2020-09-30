@@ -20,7 +20,16 @@ knitr::opts_chunk$set(
   out.width = "90%"
 )
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
 options(tibble.print_min = 6)
 ```
 
@@ -49,7 +58,7 @@ Conduct exploratory analyses using `dplyr` verbs (`group_by` and `summarize`), a
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/evwEoXO3Y7w"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
