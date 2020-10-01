@@ -63,7 +63,7 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 
 ### Problem 2
 
-This problem focuses on NYC Transit data; in particular, [this CSV file](data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv) contains information related to each entrance and exit for each subway station in NYC. 
+This problem focuses on NYC Transit data; in particular, [this CSV file](data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv) contains information related to each entrance and exit for each subway station in NYC. If you're not familiar with the NYC subway system, keeping [a map](https://new.mta.info/map/7551) in mind while looking at these data might help.
 
 Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (`YES` vs `NO`) to a logical variable (the `ifelse` or `recode` function may be useful).
 
@@ -71,7 +71,7 @@ Write a short paragraph about this dataset -- explain briefly what variables the
 
 Answer the following questions using these data:
 
-* How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the `distinct` function may be useful here.
+* How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox); the `distinct` function may be useful here.
 * How many stations are ADA compliant?
 * What proportion of station entrances / exits without vending allow entrance?
 
