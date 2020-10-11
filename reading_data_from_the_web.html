@@ -500,8 +500,6 @@ div.tocify {
 <p>There are some new additions to our standard packages (<code>rvest</code> and <code>httr</code>); I’m loading everything we need now. Now’s also the time to “install” the <a href="http://selectorgadget.com">Selector Gadget</a>.</p>
 <pre class="r"><code>library(tidyverse)
 library(rvest)
-## Warning: package &#39;rvest&#39; was built under R version 3.6.3
-## Warning: package &#39;xml2&#39; was built under R version 3.6.3
 library(httr)</code></pre>
 <div id="extracting-tables" class="section level3">
 <h3>Extracting tables</h3>
@@ -550,19 +548,19 @@ drug_use_xml
 
 table_marj
 ## # A tibble: 56 x 16
-##    State `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-201~
+##    State `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-201…
 ##    &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;           
-##  1 Tota~ 12.90a           13.36            0.002          13.28b          
-##  2 Nort~ 13.88a           14.66            0.005          13.98           
-##  3 Midw~ 12.40b           12.76            0.082          12.45           
+##  1 Tota… 12.90a           13.36            0.002          13.28b          
+##  2 Nort… 13.88a           14.66            0.005          13.98           
+##  3 Midw… 12.40b           12.76            0.082          12.45           
 ##  4 South 11.24a           11.64            0.029          12.02           
 ##  5 West  15.27            15.62            0.262          15.53a          
-##  6 Alab~ 9.98             9.60             0.426          9.90            
-##  7 Alas~ 19.60a           21.92            0.010          17.30           
-##  8 Ariz~ 13.69            13.12            0.364          15.12           
-##  9 Arka~ 11.37            11.59            0.678          12.79           
-## 10 Cali~ 14.49            15.25            0.103          15.03           
-## # ... with 46 more rows, and 11 more variables: `12-17(2014-2015)` &lt;chr&gt;,
+##  6 Alab… 9.98             9.60             0.426          9.90            
+##  7 Alas… 19.60a           21.92            0.010          17.30           
+##  8 Ariz… 13.69            13.12            0.364          15.12           
+##  9 Arka… 11.37            11.59            0.678          12.79           
+## 10 Cali… 14.49            15.25            0.103          15.03           
+## # … with 46 more rows, and 11 more variables: `12-17(2014-2015)` &lt;chr&gt;,
 ## #   `12-17(P Value)` &lt;chr&gt;, `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;,
 ## #   `18-25(P Value)` &lt;chr&gt;, `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;,
 ## #   `26+(P Value)` &lt;chr&gt;, `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;,
@@ -582,33 +580,34 @@ table_marj
 </div>
 <div id="css-selectors" class="section level3">
 <h3>CSS Selectors</h3>
-<p>Suppose we’d like to scrape the data about the <a href="https://www.imdb.com/list/ls000630791/">Harry Potter Saga</a> from the IMDB page. The first step is the same as before – we need to get the HTML.</p>
-<pre class="r"><code>hpsaga_html = 
-  read_html(&quot;https://www.imdb.com/list/ls000630791/&quot;)</code></pre>
+<p>Suppose we’d like to scrape the data about the <a href="https://www.imdb.com/list/ls070150896/">Star Wars Movies</a> from the IMDB page. The first step is the same as before – we need to get the HTML.</p>
+<pre class="r"><code>swm_html = 
+  read_html(&quot;https://www.imdb.com/list/ls070150896/&quot;)</code></pre>
 <p>The information isn’t stored in a handy table, so we’re going to isolate the CSS selector for elements we care about. A bit of clicking around gets me something like below.</p>
 <p><img src="images/read_from_web_css_selctor.png" style="width:75%"></p>
 <p>For each element, I’ll use the CSS selector in <code>html_nodes()</code> to extract the relevant HTML code, and convert it to text. Then I can combine these into a data frame.</p>
 <pre class="r"><code>title_vec = 
-  hpsaga_html %&gt;%
+  swm_html %&gt;%
   html_nodes(&quot;.lister-item-header a&quot;) %&gt;%
   html_text()
 
 gross_rev_vec = 
-  hpsaga_html %&gt;%
+  swm_html %&gt;%
   html_nodes(&quot;.text-small:nth-child(7) span:nth-child(5)&quot;) %&gt;%
   html_text()
 
 runtime_vec = 
-  hpsaga_html %&gt;%
+  swm_html %&gt;%
   html_nodes(&quot;.runtime&quot;) %&gt;%
   html_text()
 
-hpsaga_df = 
+swm_df = 
   tibble(
     title = title_vec,
     rev = gross_rev_vec,
     runtime = runtime_vec)</code></pre>
-<p><strong><em>Learning Assessment:</em></strong> <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">This page</a> contains the 10 most recent reviews of the movie “Napoleon Dynamite”. Use a process similar to the one above to extract the titles of the reviews. Note: getting the star ratings from Amazon is trickier, but the CSS path <code>"#cm_cr-review_list .review-rating"</code> helps – I discovered this after about an hour of googling around.</p>
+<p>Some of these movies made some real money …</p>
+<p><strong><em>Learning Assessment:</em></strong> <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">This page</a> contains the 10 most recent reviews of the movie “Napoleon Dynamite”. Use a process similar to the one above to extract the titles of the reviews.</p>
 <details>
 <p><summary> Solution </summary></p>
 <p>The code below will give me relevant information for the ten most recent reviews on Amazon:</p>
@@ -623,7 +622,7 @@ review_titles =
 
 review_stars = 
   dynamite_html %&gt;%
-  html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
+  html_nodes(&quot;.review-rating&quot;) %&gt;%
   html_text()
 
 review_text = 
@@ -643,7 +642,7 @@ reviews = tibble(
 <p>New York City has a great open data resource, and we’ll use that for our API examples. Although most (all?) of these datasets can be accessed by clicking through a website, we’ll access them directly using the API to improve reproducibility and make it easier to update results to reflect new data.</p>
 <p>As a simple example, <a href="https://data.cityofnewyork.us/Environment/Water-Consumption-In-The-New-York-City/ia2d-e54m">this page</a> is about a dataset for annual water consumption in NYC, along with the population in that year. First, we’ll import this as a CSV and parse it.</p>
 <pre class="r"><code>nyc_water = 
-  GET(&quot;https://data.cityofnewyork.us/resource/waf7-5gvc.csv&quot;) %&gt;% 
+  GET(&quot;https://data.cityofnewyork.us/resource/ia2d-e54m.csv&quot;) %&gt;% 
   content(&quot;parsed&quot;)
 ## Parsed with column specification:
 ## cols(
@@ -654,15 +653,17 @@ reviews = tibble(
 ## )</code></pre>
 <p>We can also import this dataset as a JSON file. This takes a bit more work (and this is, really, a pretty easy case), but it’s still doable.</p>
 <pre class="r"><code>nyc_water = 
-  GET(&quot;https://data.cityofnewyork.us/resource/waf7-5gvc.json&quot;) %&gt;% 
+  GET(&quot;https://data.cityofnewyork.us/resource/ia2d-e54m.json&quot;) %&gt;% 
   content(&quot;text&quot;) %&gt;%
   jsonlite::fromJSON() %&gt;%
   as_tibble()</code></pre>
-<p><a href="https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation">Data.gov</a> also has a lot of data available using their API; often this is available as CSV or JSON as well. For example, we might be interested in data coming from <a href="https://catalog.data.gov/dataset/behavioral-risk-factors-selected-metropolitan-area-risk-trends-smart-county-prevalence-dat-a0124">BRFSS</a>. This is importable via the API as a CSV (JSON, in this example, is <a href="dataset_brfss.html">much more complicated</a>).</p>
+<p><a href="https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation">Data.gov</a> also has a lot of data available using their API; often this is available as CSV or JSON as well. For example, we might be interested in data coming from <a href="https://chronicdata.cdc.gov/Behavioral-Risk-Factors/Behavioral-Risk-Factors-Selected-Metropolitan-Area/acme-vg9e">BRFSS</a>. This is importable via the API as a CSV (JSON, in this example, is <a href="dataset_brfss.html">more complicated</a>).</p>
 <pre class="r"><code>brfss_smart2010 = 
-  GET(&quot;https://data.cdc.gov/api/views/acme-vg9e/rows.csv?accessType=DOWNLOAD&quot;) %&gt;% 
+  GET(&quot;https://chronicdata.cdc.gov/resource/acme-vg9e.csv&quot;,
+      query = list(`$limit` = 5000)) %&gt;% 
   content(&quot;parsed&quot;)</code></pre>
-<p>Both of the previous examples are <em>extremely</em> easy – we accessed data that is essentially a data table, and we had a very straightforward API.</p>
+<p>By default, the CDC API limits data to the first 1000 rows. Here I’ve increased that by changing an element of the API query – I looked around the website describing the API to find the name of the argument, and then used the appropriate syntax for <code>GET</code>. To get the full data, I could increase this so that I get all the data at once or I could try iterating over chunks of a few thousand rows.</p>
+<p>Both of the previous examples are, actually, <em>pretty easy</em> – we accessed data that is essentially a data table, and we had a very straightforward API (although updating queries isn’t obvious at first).</p>
 <p>To get a sense of how this becomes complicated, let’s look at the <a href="https://pokeapi.co">Pokemon API</a> (which is also pretty nice).</p>
 <pre class="r"><code>poke = 
   GET(&quot;http://pokeapi.co/api/v2/pokemon/1&quot;) %&gt;%
@@ -782,7 +783,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
