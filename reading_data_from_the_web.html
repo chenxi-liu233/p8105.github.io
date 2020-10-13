@@ -663,7 +663,7 @@ reviews = tibble(
 <p><a href="https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation">Data.gov</a> also has a lot of data available using their API; often this is available as CSV or JSON as well. For example, we might be interested in data coming from <a href="https://chronicdata.cdc.gov/Behavioral-Risk-Factors/Behavioral-Risk-Factors-Selected-Metropolitan-Area/acme-vg9e">BRFSS</a>. This is importable via the API as a CSV (JSON, in this example, is <a href="dataset_brfss.html">more complicated</a>).</p>
 <pre class="r"><code>brfss_smart2010 = 
   GET(&quot;https://chronicdata.cdc.gov/resource/acme-vg9e.csv&quot;,
-      query = list(`$limit` = 5000)) %&gt;% 
+      query = list(&quot;$limit&quot; = 5000)) %&gt;% 
   content(&quot;parsed&quot;)</code></pre>
 <p>By default, the CDC API limits data to the first 1000 rows. Here I’ve increased that by changing an element of the API query – I looked around the website describing the API to find the name of the argument, and then used the appropriate syntax for <code>GET</code>. To get the full data, I could increase this so that I get all the data at once or I could try iterating over chunks of a few thousand rows.</p>
 <p>Both of the previous examples are, actually, <em>pretty easy</em> – we accessed data that is essentially a data table, and we had a very straightforward API (although updating queries isn’t obvious at first).</p>
