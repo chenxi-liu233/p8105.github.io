@@ -488,7 +488,7 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/xFwrGu8FPRc"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
@@ -600,7 +600,7 @@ vec_sex</code></pre>
 table_marj = 
   read_html(nsduh_url) %&gt;% 
   html_nodes(css = &quot;table&quot;) %&gt;% 
-  .[[1]] %&gt;%
+  first() %&gt;%
   html_table() %&gt;%
   slice(-1) %&gt;%
   as_tibble()</code></pre>
@@ -704,7 +704,7 @@ rest_inspec %&gt;%
   ggplot(aes(x = boro, fill = grade)) + 
   geom_bar() </code></pre>
 <p><img src="strings_and_factors_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
-<p>Suppose I want to rename a borough I could try using <code>str_replace</code>.</p>
+<p>Suppose I want to rename a borough. I could try using <code>str_replace</code>.</p>
 <pre class="r"><code>rest_inspec %&gt;% 
   filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
   mutate(
@@ -866,7 +866,7 @@ print(pulse_data, n = 12)</code></pre>
 nyc_airbnb %&gt;%
   filter(neighbourhood_group == &quot;Manhattan&quot;) %&gt;% 
   mutate(
-    neighbourhood = fct_reorder(neighbourhood, price, na.rm = TRUE)) %&gt;% 
+    neighbourhood = fct_reorder(neighbourhood, price)) %&gt;% 
   ggplot(aes(x = neighbourhood, y = price)) +
   geom_boxplot() +
   coord_flip() + 

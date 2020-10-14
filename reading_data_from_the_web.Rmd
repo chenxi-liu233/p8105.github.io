@@ -57,7 +57,7 @@ Gather data from online sources (i.e. “scrape”) using APIs, rvest, and httr.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/2RjK6fYWdzM"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>

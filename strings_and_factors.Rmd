@@ -57,7 +57,7 @@ Edit/manipulate strings and take control of factors.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/xFwrGu8FPRc"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -188,7 +188,7 @@ nsduh_url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uplo
 table_marj = 
   read_html(nsduh_url) %>% 
   html_nodes(css = "table") %>% 
-  .[[1]] %>%
+  first() %>%
   html_table() %>%
   slice(-1) %>%
   as_tibble()
@@ -292,7 +292,7 @@ rest_inspec %>%
   geom_bar() 
 ```
 
-Suppose I want to rename a borough I could try using `str_replace`.
+Suppose I want to rename a borough. I could try using `str_replace`.
 
 ```{r}
 rest_inspec %>% 
@@ -429,7 +429,7 @@ data("nyc_airbnb")
 nyc_airbnb %>%
   filter(neighbourhood_group == "Manhattan") %>% 
   mutate(
-    neighbourhood = fct_reorder(neighbourhood, price, na.rm = TRUE)) %>% 
+    neighbourhood = fct_reorder(neighbourhood, price)) %>% 
   ggplot(aes(x = neighbourhood, y = price)) +
   geom_boxplot() +
   coord_flip() + 
