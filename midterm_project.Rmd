@@ -12,11 +12,11 @@ In contrast to Homework assignments, you must work completely independently on t
 
 ### Context
 
-At this point, we've covered [Building Blocks](topic_building_blocks.html), [Data Wrangling I](topic_data_wrangling_i.html), [Visualization and EDA](topic_visualization_and_eda.html), and [Data Wrangling II](topic_data_wrangling_ii.html). These three topics give a broad introduction into the commonly-used tools of data science, and are the main focus of this project.
+At this point, we've covered [Building Blocks](topic_building_blocks.html), [Data Wrangling I](topic_data_wrangling_i.html), and [Visualization and EDA](topic_visualization_and_eda.html). These three topics give a broad introduction into the commonly-used tools of data science, and are the main focus of this project.
 
 ### Due date
 
-Due: October 25 at 10:00pm
+Due: October 25 at 10:00pm. 
 
 ### Reproducibility
 
@@ -35,15 +35,38 @@ We will assess adherence to the instructions above and whether we are able to kn
 
 ## Deliverable
 
-For this project, you should write a report describing your work in a way that targets a reasonably sophisticated collaborator – not an expert data scientist, but an interested observer. Structure your report to include an introduction and four sections corresponding to the problems below. Write in a reproducible way (e.g. using inline R code where necessary) and include relevant code chunks and their output. Include only relevant information, and adhere to a *strict* 500-word limit (this excludes figures and tables, code chunks, inline code, YAML, and other non-text elements). You can check your word count using `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")`; installation instructions can be found on the [`wordcountaddin` package website](https://github.com/benmarwick/wordcountaddin). We'll use the "koRpus" count.
+For this project, you should write a report describing your work in a way that targets a reasonably sophisticated collaborator – not an expert data scientist, but an interested observer. Structure your report to include sections corresponding to the problems below. Write in a reproducible way (e.g. using inline R code where necessary) and include relevant code chunks and their output. Include only relevant information, and adhere to a strict-500 word limit (this excludes figures and tables, code chunks, inline code, YAML, and other non-text elements). You can check your word count using `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")`; installation instructions can be found on the [`wordcountaddin` package website](https://github.com/benmarwick/wordcountaddin). We'll use the "koRpus" count.
 
 ## Data
 
+A friend of mine, over the last several years, has been closely monitoring the weight of three pet dogs -- Simone, Gagne, and Raisin, shown left to right in the picture below. The dogs are frequently weighed on a dedicated scale, and their weights are recorded. To ensure accuracy over time, a standard object is also weighed from time to time. Occasional notes, often indicating time spent in a kennel, are included.
+
+The data for this project [are available here](./data/dogweights_07sept2020.xlsx).
+
+<img src="images/dogweights_image.jpg" style="width:80%">
 
 ## Problems
 
+### Problem 1 -- Data. 
 
+Provide a brief introduction to the raw data and the goals of your report. 
 
-## Some past examples
+Import, tidy, and otherwise clean the data, omitting notes entered as text. Describe the major steps in the process. Note any issues with data entry you identify, and what steps you took to address them. 
 
+Produce a second dataframe, containing only the notes entered as text and the date on which they were written. 
+
+Export both dataframes as CSVs; store in the same directory as the raw data. 
+
+### Problem 2 -- EDA
+
+Briefly describe the resulting *tidy* dataset containing weights. How many unique dates are included in the dataset? Make a well-formatted table showing the number of observations for each dog, along with their average weight and the standard deviation. 
+
+### Problem 3 -- Visualization.
+
+Create a two-panel plot showing:
+
+* In the left panel, the distribution of weights for each dog. 
+* In the right panel, each dog's weight over time. 
+
+Comment on these visualizations. Do you see any trends? 
 
