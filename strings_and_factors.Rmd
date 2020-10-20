@@ -241,7 +241,7 @@ data("rest_inspec")
 rest_inspec %>% 
   group_by(boro, grade) %>% 
   summarize(n = n()) %>% 
-  spread(key = grade, value = n)
+  pivot_wider(names_from = grade, values_from = n)
 ```
 
 To simplify things, I'll remove inspections with scores other than `A`, `B`, or `C`, and also remove the restaurants with missing boro information. I'll also clean up boro names a bit.
@@ -260,7 +260,7 @@ rest_inspec %>%
   filter(str_detect(dba, "Pizza")) %>% 
   group_by(boro, grade) %>% 
   summarize(n = n()) %>% 
-  spread(key = grade, value = n)
+  pivot_wider(names_from = grade, values_from = n)
 ```
 
 That doesn't look right -- for sure there are more pizza place ratings than that! The problem is that the match in `str_detect` is case-sensitive until we tell it not to be:
@@ -270,7 +270,7 @@ rest_inspec %>%
   filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
   group_by(boro, grade) %>% 
   summarize(n = n()) %>% 
-  spread(key = grade, value = n)
+  pivot_wider(names_from = grade, values_from = n)
 ```
 
 The table is okay but I'd like to visualize this. 

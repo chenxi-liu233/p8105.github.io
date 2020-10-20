@@ -28,7 +28,7 @@ More details about the scoring and grading process can be found [here](http://ww
 
 ## Data description
 
-Data on restaurant inspection results are publicly available at [NYC Open Data](https://dev.socrata.com/foundry/data.cityofnewyork.us/43nn-pn8j) and are updated daily. The specific data to be used in this class, linked to at the top of this page, was accessed in October 2017 using the code below.
+Data on restaurant inspection results are publicly available at [NYC Open Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j) and are updated daily. The specific data to be used in this class, linked to at the top of this page, was accessed in October 2017 using the code below.
 
 ```{r, eval = FALSE}
 library(tidyverse)
@@ -67,7 +67,8 @@ get_all_inspections = function(url) {
 
 url = "https://data.cityofnewyork.us/resource/43nn-pn8j.json"
 
-nyc_inspections = get_all_inspections(url) %>%
+nyc_inspections = 
+  get_all_inspections(url) %>%
   bind_rows() 
 ```
 
