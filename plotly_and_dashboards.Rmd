@@ -57,7 +57,7 @@ Create interactive graphics using plot.ly and design a data dashboard using `fle
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/_hgTpHDkfQs"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
