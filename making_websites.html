@@ -488,7 +488,7 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/guTdeLfgLZU"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
@@ -516,7 +516,7 @@ div.tocify {
 <h3>Common content</h3>
 <p>Your website can include text, of course; you can also include code and figures generated from analyses. Like I keep saying, you’re writing in RMD.</p>
 <p>One important feature of your site will be hyperlinks. The general format for links is <code>[text for link](address.of.link)</code>. So, to link to my favorite tool for data science, I’d use <code>[this](google.com)</code>.</p>
-<p>Your website usually has more than one page. These pages can be created using the same process as <code>index.html</code>: create an Rmd file and knit to html. Once you have another page (e.g. <code>about.html</code>) you need to link to it from your home page (e.g. using use <code>[about](about.html)</code>), or no one will be able to find it.</p>
+<p>Your website usually has more than one page. These pages can be created using the same process as <code>index.html</code>: create an Rmd file and knit to html. Once you have another page (e.g. <code>about.html</code>) you need to link to it from your home page (e.g. using use <code>[about](about.html)</code>), or no one will be able to find it.</p>
 <p>Sometimes you want to add images – pictures you’ve taken or found on the internets, rather than things that are generated from analyses. This is a bit more involved than other things you might want to do. RMD’s default image settings (using <code>![](image.jpg)</code>) aren’t great. I often use a line of HTML:</p>
 <pre class="r"><code>&lt;img src=&quot;images/image.jpg&quot; style=&quot;width:75%&quot;&gt;</code></pre>
 <p>This will load and display <code>images/image.jpg</code> (I usually keep my images inside an <code>images</code> folder to reduce clutter). The <code>style</code> components control things like adding a border or adjusting the image height or width, along with lots of other things – googling around can help if you want to change the style settings. If you want your style rules to apply to all images it can be easier to write a short CSS file, but that’s beyond what we’re going to do now.</p>
@@ -649,7 +649,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
