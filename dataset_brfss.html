@@ -475,12 +475,13 @@ div.tocify {
 library(httr)
 library(jsonlite)
 
-var_names = GET(&quot;https://chronicdata.cdc.gov/views/acme-vg9e.json&quot;) %&gt;%
+var_names = 
+  GET(&quot;https://chronicdata.cdc.gov/views/acme-vg9e.json&quot;) %&gt;%
   content(&quot;text&quot;) %&gt;%
   fromJSON() %&gt;% 
   .[[&quot;columns&quot;]] %&gt;% 
   .[[&quot;name&quot;]] %&gt;% 
-  .[-23]
+  .[1:22]
 
 brfss_smart2010 = 
   GET(&quot;https://chronicdata.cdc.gov/views/acme-vg9e/rows.json&quot;) %&gt;% 
@@ -499,7 +500,7 @@ brfss_smart2010 =
   brfss_smart2010 %&gt;% 
   map(.x = ., ~row_as_tibble(.x, var_names)) %&gt;% 
   bind_rows</code></pre>
-<p>The dataset contains roughly 134,000 rows and 21 columns. There is information on lcoation, topic, question, response, and response number. The data is structured so that each (multiple-choice) response to each question is a separate row. A complete data dictionary is linked above.</p>
+<p>The dataset contains roughly 134,000 rows and 22 columns. There is information on lcoation, topic, question, response, and response number. The data is structured so that each (multiple-choice) response to each question is a separate row. A complete data dictionary is linked above.</p>
 </div>
 
 <br><br>
@@ -558,7 +559,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

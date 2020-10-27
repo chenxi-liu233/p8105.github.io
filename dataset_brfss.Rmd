@@ -25,12 +25,13 @@ library(tidyverse)
 library(httr)
 library(jsonlite)
 
-var_names = GET("https://chronicdata.cdc.gov/views/acme-vg9e.json") %>%
+var_names = 
+  GET("https://chronicdata.cdc.gov/views/acme-vg9e.json") %>%
   content("text") %>%
   fromJSON() %>% 
   .[["columns"]] %>% 
   .[["name"]] %>% 
-  .[-23]
+  .[1:22]
 
 brfss_smart2010 = 
   GET("https://chronicdata.cdc.gov/views/acme-vg9e/rows.json") %>% 
@@ -51,4 +52,4 @@ brfss_smart2010 =
   bind_rows
 ```
 
-The dataset contains roughly 134,000 rows and 21 columns. There is information on lcoation, topic, question, response, and response number. The data is structured so that each (multiple-choice) response to each question is a separate row. A complete data dictionary is linked above. 
+The dataset contains roughly 134,000 rows and 22 columns. There is information on lcoation, topic, question, response, and response number. The data is structured so that each (multiple-choice) response to each question is a separate row. A complete data dictionary is linked above. 

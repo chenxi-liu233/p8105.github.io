@@ -10,17 +10,26 @@ In [data import](data_import.html), we saw how to load data from a variety of fo
 
 This is the first module in the [Data Wrangling II](topic_data_wrangling_ii.html) topic.
 
-```{r, include = FALSE,message=FALSE,warning=FALSE}
+```{r, include = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
 knitr::opts_chunk$set(
-  collapse = TRUE,
+	echo = TRUE,
+	warning = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
 )
 
-library(tidyverse)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Overview {.tabset .tabset-pills}
@@ -48,7 +57,7 @@ Gather data from online sources (i.e. “scrape”) using APIs, rvest, and httr.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/2RjK6fYWdzM"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -75,15 +84,15 @@ First, let's make sure we can load the data from the web.
 
 ```{r}
 url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
-drug_use_xml = read_html(url)
+drug_use_html = read_html(url)
 
-drug_use_xml
+drug_use_html
 ```
 
 Doesn't look like much, but we're there. Rather than trying to grab something using a CSS selector, let's try our luck extracting the tables from the HTML.
 
 ```{r}
-drug_use_xml %>%
+drug_use_html %>%
   html_nodes(css = "table")
 ```
 
@@ -93,8 +102,9 @@ We're only focused on the first table for now, so let's get the contents from th
 
 ```{r}
 table_marj = 
-  (drug_use_xml %>% html_nodes(css = "table")) %>% 
-  .[[1]] %>%
+  drug_use_html %>% 
+  html_nodes(css = "table") %>% 
+  first() %>%
   html_table() 
 ```
 
@@ -102,8 +112,9 @@ I won't print the table here, but if you look at it you'll notice a problem: the
 
 ```{r}
 table_marj = 
-  (drug_use_xml %>% html_nodes(css = "table")) %>% 
-  .[[1]] %>%
+  drug_use_html %>% 
+  html_nodes(css = "table") %>% 
+  first() %>% 
   html_table() %>%
   slice(-1) %>% 
   as_tibble()
@@ -134,11 +145,11 @@ In case you hadn't known, NYC is kind of expensive.
 
 ### CSS Selectors
 
-Suppose we'd like to scrape the data about the [Harry Potter Saga](https://www.imdb.com/list/ls000630791/) from the IMDB page. The first step is the same as before -- we need to get the HTML.
+Suppose we'd like to scrape the data about the [Star Wars Movies](https://www.imdb.com/list/ls070150896/) from the IMDB page. The first step is the same as before -- we need to get the HTML.
 
 ```{r}
-hpsaga_html = 
-  read_html("https://www.imdb.com/list/ls000630791/")
+swm_html = 
+  read_html("https://www.imdb.com/list/ls070150896/")
 ```
 
 The information isn't stored in a handy table, so we're going to isolate the CSS selector for elements we care about. A bit of clicking around gets me something like below. 
@@ -149,28 +160,31 @@ For each element, I'll use the CSS selector in `html_nodes()` to extract the rel
 
 ```{r}
 title_vec = 
-  hpsaga_html %>%
+  swm_html %>%
   html_nodes(".lister-item-header a") %>%
   html_text()
 
 gross_rev_vec = 
-  hpsaga_html %>%
+  swm_html %>%
   html_nodes(".text-small:nth-child(7) span:nth-child(5)") %>%
   html_text()
 
 runtime_vec = 
-  hpsaga_html %>%
+  swm_html %>%
   html_nodes(".runtime") %>%
   html_text()
 
-hpsaga_df = 
+swm_df = 
   tibble(
     title = title_vec,
     rev = gross_rev_vec,
     runtime = runtime_vec)
 ```
 
-**_Learning Assessment:_** [This page](https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1) contains the 10 most recent reviews of the movie "Napoleon Dynamite". Use a process similar to the one above to extract the titles of the reviews. Note: getting the star ratings from Amazon is trickier, but the CSS path `"#cm_cr-review_list .review-rating"` helps -- I discovered this after about an hour of googling around. 
+Some of these movies made some real money ...
+
+
+**_Learning Assessment:_** [This page](https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1) contains the 10 most recent reviews of the movie "Napoleon Dynamite". Use a process similar to the one above to extract the titles of the reviews. 
 
 <details>
 <summary> Solution </summary>
@@ -189,7 +203,7 @@ review_titles =
 
 review_stars = 
   dynamite_html %>%
-  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_nodes(".review-rating") %>%
   html_text()
 
 review_text = 
@@ -215,7 +229,7 @@ As a simple example, [this page](https://data.cityofnewyork.us/Environment/Water
 
 ```{r}
 nyc_water = 
-  GET("https://data.cityofnewyork.us/resource/waf7-5gvc.csv") %>% 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
   content("parsed")
 ```
 
@@ -223,21 +237,24 @@ We can also import this dataset as a JSON file. This takes a bit more work (and 
 
 ```{r}
 nyc_water = 
-  GET("https://data.cityofnewyork.us/resource/waf7-5gvc.json") %>% 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>% 
   content("text") %>%
   jsonlite::fromJSON() %>%
   as_tibble()
 ```
 
-[Data.gov](https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation) also has a lot of data available using their API; often this is available as CSV or JSON as well. For example, we might be interested in data coming from [BRFSS](https://catalog.data.gov/dataset/behavioral-risk-factors-selected-metropolitan-area-risk-trends-smart-county-prevalence-dat-a0124). This is importable via the API as a CSV (JSON, in this example, is [much more complicated](dataset_brfss.html)).
+[Data.gov](https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation) also has a lot of data available using their API; often this is available as CSV or JSON as well. For example, we might be interested in data coming from [BRFSS](https://chronicdata.cdc.gov/Behavioral-Risk-Factors/Behavioral-Risk-Factors-Selected-Metropolitan-Area/acme-vg9e). This is importable via the API as a CSV (JSON, in this example, is [more complicated](dataset_brfss.html)).
 
 ```{r, eval = FALSE}
 brfss_smart2010 = 
-  GET("https://data.cdc.gov/api/views/acme-vg9e/rows.csv?accessType=DOWNLOAD") %>% 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+      query = list("$limit" = 5000)) %>% 
   content("parsed")
 ```
 
-Both of the previous examples are _extremely_ easy -- we accessed data that is essentially a data table, and we had a very straightforward API.
+By default, the CDC API limits data to the first 1000 rows. Here I've increased that by changing an element of the API query -- I looked around the website describing the API to find the name of the argument, and then used the appropriate syntax for `GET`. To get the full data, I could increase this so that I get all the data at once or I could try iterating over chunks of a few thousand rows.
+
+Both of the previous examples are, actually, _pretty easy_ -- we accessed data that is essentially a data table, and we had a very straightforward API (although updating queries isn't obvious at first).
 
 To get a sense of how this becomes complicated, let's look at the [Pokemon API](https://pokeapi.co) (which is also pretty nice).
 

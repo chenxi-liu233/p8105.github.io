@@ -478,7 +478,7 @@ div.tocify {
     class="video"> </iframe></p>
 </div>
 <div style="margin-bottom:5px">
-<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices-1" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
 <hr />
@@ -487,7 +487,7 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/zuxfEHEhcGg"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
@@ -513,16 +513,12 @@ div.tocify {
 ##################################################################</code></pre>
 <p>As part of <a href="homework_0.html">Homework 0</a>, we installed a lot of packages. You don’t need to re-install those each time you need them, but you do need to load packages you want to use with the <code>library</code> function. Although we won’t use it yet, I’m going to load the <code>tidyverse</code> package now.</p>
 <pre class="r"><code>library(tidyverse)
-## Warning: package &#39;tidyverse&#39; was built under R version 3.6.3
-## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --
-## v ggplot2 3.3.0     v purrr   0.3.2
-## v tibble  2.1.3     v dplyr   0.8.3
-## v tidyr   1.0.2     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.5.0
-## Warning: package &#39;ggplot2&#39; was built under R version 3.6.3
-## Warning: package &#39;tidyr&#39; was built under R version 3.6.3
-## Warning: package &#39;forcats&#39; was built under R version 3.6.3
-## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ✓ ggplot2 3.3.0     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.2
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0
+## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p>You can do basic computations in R, either on the command line (in the console) or by writing things in the script and executing the code in the console. Note that you can execute commands (e.g. the line with the cursor or highlighted code) in the console from a script using Command+Enter (Mac) or Ctrl+Enter (Windows).</p>
@@ -541,15 +537,15 @@ x + y
 <p>When making assignments, R assumes you don’t want to see the result. If you do want to see the result, you’ll have to ask for it. You can also apply <strong>functions</strong> to objects.</p>
 <pre class="r"><code>x = runif(20)
 x
-##  [1] 0.18087292 0.13418070 0.16005889 0.08814216 0.13517610 0.64985173
-##  [7] 0.33121563 0.77101748 0.90239511 0.84584059 0.15859780 0.93948516
-## [13] 0.66934136 0.72206726 0.55536777 0.39359075 0.35436639 0.23688578
-## [19] 0.24305655 0.78888645
+##  [1] 0.880909090 0.039271426 0.326627501 0.540389755 0.575707673 0.745155287
+##  [7] 0.670467087 0.025757785 0.936109769 0.765144816 0.356391120 0.898860618
+## [13] 0.380006271 0.731422100 0.118216277 0.004406423 0.333236786 0.595282739
+## [19] 0.722153966 0.283580027
 
 mean(x)
-## [1] 0.4630198
+## [1] 0.4964548
 var(x)
-## [1] 0.08813239</code></pre>
+## [1] 0.09164264</code></pre>
 <p>We’ve created two variables, <code>x</code> and <code>y</code> – these now exist in the <strong>environment</strong>. You can see everything in the environment using <code>ls()</code> on the command line, or check out the environment pane in RStudio.</p>
 <p>(If you care about these things, <a href="https://colinfay.me/r-assignment/">people</a> have <a href="https://twitter.com/JennyBryan/status/1162185393518759936">opinions</a> about <a href="https://r4ds.had.co.nz/workflow-basics.html#coding-basics">assignment operators</a>. I don’t have such strong opinions about this, and don’t care much if you use <code>=</code> or <code>&lt;-</code>.)</p>
 </div>
@@ -658,7 +654,7 @@ ggplot(plot_df, aes(x = x, y = y)) + geom_point()</code></pre>
 <div id="organizing-projects" class="section level3">
 <h3>Organizing projects</h3>
 <p>Your projects will generally consist of several related files – input data, scripts, results. It’s important to keep these organized, so you can find everything you need quickly and easily. R Projects, through RStudio, give you an easy way to do this.</p>
-<p>Create a directory and save the previous two scripts into that directory. Script names, like variable names, should be descriptive (e.g. <code>20200905_var_assign.R</code> and <code>20200905_simple_plots.R</code>). The directory name should be descriptive as well, and it should be in a reasonable place on your computer (e.g. <code>~/Documents/first_project/</code>). Create an R Project using File &gt; New Project &gt; Existing Directory and specifying the directory you just created.</p>
+<p>Create a directory and save the previous two scripts into that directory. Script names, like variable names, should be descriptive (e.g. <code>20200905_var_assign.R</code> and <code>20200905_simple_plots.R</code>). The directory name should be descriptive as well, and it should be in a reasonable place on your computer (e.g. <code>~/Documents/first_project/</code>). Create an R Project using File &gt; New Project &gt; Existing Directory and specifying the directory you just created.</p>
 <p>For now, the best part about R Projects is that they force you to think about and organize the elements you need for your analysis or project. Double-clicking the new <code>.Rproj</code> file will launch the R Project; you’ll see a Files tab in the usual Plots / Packages / Help / Viewer pane. Later, we’ll find R Projects useful in other ways.</p>
 </div>
 <div id="paths-and-your-working-directory" class="section level3">
@@ -668,14 +664,14 @@ ggplot(plot_df, aes(x = x, y = y)) + geom_point()</code></pre>
 <p>If you’ve opened your R Project, that should be your working directory. That’s great! Another bit of encouragement to keep your stuff organized. This means that anything you output will be written to this directory:</p>
 <pre class="r"><code>ggplot(plot_df, aes(x = x, y = y)) + geom_point()
 ggsave(&quot;scatter_plot.pdf&quot;, height = 4, width = 6)</code></pre>
-<p>With larger projects, it can be useful to create sub-directories for your project (e.g. <code>data</code> and <code>results</code>) – you don’t need to worry about that for now, but when you do this you should use relative paths to keep everything self-contained. That’s also a good time to start getting used to the <a href="https://github.com/jennybc/here_here"><code>here::here</code></a> approach to path construction.</p>
+<p>With larger projects, it can be useful to create sub-directories for your project (e.g. <code>data</code> and <code>results</code>) – you don’t need to worry about that for now, but when you do this you should use relative paths to keep everything self-contained. That’s also a good time to start getting used to the <a href="https://github.com/jennybc/here_here"><code>here::here</code></a> approach to path construction.</p>
 <p>Note that we exported a figure using a command, rather than clicking the Export in the Plots tab. This is intentional – whatever your script produces, it should do so exclusively from the code you’ve written.</p>
 </div>
 <div id="workflow" class="section level3">
 <h3>Workflow</h3>
 <p>All this together suggests a workflow. For every new project (and I mean <em>every new project</em>), do the following:</p>
 <ul>
-<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
 <li>Put an R Project in the directory</li>
 <li>Keep everything related to the analysis – data inputs, scripts, reports, output – in there</li>
 <li>Periodically check for reproducibility of the analysis</li>
@@ -772,7 +768,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

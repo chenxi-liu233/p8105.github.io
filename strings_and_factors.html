@@ -488,7 +488,7 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/xFwrGu8FPRc"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
@@ -572,9 +572,259 @@ str_detect(string_vec, &quot;\\[&quot;)</code></pre>
 <pre><code>## [1]  TRUE FALSE  TRUE  TRUE</code></pre>
 <p>There are a lot of other regular expression resources; we’re really only scratching the surface. The stuff we have already will be useful and it’s probably not worth going down the regex rabbit hole. That said, it’s helpful to know what other functions exist in <code>stringr</code> – you should at least know they exist even if you don’t know exactly how they work right now!</p>
 </div>
+<div id="thoughts-on-factors" class="section level3">
+<h3>Thoughts on factors</h3>
+<p>Factors are maybe the least intuitive of <code>R</code>’s data types. They are very useful, but they also do things you don’t expect; this is especially bad when you have factors but think you have characters – which happens more than you’d expect, because R uses factors a lot (<a href="https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/">mostly for historical reasons</a>). Folks get pretty <a href="https://twitter.com/JennyBryan/status/630052228624068609/photo/1">riled</a> <a href="https://cran.r-project.org/web/packages/hellno/hellno.pdf">up</a> about factors.</p>
+<p>Factors are the way to store categorical variables in R. They can take on specific levels (e.g. male and female) which are usually presented as characters but are, in fact, stored by R as integers. These integer values are used by functions throughout R – in making plots, in organizing tables, in determining the “reference” category – but most of the time are hidden by easier-to-read character string labels. This close relationship to strings, when in fact there is a lot of added structure, is why factors can be so confusing.</p>
+<p>This is the kind of thing that can get you in trouble.</p>
+<pre class="r"><code>vec_sex = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
+vec_sex</code></pre>
+<pre><code>## [1] male   male   female female
+## Levels: female male</code></pre>
+<pre class="r"><code>as.numeric(vec_sex)</code></pre>
+<pre><code>## [1] 2 2 1 1</code></pre>
+<pre class="r"><code>vec_sex = fct_relevel(vec_sex, &quot;male&quot;)
+vec_sex</code></pre>
+<pre><code>## [1] male   male   female female
+## Levels: male female</code></pre>
+<pre class="r"><code>as.numeric(vec_sex)</code></pre>
+<pre><code>## [1] 1 1 2 2</code></pre>
+<p>The previous code also illustrates <a href="http://r4ds.had.co.nz/vectors.html#coercion"><em>coersion</em></a>: forcing a variable from one type (e.g. factor) to another (e.g. numeric). Understanding how R coerces variables is important, because it sometimes happens unintentionally and can break your code or impact your analyses.</p>
+<p>For this reason, it’s important to be deliberate factors, particularly by using functions in <a href="https://forcats.tidyverse.org"><code>forcats</code></a>.</p>
+</div>
+<div id="nsduh" class="section level3">
+<h3>NSDUH</h3>
+<p>We’ll revisit the table scraped from the National Survey on Drug Use and Health data on <a href="http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm">this page</a>. In <a href="reading_data_from_the_web.html">reading data from the web</a>, we loaded this data using the code below, but noted it wasn’t tidy.</p>
+<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+
+table_marj = 
+  read_html(nsduh_url) %&gt;% 
+  html_nodes(css = &quot;table&quot;) %&gt;% 
+  first() %&gt;%
+  html_table() %&gt;%
+  slice(-1) %&gt;%
+  as_tibble()</code></pre>
+<p>There are a few steps we need to implement to tidy these data. For now I’m not interested in the p-values (I’d rather just see the data); we also have age groups and year ranges in column titles, both of which are, in fact, variables. Lastly, the table includes letters as superscripts next to table entries; if we only want the percents we’ll need to strip these out.</p>
+<pre class="r"><code>data_marj = 
+  table_marj %&gt;%
+  select(-contains(&quot;P Value&quot;)) %&gt;%
+  pivot_longer(
+    -State,
+    names_to = &quot;age_year&quot;, 
+    values_to = &quot;percent&quot;) %&gt;%
+  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) %&gt;%
+  mutate(
+    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+    percent = as.numeric(percent)) %&gt;%
+  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
+<p>We used <code>stringr</code> and regular expressions a couple of times above:</p>
+<ul>
+<li>in <code>separate</code>, we split age and year at the open parentheses using <code>&quot;\\(&quot;</code></li>
+<li>we stripped out the close parenthesis in <code>mutate</code></li>
+<li>to remove character superscripts, we replaced any character using <code>&quot;[a-c]$&quot;</code></li>
+</ul>
+<p>Let’s quickly visualize these data for the 12-17 age group; to make the plot readable, we’ll treat <code>State</code> as a factor are reorder according to the median <code>percent</code> value.</p>
+<pre class="r"><code>data_marj %&gt;%
+  filter(age == &quot;12-17&quot;) %&gt;% 
+  mutate(State = fct_reorder(State, percent)) %&gt;% 
+  ggplot(aes(x = State, y = percent, color = year)) + 
+    geom_point() + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+</div>
+<div id="restaurant-inspections" class="section level3">
+<h3>Restaurant inspections</h3>
+<p>As a kind of involved example of strings and factors, we’ll take a look at the <a href="dataset_restaurant_inspections.html">NYC Restuarant Inspections</a> data. Although we won’t talk about this in detail now, it’s worth mentioning that these data were collected using the NYC Open Data API; code is available with the data description.</p>
+<p>First we’ll import the data and take a look.</p>
+<pre class="r"><code>data(&quot;rest_inspec&quot;)
+
+rest_inspec %&gt;% 
+  group_by(boro, grade) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;boro&#39; (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 6 x 8
+## # Groups:   boro [6]
+##   boro              A     B     C `Not Yet Graded`     P     Z  `NA`
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 BRONX         13688  2801   701              200   163   351 16833
+## 2 BROOKLYN      37449  6651  1684              702   416   977 51930
+## 3 MANHATTAN     61608 10532  2689              765   508  1237 80615
+## 4 Missing           4    NA    NA               NA    NA    NA    13
+## 5 QUEENS        35952  6492  1593              604   331   913 45816
+## 6 STATEN ISLAND  5215   933   207               85    47   149  6730</code></pre>
+<p>To simplify things, I’ll remove inspections with scores other than <code>A</code>, <code>B</code>, or <code>C</code>, and also remove the restaurants with missing boro information. I’ll also clean up boro names a bit.</p>
+<pre class="r"><code>rest_inspec =
+  rest_inspec %&gt;%
+  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), boro != &quot;Missing&quot;) %&gt;% 
+  mutate(boro = str_to_title(boro))</code></pre>
+<p>Let’s focus only on pizza places for now, and re-examine grades by borough.</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;Pizza&quot;)) %&gt;% 
+  group_by(boro, grade) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;boro&#39; (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 5 x 3
+## # Groups:   boro [5]
+##   boro              A     B
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;
+## 1 Bronx             9     3
+## 2 Brooklyn          6    NA
+## 3 Manhattan        26     8
+## 4 Queens           17    NA
+## 5 Staten Island     5    NA</code></pre>
+<p>That doesn’t look right – for sure there are more pizza place ratings than that! The problem is that the match in <code>str_detect</code> is case-sensitive until we tell it not to be:</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;% 
+  group_by(boro, grade) %&gt;% 
+  summarize(n = n()) %&gt;% 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;boro&#39; (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 5 x 4
+## # Groups:   boro [5]
+##   boro              A     B     C
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 Bronx          1170   305    56
+## 2 Brooklyn       1948   296    61
+## 3 Manhattan      1983   420    76
+## 4 Queens         1647   259    48
+## 5 Staten Island   323   127    21</code></pre>
+<p>The table is okay but I’d like to visualize this.</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>Might help to have things in a different order – maybe number of pizza places? Fortunately this can be done using <code>fct_infreq</code>.</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
+  mutate(boro = fct_infreq(boro)) %&gt;%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Suppose I want to rename a borough. I could try using <code>str_replace</code>.</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
+  mutate(
+    boro = fct_infreq(boro),
+    boro = str_replace(boro, &quot;Brooklyn&quot;, &quot;HipsterHQ&quot;)) %&gt;%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>This renamed the borough, but then converted the result back to a string – which, when plotted, was implicitly made a factor and ordered alphabetically. I could switch the order in which I rename and encode the factor order I want, but that might not always work.</p>
+<p>If I tried base R (maybe because I found some code online), I might try to do this using <code>replace</code>.</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
+  mutate(
+    boro = fct_infreq(boro),
+    boro = replace(boro, which(boro == &quot;Brooklyn&quot;), &quot;HipsterHQ&quot;)) %&gt;%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()</code></pre>
+<pre><code>## Warning: Problem with `mutate()` input `boro`.
+## ℹ invalid factor level, NA generated
+## ℹ Input `boro` is `replace(boro, which(boro == &quot;Brooklyn&quot;), &quot;HipsterHQ&quot;)`.</code></pre>
+<pre><code>## Warning in `[&lt;-.factor`(`*tmp*`, list, value = &quot;HipsterHQ&quot;): invalid factor
+## level, NA generated</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p>That didn’t work at all! Factors have very specific values, trying to use a value that is not an existing factor level won’t work.</p>
+<p>Fortunately there is a dedicated function for renaming factor levels:</p>
+<pre class="r"><code>rest_inspec %&gt;% 
+  filter(str_detect(dba, regex(&quot;pizza&quot;, ignore_case = TRUE))) %&gt;%
+  mutate(
+    boro = fct_infreq(boro),
+    boro = fct_recode(boro, &quot;HipsterHQ&quot; = &quot;Brooklyn&quot;)) %&gt;%
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>Success!</p>
+</div>
+<div id="weather-data" class="section level3">
+<h3>Weather data</h3>
+<p>We saw factors in in <a href="visualization_pt2.html">Viz Pt 2</a>. In that case, we were interested in reordering a factor variable in order to produce clearer plots – <code>ggplot</code> uses factor levels to determine the order in which categories appear. Let’s revisit those examples now.</p>
+<p>Our first step is to load the data we used.</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2017-01-01&quot;,
+    date_max = &quot;2017-12-31&quot;) %&gt;%
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USC00519397 = &quot;Waikiki_HA&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %&gt;%
+  select(name, id, everything())</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USW00094728.dly</code></pre>
+<pre><code>## date created (size, mb): 2020-09-25 14:56:47 (7.519)</code></pre>
+<pre><code>## file min/max dates: 1869-01-01 / 2020-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USC00519397.dly</code></pre>
+<pre><code>## date created (size, mb): 2020-09-25 14:56:52 (1.699)</code></pre>
+<pre><code>## file min/max dates: 1965-01-01 / 2020-03-31</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/R/noaa_ghcnd/USS0023B17S.dly</code></pre>
+<pre><code>## date created (size, mb): 2020-09-25 14:56:54 (0.877)</code></pre>
+<pre><code>## file min/max dates: 1999-09-01 / 2020-09-30</code></pre>
+<pre class="r"><code>weather_df</code></pre>
+<pre><code>## # A tibble: 1,095 x 6
+##    name           id          date        prcp  tmax  tmin
+##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 CentralPark_NY USW00094728 2017-01-01     0   8.9   4.4
+##  2 CentralPark_NY USW00094728 2017-01-02    53   5     2.8
+##  3 CentralPark_NY USW00094728 2017-01-03   147   6.1   3.9
+##  4 CentralPark_NY USW00094728 2017-01-04     0  11.1   1.1
+##  5 CentralPark_NY USW00094728 2017-01-05     0   1.1  -2.7
+##  6 CentralPark_NY USW00094728 2017-01-06    13   0.6  -3.8
+##  7 CentralPark_NY USW00094728 2017-01-07    81  -3.2  -6.6
+##  8 CentralPark_NY USW00094728 2017-01-08     0  -3.8  -8.8
+##  9 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9
+## 10 CentralPark_NY USW00094728 2017-01-10     0   7.8  -6  
+## # … with 1,085 more rows</code></pre>
+<p>Our first example reordered <code>name</code> “by hand” using <code>fct_relevel</code>:</p>
+<pre class="r"><code>weather_df %&gt;%
+  mutate(name = forcats::fct_relevel(name, c(&quot;Waikiki_HA&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) %&gt;% 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
+<p>We could instead reorder <code>name</code> according to <code>tmax</code> values in each name using <code>fct_reorder</code>:</p>
+<pre class="r"><code>weather_df %&gt;%
+  mutate(name = forcats::fct_reorder(name, tmax)) %&gt;% 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-23-1.png" width="90%" /></p>
+<p>Although you may not have seen linear regression previously, the ordering of factor variables play an important in this case as well. Specifically, the ordering determines the “reference” category, and is something that can be adjusted as needed.</p>
+<pre class="r"><code>weather_df %&gt;%
+  lm(tmax ~ name, data = .)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = tmax ~ name, data = .)
+## 
+## Coefficients:
+##      (Intercept)    nameWaikiki_HA  nameWaterhole_WA  
+##           17.366            12.291            -9.884</code></pre>
+<pre class="r"><code>weather_df %&gt;%
+  mutate(name = forcats::fct_relevel(name, c(&quot;Waikiki_HA&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) %&gt;% 
+  lm(tmax ~ name, data = .)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = tmax ~ name, data = .)
+## 
+## Coefficients:
+##        (Intercept)  nameCentralPark_NY    nameWaterhole_WA  
+##              29.66              -12.29              -22.18</code></pre>
+<p>In this example, we’re also using a feature of <code>%&gt;%</code> that allows us to specify where the tibble goes: <code>.</code> is a placeholder for the result of the preceding call.</p>
+</div>
 <div id="pulse-data" class="section level3">
 <h3>PULSE data</h3>
-<p>We’ll start by revisiting a <a href="./data/public_pulse_data.sas7bdat">dataset</a> we’ve seen a few times now. In <a href="tidy_data.html">tidy data</a> we spent some time tidying the PULSE dataset; as part of that we used tools available to us at the time, but now we have some better tools.</p>
+<p>Let’s revisit a <a href="./data/public_pulse_data.sas7bdat">dataset</a> we’ve seen a few times now. In <a href="tidy_data.html">tidy data</a> we spent some time tidying the PULSE dataset. As part of that we used tools available to us at the time, but now we have some better tools.</p>
 <p>The code below updates the data processing pipeline for the PULSE data using <code>stringr</code> and <code>forcats</code>. The result is the same, and the differences are pretty small, but this is a bit cleaner.</p>
 <pre class="r"><code>pulse_data = 
   haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) %&gt;%
@@ -606,299 +856,22 @@ print(pulse_data, n = 12)</code></pre>
 ## 10 10022 01m    58.5 male      3
 ## 11 10022 06m    58.5 male      8
 ## 12 10022 12m    58.5 male     NA
-## # ... with 4,336 more rows</code></pre>
+## # … with 4,336 more rows</code></pre>
 </div>
-<div id="nsduh" class="section level3">
-<h3>NSDUH</h3>
-<p>Next we’ll revisit the table scraped from the National Survey on Drug Use and Health data on <a href="http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm">this page</a>. In <a href="reading_data_from_the_web.html">reading data from the web</a>, we loaded this data using the code below, but noted it wasn’t tidy.</p>
-<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
-
-table_marj = 
-  read_html(nsduh_url) %&gt;% 
-  html_nodes(css = &quot;table&quot;) %&gt;% 
-  .[[1]] %&gt;%
-  html_table() %&gt;%
-  slice(-1) %&gt;%
-  as_tibble()</code></pre>
-<p>There are a few steps we need to implement to tidy these data. For now I’m not interested in the p-values (I’d rather just see the data); we also have age groups and year ranges in column titles, both of which are, in fact, variables. Lastly, the table includes letters as superscripts next to table entries; if we only want the percents we’ll need to strip these out.</p>
-<pre class="r"><code>data_marj = 
-  table_marj %&gt;%
-  select(-contains(&quot;P Value&quot;)) %&gt;%
-  pivot_longer(
-    -State,
-    names_to = &quot;age_year&quot;, 
-    values_to = &quot;percent&quot;) %&gt;%
-  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) %&gt;%
-  mutate(
-    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
-    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
-    percent = as.numeric(percent)) %&gt;%
-  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
-<p>We used <code>stringr</code> and regular expressions a couple of times above:</p>
-<ul>
-<li>in <code>separate</code>, we split age and year at the open parentheses using <code>"\\("</code></li>
-<li>we stripped out the close parenthesis in <code>mutate</code></li>
-<li>to remove character superscripts, we replaced any character using <code>"[a-c]$"</code></li>
-</ul>
-<p>Let’s quickly visualize these data for the 12-17 age group; to make the plot readable, we’ll treat <code>State</code> as a factor are reorder according to the median <code>percent</code> value.</p>
-<pre class="r"><code>data_marj %&gt;%
-  filter(age == &quot;12-17&quot;) %&gt;% 
-  mutate(State = fct_reorder(State, percent)) %&gt;% 
-  ggplot(aes(x = State, y = percent, color = year)) + 
-    geom_point() + 
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
-</div>
-<div id="toothbrush-reviews" class="section level3">
-<h3>Toothbrush reviews</h3>
-<p>We were able to scrape Napoleon Dynamite reviews for a single review page in <a href="reading_data_from_the_web.html">reading data from the web</a>. If we want to scrape more reviews, it’s necessary to construct the URLs for several review pages. This is possible based on an observation about the the structure of the URL for the <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">first page</a> of reviews – it ended with <code>pageNumber=1</code> and, sure enough, changing this to <code>pageNumber=2</code> will bring up the <a href="https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=1">second page</a> of reviews.</p>
-<pre class="r"><code>url_base = &quot;https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=&quot;
-
-urls = str_c(url_base, 1:5)
-
-read_html(urls[1]) %&gt;% 
-  html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
-  html_text()</code></pre>
-<pre><code>##  [1] &quot;\n\n\n\n\n\n\n\n  \n  \n    If you like lame humor, this is for you\n  \n&quot;
-##  [2] &quot;\n\n\n\n\n\n\n\n  \n  \n    This movie is a classic!\n  \n&quot;               
-##  [3] &quot;\n\n\n\n\n\n\n\n  \n  \n    Poor audio, more chopped than a pork!\n  \n&quot;  
-##  [4] &quot;\n\n\n\n\n\n\n\n  \n  \n    Family friendly\n  \n&quot;                        
-##  [5] &quot;\n\n\n\n\n\n\n\n  \n  \n    16 years later it’s still affective!\n  \n&quot;   
-##  [6] &quot;\n\n\n\n\n\n\n\n  \n  \n    LOVE\n  \n&quot;                                   
-##  [7] &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious!\n  \n&quot;                             
-##  [8] &quot;\n\n\n\n\n\n\n\n  \n  \n    BOW TO YOUR SENSEI!!!\n  \n&quot;                  
-##  [9] &quot;\n\n\n\n\n\n\n\n  \n  \n    An innocent, Cult favorite.\n  \n&quot;            
-## [10] &quot;\n\n\n\n\n\n\n\n  \n  \n    Love the movie but doesn&#39;t work great\n  \n&quot;</code></pre>
-<pre class="r"><code>read_html(urls[2]) %&gt;% 
-  html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
-  html_text()</code></pre>
-<pre><code>##  [1] &quot;\n\n\n\n\n\n\n\n  \n  \n    Vote for Pedro!!!\n  \n&quot;            
-##  [2] &quot;\n\n\n\n\n\n\n\n  \n  \n    Good movie for everyone\n  \n&quot;      
-##  [3] &quot;\n\n\n\n\n\n\n\n  \n  \n    Dynamite\n  \n&quot;                     
-##  [4] &quot;\n\n\n\n\n\n\n\n  \n  \n    Classic\n  \n&quot;                      
-##  [5] &quot;\n\n\n\n\n\n\n\n  \n  \n    Rip off\n  \n&quot;                      
-##  [6] &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious Movie!\n  \n&quot;             
-##  [7] &quot;\n\n\n\n\n\n\n\n  \n  \n    A must watch.\n  \n&quot;                
-##  [8] &quot;\n\n\n\n\n\n\n\n  \n  \n    Favorite movie\n  \n&quot;               
-##  [9] &quot;\n\n\n\n\n\n\n\n  \n  \n    silly.. always makes me laugh\n  \n&quot;
-## [10] &quot;\n\n\n\n\n\n\n\n  \n  \n    Sweet\n  \n&quot;</code></pre>
-<p>It would get really tedious to try to scrape all (~1400) reviews by copying code over and over; before long we’ll learn about writing R functions to reuse code and make this much easier!</p>
-</div>
-<div id="thoughts-on-factors" class="section level3">
-<h3>Thoughts on factors</h3>
-<p>Factors are maybe the least intuitive of <code>R</code>’s data types. They are very useful, but they also do things you don’t expect; this is especially bad when you have factors but think you have characters – which happens more than you’d expect, because R uses factors a lot (<a href="https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/">mostly for historical reasons</a>). Folks get pretty <a href="https://twitter.com/JennyBryan/status/630052228624068609/photo/1">riled</a> <a href="https://cran.r-project.org/web/packages/hellno/hellno.pdf">up</a> about factors.</p>
-<p>Factors are the way to store categorical variables in R. They can take on specific levels (e.g. male and female) which are usually presented as characters but are, in fact, stored by R as integers. These integer values are used by functions throughout R – in making plots, in organizing tables, in determining the “reference” category – but most of the time are hidden by easier-to-read character strings.</p>
-<p>This is the kind of thing that can get you in trouble.</p>
-<pre class="r"><code>vec_sex = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
-vec_sex</code></pre>
-<pre><code>## [1] male   male   female female
-## Levels: female male</code></pre>
-<pre class="r"><code>as.numeric(vec_sex)</code></pre>
-<pre><code>## [1] 2 2 1 1</code></pre>
-<pre class="r"><code>vec_sex = relevel(vec_sex, ref = &quot;male&quot;)
-vec_sex</code></pre>
-<pre><code>## [1] male   male   female female
-## Levels: male female</code></pre>
-<pre class="r"><code>as.numeric(vec_sex)</code></pre>
-<pre><code>## [1] 1 1 2 2</code></pre>
-<p>The previous code also illustrates <a href="http://r4ds.had.co.nz/vectors.html#coercion"><em>coersion</em></a>: forcing a variable from one type (e.g. factor) to another (e.g. numeric). Understanding how R coerces variables is important, because it sometimes happens unintentionally and can break your code or impact your analyses.</p>
-</div>
-<div id="previous-factor-examples" class="section level3">
-<h3>Previous Factor Examples</h3>
-<p>We’ve seen factors a few times already, especially in <a href="visualization_pt2.html">Viz Pt 2</a>. In that case, we were interested in reordering a factor variable in order to produce clearer plots – <code>ggplot</code> uses factor levels to determine the order in which categories appear. Let’s revisit those examples now.</p>
-<p>Our first step is to load the data we used.</p>
-<pre class="r"><code>weather_df = 
-  rnoaa::meteo_pull_monitors(
-    c(&quot;USW00094728&quot;, &quot;USC00519397&quot;, &quot;USS0023B17S&quot;),
-    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
-    date_min = &quot;2017-01-01&quot;,
-    date_max = &quot;2017-12-31&quot;) %&gt;%
-  mutate(
-    name = recode(id, USW00094728 = &quot;CentralPark_NY&quot;, 
-                      USC00519397 = &quot;Waikiki_HA&quot;,
-                      USS0023B17S = &quot;Waterhole_WA&quot;),
-    tmin = tmin / 10,
-    tmax = tmax / 10) %&gt;%
-  select(name, id, everything())</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;crul&#39;:
-##   method                 from
-##   as.character.form_file httr</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;hoardr&#39;:
-##   method           from
-##   print.cache_info httr</code></pre>
-<pre><code>## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USW00094728.dly</code></pre>
-<pre><code>## file last updated:  2018-06-14 13:08:48</code></pre>
-<pre><code>## file min/max dates: 1869-01-01 / 2018-06-30</code></pre>
-<pre><code>## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USC00519397.dly</code></pre>
-<pre><code>## file last updated:  2018-06-14 13:09:00</code></pre>
-<pre><code>## file min/max dates: 1965-01-01 / 2018-06-30</code></pre>
-<pre><code>## file path:          /Users/jeffgoldsmith/Library/Caches/rnoaa/ghcnd/USS0023B17S.dly</code></pre>
-<pre><code>## file last updated:  2018-06-14 13:09:04</code></pre>
-<pre><code>## file min/max dates: 1999-09-01 / 2018-06-30</code></pre>
-<pre class="r"><code>weather_df</code></pre>
-<pre><code>## # A tibble: 1,095 x 6
-##    name           id          date        prcp  tmax  tmin
-##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 CentralPark_NY USW00094728 2017-01-01     0   8.9   4.4
-##  2 CentralPark_NY USW00094728 2017-01-02    53   5     2.8
-##  3 CentralPark_NY USW00094728 2017-01-03   147   6.1   3.9
-##  4 CentralPark_NY USW00094728 2017-01-04     0  11.1   1.1
-##  5 CentralPark_NY USW00094728 2017-01-05     0   1.1  -2.7
-##  6 CentralPark_NY USW00094728 2017-01-06    13   0.6  -3.8
-##  7 CentralPark_NY USW00094728 2017-01-07    81  -3.2  -6.6
-##  8 CentralPark_NY USW00094728 2017-01-08     0  -3.8  -8.8
-##  9 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9
-## 10 CentralPark_NY USW00094728 2017-01-10     0   7.8  -6  
-## # … with 1,085 more rows</code></pre>
-<p>Our first example reordered <code>name</code> “by hand” using <code>fct_relevel</code>:</p>
-<pre class="r"><code>weather_df %&gt;%
-  mutate(name = forcats::fct_relevel(name, c(&quot;Waikiki_HA&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) %&gt;% 
-  ggplot(aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
-<p>A second example reordered <code>name</code> according to <code>tmax</code> values in each name using <code>fct_reorder</code>:</p>
-<pre class="r"><code>weather_df %&gt;%
-  mutate(name = forcats::fct_reorder(name, tmax)) %&gt;% 
-  ggplot(aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
-  theme(legend.position = &quot;bottom&quot;)</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
-<p>Although you may not have seen linear regression previously, the ordering of factor variables play an important in this case as well. Specifically, the ordering determines the “reference” category, and is something that can be adjusted as needed:</p>
-<pre class="r"><code>weather_df %&gt;%
-  lm(tmax ~ name, data = .)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = tmax ~ name, data = .)
-## 
-## Coefficients:
-##      (Intercept)    nameWaikiki_HA  nameWaterhole_WA  
-##           17.366            12.291            -9.884</code></pre>
-<pre class="r"><code>weather_df %&gt;%
-  mutate(name = forcats::fct_relevel(name, c(&quot;Waikiki_HA&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) %&gt;% 
-  lm(tmax ~ name, data = .)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = tmax ~ name, data = .)
-## 
-## Coefficients:
-##        (Intercept)  nameCentralPark_NY    nameWaterhole_WA  
-##              29.66              -12.29              -22.18</code></pre>
-<p>We also saw factors in our exploratory analysis of the <a href="dataset_airbnb.html">Airbnb</a> data, when looking at the distribution of prices in various neighborhoods. Ordering these according to the median price made for clearer plots than ordering neighborhoods alphabetically.</p>
+<div id="airbnb" class="section level3">
+<h3>Airbnb</h3>
+<p>We could also use factors in an exploratory analysis of the <a href="dataset_airbnb.html">Airbnb</a> data, for example when looking at the distribution of prices in various neighborhoods. Ordering these according to the median price makes for clearer plots than ordering neighborhoods alphabetically.</p>
 <pre class="r"><code>data(&quot;nyc_airbnb&quot;)
 
 nyc_airbnb %&gt;%
   filter(neighbourhood_group == &quot;Manhattan&quot;) %&gt;% 
   mutate(
-    neighbourhood = fct_reorder(neighbourhood, price, na.rm = TRUE)) %&gt;% 
+    neighbourhood = fct_reorder(neighbourhood, price)) %&gt;% 
   ggplot(aes(x = neighbourhood, y = price)) +
   geom_boxplot() +
   coord_flip() + 
   ylim(0, 1000)</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
-</div>
-<div id="restaurant-inspections" class="section level3">
-<h3>Restaurant inspections</h3>
-<p>As a final example of strings and factors, we’ll take a look at the <a href="dataset_restaurant_inspections.html">NYC Restuarant Inspections</a> data. Although we won’t talk about this in detail now, it’s worth mentioning that these data were collected using the NYC Open Data API; code is available with the data description.</p>
-<p>First we’ll import the data and take a look.</p>
-<pre class="r"><code>data(&quot;rest_inspec&quot;)
-
-rest_inspec %&gt;% 
-  group_by(boro, grade) %&gt;% 
-  summarize(n = n()) %&gt;% 
-  spread(key = grade, value = n)</code></pre>
-<pre><code>## # A tibble: 6 x 8
-## # Groups:   boro [6]
-##   boro              A     B     C `Not Yet Graded`     P     Z `&lt;NA&gt;`
-##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-## 1 BRONX         13688  2801   701              200   163   351  16833
-## 2 BROOKLYN      37449  6651  1684              702   416   977  51930
-## 3 MANHATTAN     61608 10532  2689              765   508  1237  80615
-## 4 Missing           4    NA    NA               NA    NA    NA     13
-## 5 QUEENS        35952  6492  1593              604   331   913  45816
-## 6 STATEN ISLAND  5215   933   207               85    47   149   6730</code></pre>
-<p>To simplify things, I’ll remove inspections with scores other than <code>A</code>, <code>B</code>, or <code>C</code>, and also remove the restaurants with missing boro information. I’ll also clean up boro names a bit.</p>
-<pre class="r"><code>rest_inspec =
-  rest_inspec %&gt;%
-  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), boro != &quot;Missing&quot;) %&gt;% 
-  mutate(boro = str_to_title(boro))</code></pre>
-<p>Let’s focus only on pizza places for now, and re-examine grades by boro.</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;Pizza&quot;)) %&gt;% 
-  group_by(boro, grade) %&gt;% 
-  summarize(n = n()) %&gt;% 
-  spread(key = grade, value = n)</code></pre>
-<pre><code>## # A tibble: 5 x 3
-## # Groups:   boro [5]
-##   boro              A     B
-##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;
-## 1 Bronx             9     3
-## 2 Brooklyn          6    NA
-## 3 Manhattan        26     8
-## 4 Queens           17    NA
-## 5 Staten Island     5    NA</code></pre>
-<p>That doesn’t look right – for sure there are more pizza place ratings than that! The problem is that the match in <code>str_detect</code> is case-sensitive until we tell it not to be:</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;% 
-  group_by(boro, grade) %&gt;% 
-  summarize(n = n()) %&gt;% 
-  spread(key = grade, value = n)</code></pre>
-<pre><code>## # A tibble: 5 x 4
-## # Groups:   boro [5]
-##   boro              A     B     C
-##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;
-## 1 Bronx          1170   305    56
-## 2 Brooklyn       1948   296    61
-## 3 Manhattan      1983   420    76
-## 4 Queens         1647   259    48
-## 5 Staten Island   323   127    21</code></pre>
-<p>The table is okay but I’d like to visualize this.</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
-  ggplot(aes(x = boro, fill = grade)) + 
-  geom_bar() </code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-23-1.png" width="90%" /></p>
-<p>Might help to have things in a different order – maybe number of pizza places? Fortunately this can be done using <code>fct_infreq</code>.</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
-  mutate(boro = fct_infreq(boro)) %&gt;%
-  ggplot(aes(x = boro, fill = grade)) + 
-  geom_bar() </code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-24-1.png" width="90%" /></p>
-<p>Suppose I want to rename a boro; I’ll try to do this using <code>replace</code>.</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
-  mutate(
-    boro = fct_infreq(boro),
-    boro = replace(boro, which(boro == &quot;Brooklyn&quot;), &quot;HipsterHQ&quot;)) %&gt;%
-  ggplot(aes(x = boro, fill = grade)) + 
-  geom_bar() + 
-  scale_fill_viridis(discrete = TRUE)</code></pre>
-<pre><code>## Warning in `[&lt;-.factor`(`*tmp*`, list, value = &quot;HipsterHQ&quot;): invalid factor
-## level, NA generated</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-25-1.png" width="90%" /></p>
-<p>That didn’t work at all! Factors have very specific values, trying to use a value that is not an existing factor level won’t work.</p>
-<p>Alternatively, I could try using <code>str_replace</code>.</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) %&gt;%
-  mutate(
-    boro = fct_infreq(boro),
-    boro = str_replace(boro, &quot;Brooklyn&quot;, &quot;HipsterHQ&quot;)) %&gt;%
-  ggplot(aes(x = boro, fill = grade)) + 
-  geom_bar() </code></pre>
 <p><img src="strings_and_factors_files/figure-html/unnamed-chunk-26-1.png" width="90%" /></p>
-<p>This renamed the Borough, but then converted the result back to a string – which, when plotted, was implicitly made a factor and ordered alphabetically. I could switch the order in which I rename and encode the factor order I want, but that might not always work.</p>
-<p>Fortunately there is a dedicated function for renaming factor levels:</p>
-<pre class="r"><code>rest_inspec %&gt;% 
-  filter(str_detect(dba, regex(&quot;pizza&quot;, ignore_case = TRUE))) %&gt;%
-  mutate(
-    boro = fct_infreq(boro),
-    boro = fct_recode(boro, &quot;HipsterHQ&quot; = &quot;Brooklyn&quot;)) %&gt;%
-  ggplot(aes(x = boro, fill = grade)) + 
-  geom_bar() + 
-  scale_fill_viridis(discrete = TRUE)</code></pre>
-<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-27-1.png" width="90%" /></p>
-<p>Success!</p>
 </div>
 </div>
 <div id="other-materials" class="section level2">
@@ -968,7 +941,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

@@ -396,8 +396,9 @@ Earlier, we looked at scraping reviews of Napoleon Dynamite from several pages o
 
 ```{r}
 dynamite_reviews = 
-  tibble(page = 1:5,
-         urls = str_c(url_base, page)) %>% 
+  tibble(
+    page = 1:5,
+    urls = str_c(url_base, page)) %>% 
   mutate(reviews = map(urls, read_page_reviews)) %>% 
   unnest()
 ```

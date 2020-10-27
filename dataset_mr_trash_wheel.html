@@ -461,11 +461,10 @@ div.tocify {
 </div>
 
 
-<p>The version of the Mr. Trash Wheel data we’ll use for this class is available <a href="./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx">here</a>.</p>
-<p><strong>UPDATE (FALL 2019):</strong> an even-more recent dataset is <a href="./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx">here</a>.</p>
+<p>The version of the Mr. Trash Wheel data we’ll use for this class is available <a href="./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx">here</a>.</p>
 <div id="context" class="section level2">
 <h2>Context</h2>
-<p><a href="http://baltimorewaterfront.com/healthy-harbor/water-wheel/">Mr. Trash Wheel</a> is “a <a href="https://en.wikipedia.org/wiki/Mr._Trash_Wheel">water-wheel vessel</a> that removes trash from the Inner Harbor in Baltimore, Maryland.” It (or he) sits at an intake into the Inner Harbor and intercepts litter and debris carried by the Jones Falls River toward the harbor. It has removed over a million pounds of litter since May 2014!</p>
+<p><a href="https://www.mrtrashwheel.com">Mr. Trash Wheel</a> is “a <a href="https://en.wikipedia.org/wiki/Mr._Trash_Wheel">water-wheel vessel</a> that removes trash from the Inner Harbor in Baltimore, Maryland.” It (or he) sits at an intake into the Inner Harbor and intercepts litter and debris carried by the Jones Falls River toward the harbor. It has removed over a million pounds of litter since May 2014!</p>
 <p>Adam Lindquist, Director of the Healthy Harbor Initiative, describes the operation of the trash wheel and the data collection process below:</p>
 <blockquote>
 <p>Trash collected by the Trash Wheel is immediately dumped into a dumpster sitting on a separate barge at the back of the device. Each time the dumpster fills it is removed by boat and replaced with an empty dumpster. The full dumpster is transported to a waste-to-energy plant with the trash is incinerated to make electricity for Maryland homes.</p>
@@ -540,7 +539,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

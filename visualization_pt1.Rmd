@@ -40,7 +40,7 @@ Create effective graphics using ggplot and implement best practices for effectiv
   </iframe>
 </div>
 
-<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-visualization" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-i" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
 ***
 
@@ -48,7 +48,7 @@ Create effective graphics using ggplot and implement best practices for effectiv
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/32RI5q1IXAI"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -68,17 +68,21 @@ We'll be working with NOAA weather data, which is downloaded using `rnoaa::meteo
 
 ```{r weather_data_create, cache = TRUE}
 weather_df = 
-  rnoaa::meteo_pull_monitors(c("USW00094728", "USC00519397", "USS0023B17S"),
-                      var = c("PRCP", "TMIN", "TMAX"), 
-                      date_min = "2017-01-01",
-                      date_max = "2017-12-31") %>%
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
   mutate(
-    name = recode(id, USW00094728 = "CentralPark_NY", 
-                      USC00519397 = "Waikiki_HA",
-                      USS0023B17S = "Waterhole_WA"),
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Waikiki_HA",
+      USS0023B17S = "Waterhole_WA"),
     tmin = tmin / 10,
     tmax = tmax / 10) %>%
   select(name, id, everything())
+
 weather_df
 ```
 
@@ -168,8 +172,9 @@ I can produce the desired plot using the code below:
 ```{r, eval = FALSE}
 weather_df %>% 
   filter(name == "CentralPark_NY") %>% 
-  mutate(tmax_fahr = tmax * (9 / 5) + 32,
-         tmin_fahr = tmin * (9 / 5) + 32) %>% 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) %>% 
   ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm", se = FALSE)
@@ -179,7 +184,7 @@ Looks like there's a pretty linear relationship between min and max temperatures
 
 </details>
 
-### Tips and tricks
+### Odds and ends
 
 There are lots of ways you can mix and match elements, depending on your goals. I don't like the following plot as much (it doesn't show the data and omits precipitation), but it illustrates that you have lots of freedom in determining which geoms to include and how to compare your groups. If nothing else, you should be starting to get a sense for why you create way more plots for yourself than for others.
 
@@ -207,7 +212,7 @@ ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
 <details>
 <summary> Solution </summary>
 
-In the first attempt, we're defining the color of the points by hand; In the second attempt, we're implicitly creating a color variable that has the value `blue` everywhere; `ggplot` is then assigning colors according to this variable using the default color scheme. 
+In the first attempt, we're defining the color of the points by hand; in the second attempt, we're implicitly creating a color variable that has the value `blue` everywhere; `ggplot` is then assigning colors according to this variable using the default color scheme. 
 
 </details>
 
@@ -249,8 +254,8 @@ Violin plots are sometimes nice, but folks complain that they don't [look like v
 
 ```{r}
 ggplot(weather_df, aes(x = name, y = tmax)) + 
-  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
-  stat_summary(fun.y = median, geom = "point", color = "blue", size = 4)
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = "median", color = "blue")
 ```
 
 Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They're implemented in the [`ggridges`](https://github.com/clauswilke/ggridges) package, and are nice if you have lots of categories in which the shape of the distribution matters.

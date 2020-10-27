@@ -44,7 +44,7 @@ Read data into R from a variety of sources and parse variable types.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/71pMVzk_KEE"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -53,7 +53,7 @@ Read data into R from a variety of sources and parse variable types.
 
 ## Example
 
-We're going to figure out how to import the datasets in [this zip file](./resources/data_import_examples.zip). First, create a GitHub repo + local R project for today's work (I'm calling mine `data_wrangling_i`). Move the datasets to your repo / directory (perhaps in a sub-directory called `data`), and start an R Markdown file. We're also going to be making extensive use of the `tidyverse` package, so go ahead and load that in a "setup" code chunk. 
+We're going to figure out how to import the datasets in [this zip file](./resources/data_import_examples.zip). First, create a GitHub repo + local R project for today's work (I'm calling mine `data_wrangling_i`). Move the datasets to your repo / directory (perhaps in a sub-directory called `data`), and start an R Markdown; I'm reusing this [template](resources/template.Rmd). We're also going to be making extensive use of the `tidyverse` package, so go ahead and load that in a "setup" code chunk. 
 
 ```{r}
 library(tidyverse)
@@ -73,7 +73,7 @@ Absolute paths are often conceptually easier, because you don't really have to _
 An absolute path example is below:
 
 ```
-"/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2019/p8105.github.io/data/FAS_litters.csv"
+"/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_20209/p8105.github.io/data/FAS_litters.csv"
 ```
 
 Relative paths, meanwhile, navigate from your current working directory. Relative paths are portable, in that if you move your directory or share it with someone else, the **relative** path to files in the directory will stay the same and your code will work. For both of these reasons, relative paths are preferred in almost every setting. 
@@ -107,7 +107,7 @@ Tabbed autocomplete in RStudio works with both absolute and relative paths.
 
 One note: R Markdown files treat whatever directory they're in as the starting point for relative paths. For now, putting your R Markdown file in the same directory as you .RProj file will save a lot of headaches -- the same path will work when you knit the document and when you write / edit code interactive in the console. For larger projects, you might want to have a separate directory with several R Markdown files. In that case using [`here::here`](https://github.com/jennybc/here_here) to identify and navigate from the _project_ top-level directory is great, but you need a pretty firm understanding of paths before jumping into that. 
 
-One caveat: if you're going to both share code and use confidential data, you have to take extra steps to ensure data security. That can mean storing data outside of your shared project directory (especially if that directory lives on GitHub), but there are ways to make you paths "stable" even in this setting.
+One caveat: if you're going to both share code and use confidential data, you have to take extra steps to ensure data security (especially if that directory lives on GitHub). One option is to use the `.gitignore` file to ensure data aren't uploaded inadvertently. Alternatively, you can store data outside of your shared project directory. In both cases there are ways to make you paths "stable".
 
 ### Importing data tables
 

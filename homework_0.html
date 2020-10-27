@@ -467,11 +467,11 @@ div.tocify {
 </div>
 <div id="due-date" class="section level3">
 <h3>Due date</h3>
-<p>Due: September 5 at 10:00am.</p>
+<p>Due: September 11 at 10:00pm.</p>
 </div>
 <div id="problem-1" class="section level3">
 <h3>Problem 1</h3>
-<p>Download and install the latest versions of <a href="https://cran.r-project.org">R</a> (3.6.1) and <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a> (1.2.1335).</p>
+<p>Download and install the latest versions of <a href="https://cran.r-project.org">R</a> (4.0.2) and <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a> (1.3.1073).</p>
 <p>Open RStudio and install several packages (and their dependencies) using the code below:</p>
 <pre class="r"><code>install.packages(
   c(&quot;tidyverse&quot;, &quot;knitr&quot;, &quot;rmarkdown&quot;, &quot;janitor&quot;, &quot;broom&quot;, &quot;here&quot;, &quot;readxl&quot;, 
@@ -487,7 +487,12 @@ devtools::install_github(&quot;p8105/p8105.datasets&quot;)</code></pre>
 <div id="problem-2" class="section level3">
 <h3>Problem 2</h3>
 <p>Install Git on the machine you’ll use for work in this course. There are several installation approaches; I suggest you follow <a href="http://happygitwithr.com/install-git.html">this guide</a>.</p>
-<p>Upload a screenshot of RStudio’s terminal pane that shows a successful execution of <code>which git</code> or <code>git --version</code>. Here’s an example “solution”:</p>
+<p>Upload a screenshot of RStudio’s terminal pane that shows a successful execution of:</p>
+<ul>
+<li><code>which git</code> or <code>git --version</code> (for OSX / Mac)</li>
+<li><code>where git</code> (for Windows / PC).</li>
+</ul>
+<p>Here’s an example “solution”:</p>
 <p><img src="images/homework_0_git.png" style="width:90%"></p>
 </div>
 <div id="problem-3" class="section level3">
@@ -552,7 +557,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

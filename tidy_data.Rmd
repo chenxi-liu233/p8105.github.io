@@ -44,7 +44,7 @@ Understanding principles of "tidy" data, using relational databases, and merging
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/CnRgc-2WVRU"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -66,8 +66,10 @@ options(tibble.print_min = 5)
 In [data import](data_import.html), we used the `haven` package to load the PULSE biomarkers dataset from a .sas7bdat. Let's reload those data and take a closer look:
 
 ```{r}
-pulse_data = haven::read_sas("./data/public_pulse_data.sas7bdat") %>%
+pulse_data = 
+  haven::read_sas("./data/public_pulse_data.sas7bdat") %>%
   janitor::clean_names()
+
 pulse_data
 ```
 
@@ -111,36 +113,13 @@ pulse_data =
     names_to = "visit", 
     names_prefix = "bdi_score_",
     values_to = "bdi") %>%
-  select(id, visit, everything()) %>%
+  relocate(visit) %>%
   mutate(
     visit = replace(visit, visit == "bl", "00m"),
     visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) %>%
   arrange(id, visit)
 
 print(pulse_data, n = 12)
-```
-
-Before moving on, let's revisit the `group` variable in the litters dataset: 
-
-```{r}
-read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>% 
-  janitor::clean_names() %>%
-  count(group) 
-```
-
-These data are also untidy: `group` encodes both dose and day of treatment! Time to fix that ...
-
-```{r}
-litters_data = 
-  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>% 
-  janitor::clean_names() %>%
-  separate(group, into = c("dose", "day_of_tx"), sep = 3) %>%
-  mutate(
-    dose = str_to_lower(dose),
-    wt_gain = gd18_weight - gd0_weight) %>%
-  arrange(litter_number)
-
-litters_data
 ```
 
 Now we're in pretty okay shape :-).
@@ -153,7 +132,9 @@ Now we're in pretty okay shape :-).
 The code below shows one approach to this data cleaning process:
 
 ```{r}
-litters_data %>% 
+litters_wide = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
   select(litter_number, ends_with("weight")) %>% 
   pivot_longer(
     gd0_weight:gd18_weight,
@@ -192,12 +173,12 @@ pivot_wider(
   values_from = "mean")
 ```
 
-We're pretty much there now -- in some cases you migth use `select` to reorder columns, and (depending on your goal) use `knitr::kable()` to produce a nicer table for reading.
+We're pretty much there now -- in some cases you might use `select` to reorder columns, and (depending on your goal) use `knitr::kable()` to produce a nicer table for reading.
 
 
 ### Binding rows
 
-We've looked at single-table non-tidy data, but non-tidiness often stems from relevant data spread across multiple tables. In the simplest case, these tables are basically the same and can be stacked to produce a tidy dataset. That's the setting in `LotR_words.xlsx`, where the word counts for different races and sexes in each movie in the trilogy are spread across distinct data rectangles (these data are based on [this example](https://github.com/jennybc/lotr-tidy/blob/master/01-intro.md)).
+We've looked at single-table non-tidy data, but non-tidiness often stems from relevant data spread across multiple tables. In the simplest case, these tables are basically the same and can be stacked to produce a tidy dataset. That's the setting in `LotR_words.xlsx`, where the word counts for different races and genders in each movie in the trilogy are spread across distinct data rectangles (these data are based on [this example](https://github.com/jennybc/lotr-tidy/blob/master/01-intro.md)).
 
 To produce the desired tidy dataset, we first need to read each table and do some cleaning.
 
@@ -225,7 +206,7 @@ lotr_tidy =
   janitor::clean_names() %>%
   pivot_longer(
     female:male,
-    names_to = "sex", 
+    names_to = "gender", 
     values_to = "words") %>%
   mutate(race = str_to_lower(race)) %>% 
   select(movie, everything()) 
@@ -251,6 +232,8 @@ Left joins are the most common, because they add data from a smaller table `y` i
 
 As an example, consider the data tables in `FAS_pups.csv` and `FAS_litters.csv`, which are related through the `Litter Number` variable. The former contains data unique to each pup, and the latter contains data unique to each litter. We can combine these using a left join of litter data into pup data; doing so retains data on each pup and adds data in new columns.
 
+(While revisiting this example, take a look at the `group` variable in the litters dataset: this encodes both dose and day of treatment! We'll fix that bit of untidiness as part of the processing pipeline. I'm also going to address a pet peeve of mine, which is coding sex as an ambiguous numeric variable.)
+
 ```{r}
 pup_data = 
   read_csv("./data/FAS_pups.csv", col_types = "ciiiii") %>%
@@ -260,13 +243,15 @@ pup_data =
 litter_data = 
   read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
   janitor::clean_names() %>%
-  select(-pups_survive) %>%
+  separate(group, into = c("dose", "day_of_tx"), sep = 3) %>%
+  relocate(litter_number) %>%
   mutate(
     wt_gain = gd18_weight - gd0_weight,
-    group = str_to_lower(group))
+    dose = str_to_lower(dose))
 
 fas_data = 
   left_join(pup_data, litter_data, by = "litter_number")
+
 fas_data
 ```
 

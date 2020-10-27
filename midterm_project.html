@@ -467,11 +467,11 @@ div.tocify {
 </div>
 <div id="context" class="section level3">
 <h3>Context</h3>
-<p>At this point, we’ve covered <a href="topic_building_blocks.html">Building Blocks</a>, <a href="topic_data_wrangling_i.html">Data Wrangling I</a>, <a href="topic_visualization_and_eda.html">Visualization and EDA</a>, and <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>. These three topics give a broad introduction into the commonly-used tools of data science, and are the main focus of this project.</p>
+<p>At this point, we’ve covered <a href="topic_building_blocks.html">Building Blocks</a>, <a href="topic_data_wrangling_i.html">Data Wrangling I</a>, and <a href="topic_visualization_and_eda.html">Visualization and EDA</a>. These three topics give a broad introduction into the commonly-used tools of data science, and are the main focus of this project.</p>
 </div>
 <div id="due-date" class="section level3">
 <h3>Due date</h3>
-<p>Due:</p>
+<p>Due: October 25 at 10:00pm.</p>
 </div>
 <div id="reproducibility" class="section level3">
 <h3>Reproducibility</h3>
@@ -490,16 +490,36 @@ div.tocify {
 </div>
 <div id="deliverable" class="section level2">
 <h2>Deliverable</h2>
-<p>For this project, you should write a report describing your work in a way that targets a reasonably sophisticated collaborator – not an expert data scientist, but an interested observer. Structure your report to include an introduction and four sections corresponding to the problems below. Write in a reproducible way (e.g. using inline R code where necessary) and include relevant code chunks and their output. Include only relevant information, and adhere to a <em>strict</em> 500-word limit (this excludes figures and tables, code chunks, inline code, YAML, and other non-text elements). You can check your word count using <code>wordcountaddin::text_stats(&quot;p8105_mtp_YOURUNI.Rmd&quot;)</code>; installation instructions can be found on the <a href="https://github.com/benmarwick/wordcountaddin"><code>wordcountaddin</code> package website</a>. We’ll use the “koRpus” count.</p>
+<p>For this project, you should write a report describing your work in a way that targets a reasonably sophisticated collaborator – not an expert data scientist, but an interested observer. Structure your report to include sections corresponding to the problems below. Write in a reproducible way (e.g. using inline R code where necessary) and include relevant code chunks and their output. Include only relevant information, and adhere to a strict-500 word limit (this excludes figures and tables, code chunks, inline code, YAML, and other non-text elements). You can check your word count using <code>wordcountaddin::text_stats(&quot;p8105_mtp_YOURUNI.Rmd&quot;)</code>; installation instructions can be found on the <a href="https://github.com/benmarwick/wordcountaddin"><code>wordcountaddin</code> package website</a>. We’ll use the “koRpus” count.</p>
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
+<p>A friend of mine, over the last several years, has been closely monitoring the weight of three pet dogs – Simone, Gagne, and Raisin, shown left to right in the picture below. The dogs are frequently weighed on a dedicated scale, and their weights are recorded. To ensure accuracy over time, a standard object is also weighed from time to time. Occasional notes, often indicating time spent in a kennel, are included.</p>
+<p>The data for this project <a href="./data/dogweights_07sept2020.xlsx">are available here</a>.</p>
+<p><img src="images/dogweights_image.jpg" style="width:80%"></p>
 </div>
 <div id="problems" class="section level2">
 <h2>Problems</h2>
+<div id="problem-1-data." class="section level3">
+<h3>Problem 1 – Data.</h3>
+<p>Provide a brief introduction to the raw data and the goals of your report.</p>
+<p>Import, tidy, and otherwise clean the data, omitting notes entered as text. Describe the major steps in the process. Note any issues with data entry you identify, and what steps you took to address them.</p>
+<p>Produce a second dataframe, containing only the notes entered as text and the date on which they were written.</p>
+<p>Export both dataframes as CSVs; store in the same directory as the raw data.</p>
 </div>
-<div id="some-past-examples" class="section level2">
-<h2>Some past examples</h2>
+<div id="problem-2-eda" class="section level3">
+<h3>Problem 2 – EDA</h3>
+<p>Briefly describe the resulting <em>tidy</em> dataset containing weights. How many unique dates are included in the dataset? Make a well-formatted table showing the number of observations for each dog, along with their average weight and the standard deviation.</p>
+</div>
+<div id="problem-3-visualization." class="section level3">
+<h3>Problem 3 – Visualization.</h3>
+<p>Create a two-panel plot showing:</p>
+<ul>
+<li>In the left panel, the distribution of weights for each dog.</li>
+<li>In the right panel, each dog’s weight over time.</li>
+</ul>
+<p>Comment on these visualizations. Do you see any trends?</p>
+</div>
 </div>
 
 <br><br>
@@ -558,7 +578,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

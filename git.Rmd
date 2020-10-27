@@ -25,7 +25,7 @@ library(tidyverse)
 
 ### Learning Objectives
 
-We'll be getting up-to-speed on the basic tools in R. As part of that, we'll define and establish some good habits.
+Git is awesome ... but it isn't easy at first. We'll look at how to use git and github in a data science workflow. 
 
 ### Slide Deck
 
@@ -46,7 +46,7 @@ We'll be getting up-to-speed on the basic tools in R. As part of that, we'll def
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/8jOpEnJx_A4"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>

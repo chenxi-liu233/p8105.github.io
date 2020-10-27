@@ -462,7 +462,7 @@ div.tocify {
 
 
 <p>You will typically (if not always) need to summarize your work in writing. This page describes how to do so using R Markdown.</p>
-<p>This is the second module in the <a href="topic_building_blocks.html">Building blocks</a> topic; the relevant slack channel is <a href="https://p8105fall2019.slack.com/messages/CMPF9U6LA">here</a>.</p>
+<p>This is the second module in the <a href="topic_building_blocks.html">Building blocks</a> topic.</p>
 <div id="overview" class="section level2 tabset tabset-pills">
 <h2>Overview</h2>
 <div id="learning-objectives" class="section level3">
@@ -488,7 +488,7 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/5dEZSYq11VU"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
@@ -500,8 +500,7 @@ div.tocify {
 <div id="basic-rmd" class="section level3">
 <h3>Basic RMD</h3>
 <p>Below is a first RMD file. To follow along, create a .Rmd file using File &gt; New File &gt; R Markdown, and replace the default text with what’s below; you can also download the template <a href="resources/template.Rmd">here</a>. Don’t forget to keep this in a directory you can find again later!</p>
-<pre><code>
----
+<pre><code>---
 title: &quot;Simple document&quot;
 output: html_document
 ---
@@ -657,7 +656,7 @@ date: 2019-09-10</code></pre>
 <h2>New workflow</h2>
 <p>All of this suggests a slight modification to the previous workflow:</p>
 <ul>
-<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Create a directory with a reasonable name and path (e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
 <li>Put an R Project in the directory</li>
 <li>Keep everything related to the analysis – data inputs, scripts / <strong>R Markdown files</strong>, reports, output – in there, <strong>and use R Markdown as much as possible</strong></li>
 <li>Periodically check for reproducibility of the analysis</li>
@@ -803,7 +802,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
