@@ -498,27 +498,24 @@ div.tocify {
 <h2>Example</h2>
 <p>For this topic, I’ll create a GitHub repo + directory / R Project called <code>iteration</code>. I’ll write code for today’s content in a new R Markdown document called <code>writing_functions.Rmd</code>, and I’m going to load the usual packages. I’m also setting the seed so that the output on this page is fixed.</p>
 <pre class="r"><code>library(tidyverse)
-library(rvest)
-## Warning: package &#39;rvest&#39; was built under R version 3.6.3
-## Loading required package: xml2
-## Warning: package &#39;xml2&#39; was built under R version 3.6.3
+library(rvest)</code></pre>
+<pre><code>## Loading required package: xml2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
 ## 
-## Attaching package: &#39;rvest&#39;
-## The following object is masked from &#39;package:purrr&#39;:
+##     pluck</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
 ## 
-##     pluck
-## The following object is masked from &#39;package:readr&#39;:
-## 
-##     guess_encoding
-
-set.seed(1)</code></pre>
+##     guess_encoding</code></pre>
+<pre class="r"><code>set.seed(1)</code></pre>
 <div id="my-first-function" class="section level3">
 <h3>My first function</h3>
 <p>The best way to build up a function is to start with code you’ve written outside a function. To see how this might work, I’ll start with a simple example: the chunk below takes a sample from a normal distribution and then computes the vector of Z scores for the sample.</p>
 <pre class="r"><code>x_vec = rnorm(25, mean = 5, sd = 3)
 
-(x_vec - mean(x_vec)) / sd(x_vec)
-##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+(x_vec - mean(x_vec)) / sd(x_vec)</code></pre>
+<pre><code>##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
 ##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
 ## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
 ## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
@@ -531,24 +528,21 @@ set.seed(1)</code></pre>
   
 }
 
-z_scores(x_vec)
-##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+z_scores(x_vec)</code></pre>
+<pre><code>##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
 ##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
 ## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
 ## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
 ## [25]  0.47485186</code></pre>
 <p>I can try this with a few samples and confirm that it works. I should also try to think of ways this code might break; the attempts below try a variety of inputs to see what happens.</p>
-<pre class="r"><code>z_scores(3)
-## [1] NA
-z_scores(&quot;my name is jeff&quot;)
-## Warning in mean.default(x): argument is not numeric or logical: returning NA
-## Error in x - mean(x): non-numeric argument to binary operator
-z_scores(iris)
-## Warning in mean.default(x): argument is not numeric or logical: returning NA
-## Warning in Ops.factor(left, right): &#39;-&#39; not meaningful for factors
-## Error in is.data.frame(x): (list) object cannot be coerced to type &#39;double&#39;
-z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))
-##  [1] -0.7348469  1.3063945 -0.7348469 -0.7348469  1.3063945  1.3063945
+<pre class="r"><code>z_scores(3)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>z_scores(&quot;my name is jeff&quot;)</code></pre>
+<pre><code>## Error in x - mean(x): non-numeric argument to binary operator</code></pre>
+<pre class="r"><code>z_scores(iris)</code></pre>
+<pre><code>## Error in is.data.frame(x): &#39;list&#39; object cannot be coerced to type &#39;double&#39;</code></pre>
+<pre class="r"><code>z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))</code></pre>
+<pre><code>##  [1] -0.7348469  1.3063945 -0.7348469 -0.7348469  1.3063945  1.3063945
 ##  [7] -0.7348469 -0.7348469 -0.7348469  1.3063945  1.3063945 -0.7348469
 ## [13] -0.7348469 -0.7348469 -0.7348469 -0.7348469 -0.7348469  1.3063945
 ## [19] -0.7348469 -0.7348469 -0.7348469 -0.7348469  1.3063945  1.3063945
@@ -618,23 +612,21 @@ beta0_hat = coef(ls_fit)[1]
 beta1_hat = coef(ls_fit)[2]</code></pre>
 <p>You should take a few minutes to examine this code – make a plot of the simulated data to make sure it “makes sense”, take a look at the result of the <code>lm</code> call, etc.</p>
 <p>Once you’re satisfied, it’s time to wrap things up in a function. I’d like to be able to change the sample size and regression parameters, so those will be my <em>arguments</em>; the code that simulates data and fits the regression goes in the <em>body</em>; and the <em>return</em> statement should include the intercept and slope. A function that does all this, using default values for the intercept and slope, is below.</p>
-<pre class="r"><code>sim_regression = function(n, beta0 = 2, beta1 = 3) {
+<pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
   
   sim_data = tibble(
-    x = rnorm(n, mean = 1, sd = 1),
-    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+    x = rnorm(n, mean = mu, sd = sigma),
   )
   
-  ls_fit = lm(y ~ x, data = sim_data)
-  
-  tibble(
-    beta0_hat = coef(ls_fit)[1],
-    beta1_hat = coef(ls_fit)[2]
-  )
+  sim_data %&gt;% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
 }</code></pre>
-<p>Repeated calls to <code>sim_regression()</code> will give a sense of sampling variability in regression coefficients in SLR; take a few minutes to run <code>sim_regression(30)</code> a few times, and then to run <code>sim_regression(300)</code>, and think about the results. We’ll examine this more formally in <a href="iteration_and_listcols.html">iteration</a> and in <a href="simulation_and_bootstrapping.html">simulation</a>.</p>
-<p>This is also a good time to point out how R handles argument matching. We can use <em>positional</em> matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with <code>tidyverse</code> functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call <code>mean(x)</code> or <code>sim_regression(30, 5, -1)</code>.</p>
-<p>Alternatively, we can use <em>named</em> matching, which uses the argument name in the function call. Named matching can be a bit more stable when you’re writing your own functions (in case you decide to change the order of the inputs, for example) but isn’t strictly necessary. Named arguments can be supplied in any order: <code>sim_regression(n = 30, beta0 = 5, beta1 = -1)</code> is equivalent to <code>sim_regression(beta1 = -1, n = 30, beta0 = 5)</code>.</p>
+<p>Repeated calls to <code>sim_mean_sd()</code> will give a sense of sampling variability in estimating the mean and standard deviation from a sample; take a few minutes to run <code>sim_mean_sd(30)</code> a few times, and then to run <code>sim_mean_sd(300)</code>, and think about the results. We’ll examine this more formally in <a href="iteration_and_listcols.html">iteration</a> and in <a href="simulation.html">simulation</a>.</p>
+<p>This is also a good time to point out how R handles argument matching. We can use <em>positional</em> matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with <code>tidyverse</code> functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call <code>mean(x)</code> or <code>sim_mean_sd(30, 5, -1)</code>.</p>
+<p>Alternatively, we can use <em>named</em> matching, which uses the argument name in the function call. Named matching can be a bit more stable when you’re writing your own functions (in case you decide to change the order of the inputs, for example) but isn’t strictly necessary. Named arguments can be supplied in any order: <code>sim_mean_sd(n = 30, mu = 5, sd = 1)</code> is equivalent to <code>sim_mean_sd(sd = 1, n = 30, mu = 5)</code>.</p>
 </div>
 <div id="revisiting-past-examples" class="section level3">
 <h3>Revisiting past examples</h3>
@@ -646,17 +638,24 @@ beta1_hat = coef(ls_fit)[2]</code></pre>
 
 dynamite_html = read_html(url)
 
-review_titles = dynamite_html %&gt;%
-  html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
+review_titles = 
+  dynamite_html %&gt;%
+  html_nodes(&quot;.a-text-bold span&quot;) %&gt;%
   html_text()
 
-review_stars = dynamite_html %&gt;%
+review_stars = 
+  dynamite_html %&gt;%
   html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
-  html_text()
+  html_text() %&gt;%
+  str_extract(&quot;^\\d&quot;) %&gt;%
+  as.numeric()
 
-review_text = dynamite_html %&gt;%
-    html_nodes(&quot;.review-data:nth-child(4)&quot;) %&gt;%
-    html_text()
+review_text = 
+  dynamite_html %&gt;%
+  html_nodes(&quot;.review-text-content span&quot;) %&gt;%
+  html_text() %&gt;% 
+  str_replace_all(&quot;\n&quot;, &quot;&quot;) %&gt;% 
+  str_trim()
 
 reviews = tibble(
   title = review_titles,
@@ -666,21 +665,26 @@ reviews = tibble(
 <p>Let’s write a quick function to scrape review information for any URL to an Amazon review page.</p>
 <pre class="r"><code>read_page_reviews &lt;- function(url) {
   
-  h = read_html(url)
+  html = read_html(url)
   
-  review_titles = h %&gt;%
-    html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
+  review_titles = 
+    html %&gt;%
+    html_nodes(&quot;.a-text-bold span&quot;) %&gt;%
     html_text()
   
-  review_stars = h %&gt;%
+  review_stars = 
+    html %&gt;%
     html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
     html_text() %&gt;%
-    str_extract(&quot;\\d&quot;) %&gt;%
+    str_extract(&quot;^\\d&quot;) %&gt;%
     as.numeric()
   
-  review_text = h %&gt;%
-    html_nodes(&quot;.review-data:nth-child(4)&quot;) %&gt;%
-    html_text()
+  review_text = 
+    html %&gt;%
+    html_nodes(&quot;.review-text-content span&quot;) %&gt;%
+    html_text() %&gt;% 
+    str_replace_all(&quot;\n&quot;, &quot;&quot;) %&gt;% 
+    str_trim()
   
   tibble(
     title = review_titles,
@@ -700,21 +704,21 @@ dynamite_reviews = bind_rows(
   read_page_reviews(vec_urls[5])
 )
 
-dynamite_reviews
-## # A tibble: 50 x 3
-##    title                                                     stars text         
-##    &lt;chr&gt;                                                     &lt;dbl&gt; &lt;chr&gt;        
-##  1 &quot;\n\n\n\n\n\n\n\n  \n  \n    If you like lame humor, thi~     3 Verified Pur~
-##  2 &quot;\n\n\n\n\n\n\n\n  \n  \n    This movie is a classic!\n ~     5 Verified Pur~
-##  3 &quot;\n\n\n\n\n\n\n\n  \n  \n    Poor audio, more chopped th~     1 Verified Pur~
-##  4 &quot;\n\n\n\n\n\n\n\n  \n  \n    Family friendly\n  \n&quot;           5 Verified Pur~
-##  5 &quot;\n\n\n\n\n\n\n\n  \n  \n    16 years later it’s still a~     4 Verified Pur~
-##  6 &quot;\n\n\n\n\n\n\n\n  \n  \n    LOVE\n  \n&quot;                      5 Verified Pur~
-##  7 &quot;\n\n\n\n\n\n\n\n  \n  \n    Hilarious!\n  \n&quot;                5 Verified Pur~
-##  8 &quot;\n\n\n\n\n\n\n\n  \n  \n    BOW TO YOUR SENSEI!!!\n  \n&quot;     5 Verified Pur~
-##  9 &quot;\n\n\n\n\n\n\n\n  \n  \n    An innocent, Cult favorite.~     5 Verified Pur~
-## 10 &quot;\n\n\n\n\n\n\n\n  \n  \n    Love the movie but doesn&#39;t ~     1 Verified Pur~
-## # ... with 40 more rows</code></pre>
+dynamite_reviews</code></pre>
+<pre><code>## # A tibble: 50 x 3
+##    title                               stars text                               
+##    &lt;chr&gt;                               &lt;dbl&gt; &lt;chr&gt;                              
+##  1 I LOVE THIS MOVIE                       5 &quot;THIS MOVIE IS SO FUNNY ONE OF MY …
+##  2 Don&#39;t you wish you could go back?       5 &quot;Watch it 100 times. Never. Gets. …
+##  3 Stupid, but very funny!                 5 &quot;If you like stupidly funny &#39;90s t…
+##  4 The beat                                5 &quot;The best&quot;                         
+##  5 Hilarious                               5 &quot;Super funny! Loved the online ren…
+##  6 Love this movie                         5 &quot;We love this product.  It came in…
+##  7 Entertaining, limited quality           4 &quot;Entertainment level gets a 5 star…
+##  8 Boo                                     1 &quot;We rented this movie because our …
+##  9 Movie is still silly fun....amazon…     1 &quot;We are getting really frustrated …
+## 10 Brilliant and awkwardly funny.          5 &quot;I&#39;ve watched this movie repeatedl…
+## # … with 40 more rows</code></pre>
 </div>
 <div id="loading-lotr-data" class="section level4">
 <h4>Loading LoTR data</h4>
@@ -763,18 +767,18 @@ lotr_tidy =
 <h3>Functions as arguments</h3>
 <p>One powerful tool is the ability to pass functions as arguments into functions. This might seem like a weird thing to do, but it has a lot of handy applications – we’ll see just how far it goes in the next modules in this topic.</p>
 <p>As a quick example, suppose we wanted to get a sense of how similar or different values in a vector are to each other. There are lots of ways to measure this – variance, standard deviation, range, inter-quartile range – and some are more appropriate in some cases than in others. The function below allows you to input a vector and a function, and returns the result of applying the specified function to the vector input.</p>
-<pre class="r"><code>x = rnorm(25, 0, 1)
+<pre class="r"><code>x_vec = rnorm(25, 0, 1)
 
 my_summary = function(x, summ_func) {
   summ_func(x)
 }
 
-my_summary(x, sd)
-## [1] 0.8988712
-my_summary(x, IQR)
-## [1] 1.271572
-my_summary(x, var)
-## [1] 0.8079694</code></pre>
+my_summary(x_vec, sd)</code></pre>
+<pre><code>## [1] 0.8988712</code></pre>
+<pre class="r"><code>my_summary(x_vec, IQR)</code></pre>
+<pre><code>## [1] 1.271572</code></pre>
+<pre class="r"><code>my_summary(x_vec, var)</code></pre>
+<pre><code>## [1] 0.8079694</code></pre>
 <p>This example is pretty trivial – you could just apply those functions directly to <code>x</code> and skip the hassle – but in many cases the idea of passing functions as arguments is really powerful. As a practical example, remember that you can reorder factors according to different summaries in <code>fct_reorder</code>!</p>
 </div>
 <div id="scoping-and-names" class="section level3">
@@ -859,7 +863,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
