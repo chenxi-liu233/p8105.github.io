@@ -600,18 +600,22 @@ z_scores(x_vec)</code></pre>
 </div>
 <div id="multiple-inputs" class="section level3">
 <h3>Multiple inputs</h3>
-<p>As exciting as it is to compute Z scores, let’s start setting our sights higher. I’d like to have a function that takes a given sample size and true simple linear regression line, simulates data from that model, and returns the estimated intercept and slope. I’ll start from the code below.</p>
+<p>As exciting as it is to compute Z scores, let’s start setting our sights higher. I’d like to have a function that takes a given sample size along with a true mean and standard deviation, simulates data from a normal distribution, and returns the estimated mean and standard deviation. I’ll start from the code below.</p>
 <pre class="r"><code>sim_data = tibble(
-  x = rnorm(30, mean = 1, sd = 1),
-  y = 2 + 3 * x + rnorm(30, 0, 1)
+  x = rnorm(30, mean = 2, sd = 3)
 )
 
-ls_fit = lm(y ~ x, data = sim_data)
-  
-beta0_hat = coef(ls_fit)[1]
-beta1_hat = coef(ls_fit)[2]</code></pre>
+sim_data %&gt;% 
+  summarize(
+    mu_hat = mean(x),
+    sigma_hat = sd(x)
+  )</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   mu_hat sigma_hat
+##    &lt;dbl&gt;     &lt;dbl&gt;
+## 1   1.63      3.06</code></pre>
 <p>You should take a few minutes to examine this code – make a plot of the simulated data to make sure it “makes sense”, take a look at the result of the <code>lm</code> call, etc.</p>
-<p>Once you’re satisfied, it’s time to wrap things up in a function. I’d like to be able to change the sample size and regression parameters, so those will be my <em>arguments</em>; the code that simulates data and fits the regression goes in the <em>body</em>; and the <em>return</em> statement should include the intercept and slope. A function that does all this, using default values for the intercept and slope, is below.</p>
+<p>Once you’re satisfied, it’s time to wrap things up in a function. I’d like to be able to change the sample size and parameters, so those will be my <em>arguments</em>; the code that simulates data and computes the sample mean and SD go in the <em>body</em>; and the <em>return</em> statement should include the estimates. A function that does all this, using default values for the mean and standard deviation, is below.</p>
 <pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
   
   sim_data = tibble(
@@ -625,7 +629,7 @@ beta1_hat = coef(ls_fit)[2]</code></pre>
     )
 }</code></pre>
 <p>Repeated calls to <code>sim_mean_sd()</code> will give a sense of sampling variability in estimating the mean and standard deviation from a sample; take a few minutes to run <code>sim_mean_sd(30)</code> a few times, and then to run <code>sim_mean_sd(300)</code>, and think about the results. We’ll examine this more formally in <a href="iteration_and_listcols.html">iteration</a> and in <a href="simulation.html">simulation</a>.</p>
-<p>This is also a good time to point out how R handles argument matching. We can use <em>positional</em> matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with <code>tidyverse</code> functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call <code>mean(x)</code> or <code>sim_mean_sd(30, 5, -1)</code>.</p>
+<p>This is also a good time to point out how R handles argument matching. We can use <em>positional</em> matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with <code>tidyverse</code> functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call <code>mean(x)</code> or <code>sim_mean_sd(30, 5, 1)</code>.</p>
 <p>Alternatively, we can use <em>named</em> matching, which uses the argument name in the function call. Named matching can be a bit more stable when you’re writing your own functions (in case you decide to change the order of the inputs, for example) but isn’t strictly necessary. Named arguments can be supplied in any order: <code>sim_mean_sd(n = 30, mu = 5, sd = 1)</code> is equivalent to <code>sim_mean_sd(sd = 1, n = 30, mu = 5)</code>.</p>
 </div>
 <div id="revisiting-past-examples" class="section level3">
@@ -774,11 +778,11 @@ my_summary = function(x, summ_func) {
 }
 
 my_summary(x_vec, sd)</code></pre>
-<pre><code>## [1] 0.8988712</code></pre>
+<pre><code>## [1] 0.753654</code></pre>
 <pre class="r"><code>my_summary(x_vec, IQR)</code></pre>
-<pre><code>## [1] 1.271572</code></pre>
+<pre><code>## [1] 1.083116</code></pre>
 <pre class="r"><code>my_summary(x_vec, var)</code></pre>
-<pre><code>## [1] 0.8079694</code></pre>
+<pre><code>## [1] 0.5679943</code></pre>
 <p>This example is pretty trivial – you could just apply those functions directly to <code>x</code> and skip the hassle – but in many cases the idea of passing functions as arguments is really powerful. As a practical example, remember that you can reorder factors according to different summaries in <code>fct_reorder</code>!</p>
 </div>
 <div id="scoping-and-names" class="section level3">

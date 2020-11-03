@@ -173,23 +173,23 @@ In general, either of these will be fine; which one you choose will depend on wh
 
 ### Multiple inputs
 
-As exciting as it is to compute Z scores, let's start setting our sights higher. I'd like to have a function that takes a given sample size and true simple linear regression line, simulates data from that model, and returns the estimated intercept and slope. I'll start from the code below.
+As exciting as it is to compute Z scores, let's start setting our sights higher. I'd like to have a function that takes a given sample size along with a true mean and standard deviation, simulates data from a normal distribution, and returns the estimated mean and standard deviation. I'll start from the code below.
 
 ```{r}
 sim_data = tibble(
-  x = rnorm(30, mean = 1, sd = 1),
-  y = 2 + 3 * x + rnorm(30, 0, 1)
+  x = rnorm(30, mean = 2, sd = 3)
 )
 
-ls_fit = lm(y ~ x, data = sim_data)
-  
-beta0_hat = coef(ls_fit)[1]
-beta1_hat = coef(ls_fit)[2]
+sim_data %>% 
+  summarize(
+    mu_hat = mean(x),
+    sigma_hat = sd(x)
+  )
 ```
 
 You should take a few minutes to examine this code -- make a plot of the simulated data to make sure it "makes sense", take a look at the result of the `lm` call, etc. 
 
-Once you're satisfied, it's time to wrap things up in a function. I'd like to be able to change the sample size and regression parameters, so those will be my *arguments*; the code that simulates data and fits the regression goes in the *body*; and the *return* statement should include the intercept and slope. A function that does all this, using default values for the intercept and slope, is below. 
+Once you're satisfied, it's time to wrap things up in a function. I'd like to be able to change the sample size and parameters, so those will be my *arguments*; the code that simulates data and computes the sample mean and SD go in the *body*; and the *return* statement should include the estimates. A function that does all this, using default values for the mean and standard deviation, is below. 
 
 ```{r}
 sim_mean_sd = function(n, mu = 2, sigma = 3) {
@@ -208,7 +208,7 @@ sim_mean_sd = function(n, mu = 2, sigma = 3) {
 
 Repeated calls to `sim_mean_sd()` will give a sense of sampling variability in estimating the mean and standard deviation from a sample; take a few minutes to run `sim_mean_sd(30)` a few times, and then to run `sim_mean_sd(300)`, and think about the results. We'll examine this more formally in [iteration](iteration_and_listcols.html) and in [simulation](simulation.html).
 
-This is also a good time to point out how R handles argument matching. We can use _positional_ matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with `tidyverse` functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call `mean(x)` or `sim_mean_sd(30, 5, -1)`.
+This is also a good time to point out how R handles argument matching. We can use _positional_ matching, meaning the first value supplied is taken to be the first argument, the second value is the second argument, and so on. We do this with `tidyverse` functions a lot; the first argument is always a dataframe, and we just supply that dataframe in the first position. We also use positional matching when we call `mean(x)` or `sim_mean_sd(30, 5, 1)`.
 
 Alternatively, we can use _named_ matching, which uses the argument name in the function call. Named matching can be a bit more stable when you're writing your own functions (in case you decide to change the order of the inputs, for example) but isn't strictly necessary. Named arguments can be supplied in any order: `sim_mean_sd(n = 30, mu = 5, sd = 1)` is equivalent to `sim_mean_sd(sd = 1, n = 30, mu = 5)`.
 
