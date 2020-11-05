@@ -38,7 +38,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ### Learning Objectives
 
-Use loops, apply and map functions, and simulate datasets in R.
+There are stops along the way, but our goal is to use map functions and iterate over listcolumns in data frames.
 
 ### Slide Deck
 
@@ -59,7 +59,7 @@ Use loops, apply and map functions, and simulate datasets in R.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/61PbKHQWh6A"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>

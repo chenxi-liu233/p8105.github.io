@@ -57,7 +57,7 @@ Create simple R functions to abstract common processes.
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/wd44ZlHmlLQ"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
