@@ -500,92 +500,94 @@ div.tocify {
 <pre class="r"><code>library(tidyverse)
 
 set.seed(1)</code></pre>
-<div id="simulation-slr-for-one-n" class="section level3">
-<h3>Simulation: SLR for one <span class="math inline">\(n\)</span></h3>
-<p>In <a href="writing_functions.html">writing functions</a> we wrote a short function to simulate data from a simple linear regression, fit the regression model, and return estimates of regression coefficients. Specifically, we generate data from <span class="math display">\[ y_i = \beta_0 + \beta_1 x_i + \epsilon_i \]</span></p>
-<p>for subjects <span class="math inline">\(1 \leq i \leq n\)</span> with <span class="math inline">\(\epsilon_i \sim N[0,1]\)</span> and return estimates</p>
-<p><span class="math inline">\(\hat{\beta}_0, \hat{\beta}_1\)</span>. That function is below.</p>
-<pre class="r"><code>sim_regression = function(n, beta0 = 2, beta1 = 3) {
+<div id="simulation-mean-and-sd-for-one-n" class="section level3">
+<h3>Simulation: Mean and SD for one <span class="math inline">\(n\)</span></h3>
+<p>In <a href="writing_functions.html">writing functions</a> we wrote a short function to simulate data from a normal distribution, and return estimates of the mean and standard deviation. Specifically, we generate data from <span class="math display">\[ x_i \sim N[\mu, \sigma] \]</span></p>
+<p>for subjects <span class="math inline">\(1 \leq i \leq n\)</span> and return estimates</p>
+<p><span class="math inline">\(\hat{\mu}, \hat{\sigma}\)</span>. That function is below.</p>
+<pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
   
   sim_data = tibble(
-    x = rnorm(n, mean = 1, sd = 1),
-    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+    x = rnorm(n, mean = mu, sd = sigma),
   )
   
-  ls_fit = lm(y ~ x, data = sim_data)
-  
-  tibble(
-    beta0_hat = coef(ls_fit)[1],
-    beta1_hat = coef(ls_fit)[2]
-  )
+  sim_data %&gt;% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
 }</code></pre>
-<p>Important statistical properties of estimates <span class="math inline">\(\hat{\beta}_0, \hat{\beta}_1\)</span> are established under the conceptual framework of repeated sampling. If you could draw from a population over and over, your estimates will have a known mean and variance:</p>
-<p><span class="math display">\[ \hat{\beta}_0 \sim \left[\beta_0, \sigma^2 \left(\frac{1}{n} + \frac{\bar{x}}{\sum (x_i - \bar{x})^2}\right) \right] \mbox{ and } \hat{\beta}_1 \sim \left[\beta_1,\frac{\sigma^2}{\sum (x_i - \bar{x})^2} \right] \]</span></p>
-<p>(Because our simulation design generates errors from a Normal distribution we also know that the estimates follow a Normal distribution, although that’s not guaranteed by least squares estimation.)</p>
+<p>Important statistical properties of estimates <span class="math inline">\(\hat{\mu}\)</span> are established under the conceptual framework of repeated sampling. If you could draw from a population over and over, your estimates will have a known distribution:</p>
+<p><span class="math display">\[ \hat{\mu} \sim \left[\mu,\frac{\sigma}{\sqrt{n}} \right]\]</span></p>
+<p>Because our simulation design generates observations from a Normal distribution we also know that the estimates follow a Normal distribution, although that’s not guaranteed in general. You can do some work to understand the distribution of <span class="math inline">\(\hat{\sigma}\)</span>, but it’s … messier.</p>
 <p>In the real world, drawing samples is time consuming and costly, so “repeated sampling” remains conceptual. On a computer, though, drawing samples is pretty easy. That makes simulation an appealing way to examine the statistical properties of your estimators.</p>
-<p>Let’s run <code>sim_regression()</code> 100 times to see the effect of randomness in <span class="math inline">\(\epsilon\)</span> on estimates <span class="math inline">\(\hat{\beta}_0, \hat{\beta}_1\)</span>.</p>
+<p>Let’s run <code>sim_mean_sd()</code> 100 times to see the effect of randomness in <span class="math inline">\(x_i\)</span> on estimates <span class="math inline">\(\hat{\mu}, \hat{\sigma}\)</span>.</p>
 <pre class="r"><code>output = vector(&quot;list&quot;, 100)
 
 for (i in 1:100) {
-  output[[i]] = sim_regression(30)
+  output[[i]] = sim_mean_sd(30)
 }
 
 sim_results = bind_rows(output)</code></pre>
 <p>Taking a look at the <code>for</code> loop we used to create these results, you might notice that there’s no <code>input</code> list – the sequence is used to keep track of the output but doesn’t affect the computation performed inside the <code>for</code> loop. In cases like these, the <code>purrr::rerun</code> function is very handy.</p>
 <pre class="r"><code>sim_results = 
-  rerun(100, sim_regression(30, 2, 3)) %&gt;% 
+  rerun(100, sim_mean_sd(30, 2, 3)) %&gt;% 
   bind_rows()</code></pre>
 <p>Structurally, <code>rerun</code> is a lot like <code>map</code> – the first argument defines the amount of iteration and the second argument is the function to use in each iteration step. As with <code>map</code>, we’ve replaced a for loop with a segment of code that makes our purpose much more transparent but both approaches give the same results.</p>
 <p>Let’s make some quick plots and compute some summaries for our simulation results.</p>
 <pre class="r"><code>sim_results %&gt;% 
-  ggplot(aes(x = beta0_hat, y = beta1_hat)) + 
-  geom_point()</code></pre>
+  ggplot(aes(x = mu_hat)) + 
+  geom_density()</code></pre>
 <p><img src="simulation_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
-<pre class="r"><code>
-sim_results %&gt;% 
+<pre class="r"><code>sim_results %&gt;% 
   pivot_longer(
-    beta0_hat:beta1_hat,
+    mu_hat:sigma_hat,
     names_to = &quot;parameter&quot;, 
     values_to = &quot;estimate&quot;) %&gt;% 
   group_by(parameter) %&gt;% 
-  summarize(emp_mean = mean(estimate),
-            emp_var = var(estimate)) %&gt;% 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_sd = sd(estimate)) %&gt;% 
   knitr::kable(digits = 3)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="left">parameter</th>
 <th align="right">emp_mean</th>
-<th align="right">emp_var</th>
+<th align="right">emp_sd</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">beta0_hat</td>
-<td align="right">1.995</td>
-<td align="right">0.081</td>
+<td align="left">mu_hat</td>
+<td align="right">1.985</td>
+<td align="right">0.567</td>
 </tr>
 <tr class="even">
-<td align="left">beta1_hat</td>
-<td align="right">3.021</td>
-<td align="right">0.056</td>
+<td align="left">sigma_hat</td>
+<td align="right">2.979</td>
+<td align="right">0.384</td>
 </tr>
 </tbody>
 </table>
 <p>This is <strong><em>great</em></strong>! We’ve seen how our estimates are distributed under our simulation scenario, and can compare empirical results to theoretical ones. In this way, we can build intution for fundamental statistical procedures under repeated sampling in a way that’s not possible with single data sets.</p>
 </div>
-<div id="simulation-slr-for-several-ns" class="section level3">
-<h3>Simulation: SLR for several <span class="math inline">\(n\)</span>s</h3>
+<div id="simulation-mean-for-several-ns" class="section level3">
+<h3>Simulation: Mean for several <span class="math inline">\(n\)</span>s</h3>
 <p>Sample size makes a huge difference on the variance of estimates in SLR (and pretty much every statistical method). Let’s try to clarify that effect through simulating at a few sample sizes.</p>
 <p>I’ll start this process with a for loop around the code I established above using <code>rerun</code> (I could start from scratch by nesting one for loop in another for loop, but let’s not).</p>
-<pre class="r"><code>n_list = list(&quot;n_30&quot;  = 30, 
-              &quot;n_60&quot;  = 60, 
-              &quot;n_120&quot; = 120, 
-              &quot;n_240&quot; = 240)
+<pre class="r"><code>n_list = 
+  list(
+    &quot;n_30&quot;  = 30, 
+    &quot;n_60&quot;  = 60, 
+    &quot;n_120&quot; = 120, 
+    &quot;n_240&quot; = 240)
+
 output = vector(&quot;list&quot;, length = 4)
 
 for (i in 1:4) {
-  output[[i]] = rerun(100, sim_regression(n_list[[i]])) %&gt;% 
+  output[[i]] = rerun(100, sim_mean_sd(n_list[[i]])) %&gt;% 
     bind_rows
 }</code></pre>
 <p>After this loop, <code>output</code> is a list of 4 data frames; each data frame contains the results of 100 simulations at different sample sizes.</p>
@@ -593,39 +595,31 @@ for (i in 1:4) {
 <pre class="r"><code>sim_results = 
   tibble(sample_size = c(30, 60, 120, 240)) %&gt;% 
   mutate(
-    output_lists = map(.x = sample_size, ~rerun(1000, sim_regression(n = .x))),
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
     estimate_dfs = map(output_lists, bind_rows)) %&gt;% 
   select(-output_lists) %&gt;% 
   unnest(estimate_dfs)</code></pre>
-<p>Let’s take a look at what we’ve accomplished in our simulations! First I’ll take a look at the distribution of slope estimates across sample sizes.</p>
+<p>Let’s take a look at what we’ve accomplished in our simulations! First I’ll take a look at the distribution of mean estimates across sample sizes.</p>
 <pre class="r"><code>sim_results %&gt;% 
   mutate(
     sample_size = str_c(&quot;n = &quot;, sample_size),
     sample_size = fct_inorder(sample_size)) %&gt;% 
-  ggplot(aes(x = sample_size, y = beta1_hat, fill = sample_size)) + 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
   geom_violin()</code></pre>
 <p><img src="simulation_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
-<p>These estimates are centered around the truth (3) for each sample size, and the width of the distribution shrinks as sample size grows.</p>
-<p>Next, I’ll look at the bivariate distribution of intercept and slope estimates across sample sizes.</p>
-<pre class="r"><code>sim_results %&gt;% 
-  mutate(
-    sample_size = str_c(&quot;n = &quot;, sample_size),
-    sample_size = fct_inorder(sample_size)) %&gt;% 
-  ggplot(aes(x = beta0_hat, y = beta1_hat)) + 
-  geom_point(alpha = .2) + 
-  facet_grid(~sample_size)</code></pre>
-<p><img src="simulation_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
-<p>The variability in the slope estimates was shown in the violin plot, but now we have a sense for the bivariate distribution of intercepts and slopes. Estimates of the intercept and slope are correlated with each other; this is expected from theoretical results describing the joint distribution of estimated regression coefficients.</p>
+<p>These estimates are centered around the truth (2) for each sample size, and the width of the distribution shrinks as sample size grows.</p>
 <p>Lastly I’ll look at the empirical mean and variance of these estimates.</p>
 <pre class="r"><code>sim_results %&gt;% 
   pivot_longer(
-    beta0_hat:beta1_hat,
+    mu_hat:sigma_hat,
     names_to = &quot;parameter&quot;, 
     values_to = &quot;estimate&quot;) %&gt;% 
   group_by(parameter, sample_size) %&gt;% 
-  summarize(emp_mean = mean(estimate),
-            emp_var = var(estimate)) %&gt;% 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_var = var(estimate)) %&gt;% 
   knitr::kable(digits = 3)</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;parameter&#39; (override with `.groups` argument)</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -637,56 +631,56 @@ for (i in 1:4) {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">beta0_hat</td>
+<td align="left">mu_hat</td>
 <td align="right">30</td>
-<td align="right">2.000</td>
-<td align="right">0.073</td>
+<td align="right">1.996</td>
+<td align="right">0.291</td>
 </tr>
 <tr class="even">
-<td align="left">beta0_hat</td>
+<td align="left">mu_hat</td>
 <td align="right">60</td>
 <td align="right">2.011</td>
+<td align="right">0.146</td>
+</tr>
+<tr class="odd">
+<td align="left">mu_hat</td>
+<td align="right">120</td>
+<td align="right">1.990</td>
+<td align="right">0.077</td>
+</tr>
+<tr class="even">
+<td align="left">mu_hat</td>
+<td align="right">240</td>
+<td align="right">2.001</td>
+<td align="right">0.038</td>
+</tr>
+<tr class="odd">
+<td align="left">sigma_hat</td>
+<td align="right">30</td>
+<td align="right">2.972</td>
+<td align="right">0.144</td>
+</tr>
+<tr class="even">
+<td align="left">sigma_hat</td>
+<td align="right">60</td>
+<td align="right">2.998</td>
+<td align="right">0.075</td>
+</tr>
+<tr class="odd">
+<td align="left">sigma_hat</td>
+<td align="right">120</td>
+<td align="right">2.990</td>
 <td align="right">0.037</td>
 </tr>
-<tr class="odd">
-<td align="left">beta0_hat</td>
-<td align="right">120</td>
-<td align="right">2.007</td>
+<tr class="even">
+<td align="left">sigma_hat</td>
+<td align="right">240</td>
+<td align="right">2.993</td>
 <td align="right">0.017</td>
-</tr>
-<tr class="even">
-<td align="left">beta0_hat</td>
-<td align="right">240</td>
-<td align="right">2.000</td>
-<td align="right">0.008</td>
-</tr>
-<tr class="odd">
-<td align="left">beta1_hat</td>
-<td align="right">30</td>
-<td align="right">2.997</td>
-<td align="right">0.039</td>
-</tr>
-<tr class="even">
-<td align="left">beta1_hat</td>
-<td align="right">60</td>
-<td align="right">2.993</td>
-<td align="right">0.019</td>
-</tr>
-<tr class="odd">
-<td align="left">beta1_hat</td>
-<td align="right">120</td>
-<td align="right">2.993</td>
-<td align="right">0.008</td>
-</tr>
-<tr class="even">
-<td align="left">beta1_hat</td>
-<td align="right">240</td>
-<td align="right">3.002</td>
-<td align="right">0.004</td>
 </tr>
 </tbody>
 </table>
-<p>These values are consistent with the formulas presented above. This kind of check is a useful way to support derivations (although they don’t serve as a formal proof in any way).</p>
+<p>These values are consistent with the formula presented for the distribution of the sample mean. This kind of check is a useful way to support derivations (although they don’t serve as a formal proof in any way).</p>
 </div>
 </div>
 <div id="other-materials" class="section level2">
@@ -753,7 +747,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

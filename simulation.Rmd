@@ -11,16 +11,25 @@ We've noted that functions are helpful when you repeat code more than twice; we'
 This is the third module in the [Iteration](topic_iteration.html) topic.
 
 ```{r, include = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
 knitr::opts_chunk$set(
-  collapse = TRUE,
+	echo = TRUE,
+	warning = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
 )
 
-library(tidyverse)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Overview {.tabset .tabset-pills}
@@ -65,47 +74,45 @@ library(tidyverse)
 set.seed(1)
 ```
 
-### Simulation: SLR for one $n$
+### Simulation: Mean and SD for one $n$
 
-In [writing functions](writing_functions.html) we wrote a short function to simulate data from a simple linear regression, fit the regression model, and return estimates of regression coefficients. Specifically, we generate data from 
-$$ y_i = \beta_0 + \beta_1 x_i + \epsilon_i $$
+In [writing functions](writing_functions.html) we wrote a short function to simulate data from a normal distribution, and return estimates of the mean and standard deviation. Specifically, we generate data from 
+$$ x_i \sim N[\mu, \sigma] $$
 
-for subjects $1 \leq i \leq n$ with $\epsilon_i \sim N[0,1]$ and return estimates 
+for subjects $1 \leq i \leq n$ and return estimates 
 
-$\hat{\beta}_0, \hat{\beta}_1$. That function is below. 
+$\hat{\mu}, \hat{\sigma}$. That function is below. 
 
 ```{r}
-sim_regression = function(n, beta0 = 2, beta1 = 3) {
+sim_mean_sd = function(n, mu = 2, sigma = 3) {
   
   sim_data = tibble(
-    x = rnorm(n, mean = 1, sd = 1),
-    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+    x = rnorm(n, mean = mu, sd = sigma),
   )
   
-  ls_fit = lm(y ~ x, data = sim_data)
-  
-  tibble(
-    beta0_hat = coef(ls_fit)[1],
-    beta1_hat = coef(ls_fit)[2]
-  )
+  sim_data %>% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
 }
 ```
 
-Important statistical properties of estimates $\hat{\beta}_0, \hat{\beta}_1$ are established under the conceptual framework of repeated sampling. If you could draw from a population over and over, your estimates will have a known mean and variance:
+Important statistical properties of estimates $\hat{\mu}$ are established under the conceptual framework of repeated sampling. If you could draw from a population over and over, your estimates will have a known distribution:
 
-$$ \hat{\beta}_0 \sim \left[\beta_0, \sigma^2 \left(\frac{1}{n} + \frac{\bar{x}}{\sum (x_i - \bar{x})^2}\right) \right] \mbox{ and } \hat{\beta}_1 \sim \left[\beta_1,\frac{\sigma^2}{\sum (x_i - \bar{x})^2} \right] $$
+$$ \hat{\mu} \sim \left[\mu,\frac{\sigma}{\sqrt{n}} \right]$$
 
-(Because our simulation design generates errors from a Normal distribution we also know that the estimates follow a Normal distribution, although that's not guaranteed by least squares estimation.)
+Because our simulation design generates observations from a Normal distribution we also know that the estimates follow a Normal distribution, although that's not guaranteed in general. You can do some work to understand the distribution of $\hat{\sigma}$, but it's ... messier. 
 
 In the real world, drawing samples is time consuming and costly, so "repeated sampling" remains conceptual. On a computer, though, drawing samples is pretty easy. That makes simulation an appealing way to examine the statistical properties of your estimators. 
 
-Let's run `sim_regression()` 100 times to see the effect of randomness in $\epsilon$ on estimates $\hat{\beta}_0, \hat{\beta}_1$.
+Let's run `sim_mean_sd()` 100 times to see the effect of randomness in $x_i$ on estimates $\hat{\mu}, \hat{\sigma}$.
 
 ```{r loop_sim, cache = TRUE}
 output = vector("list", 100)
 
 for (i in 1:100) {
-  output[[i]] = sim_regression(30)
+  output[[i]] = sim_mean_sd(30)
 }
 
 sim_results = bind_rows(output)
@@ -115,7 +122,7 @@ Taking a look at the `for` loop we used to create these results, you might notic
 
 ```{r}
 sim_results = 
-  rerun(100, sim_regression(30, 2, 3)) %>% 
+  rerun(100, sim_mean_sd(30, 2, 3)) %>% 
   bind_rows()
 ```
 
@@ -125,38 +132,42 @@ Let's make some quick plots and compute some summaries for our simulation result
 
 ```{r}
 sim_results %>% 
-  ggplot(aes(x = beta0_hat, y = beta1_hat)) + 
-  geom_point()
+  ggplot(aes(x = mu_hat)) + 
+  geom_density()
 
 sim_results %>% 
   pivot_longer(
-    beta0_hat:beta1_hat,
+    mu_hat:sigma_hat,
     names_to = "parameter", 
     values_to = "estimate") %>% 
   group_by(parameter) %>% 
-  summarize(emp_mean = mean(estimate),
-            emp_var = var(estimate)) %>% 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_sd = sd(estimate)) %>% 
   knitr::kable(digits = 3)
 ```
 
 This is **_great_**! We've seen how our estimates are distributed under our simulation scenario, and can compare empirical results to theoretical ones. In this way, we can build intution for fundamental statistical procedures under repeated sampling in a way that's not possible with single data sets. 
 
 
-### Simulation: SLR for several $n$s
+### Simulation: Mean for several $n$s
 
 Sample size makes a huge difference on the variance of estimates in SLR (and pretty much every statistical method). Let's try to clarify that effect through simulating at a few sample sizes. 
 
 I'll start this process with a for loop around the code I established above using `rerun` (I could start from scratch by nesting one for loop in another for loop, but let's not). 
 
 ```{r}
-n_list = list("n_30"  = 30, 
-              "n_60"  = 60, 
-              "n_120" = 120, 
-              "n_240" = 240)
+n_list = 
+  list(
+    "n_30"  = 30, 
+    "n_60"  = 60, 
+    "n_120" = 120, 
+    "n_240" = 240)
+
 output = vector("list", length = 4)
 
 for (i in 1:4) {
-  output[[i]] = rerun(100, sim_regression(n_list[[i]])) %>% 
+  output[[i]] = rerun(100, sim_mean_sd(n_list[[i]])) %>% 
     bind_rows
 }
 ```
@@ -169,56 +180,41 @@ Before we spend time looking at the results of the simulation, let's recast this
 sim_results = 
   tibble(sample_size = c(30, 60, 120, 240)) %>% 
   mutate(
-    output_lists = map(.x = sample_size, ~rerun(1000, sim_regression(n = .x))),
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
     estimate_dfs = map(output_lists, bind_rows)) %>% 
   select(-output_lists) %>% 
   unnest(estimate_dfs)
 ```
 
-Let's take a look at what we've accomplished in our simulations! First I'll take a look at the distribution of slope estimates across sample sizes. 
+Let's take a look at what we've accomplished in our simulations! First I'll take a look at the distribution of mean estimates across sample sizes. 
 
 ```{r}
 sim_results %>% 
   mutate(
     sample_size = str_c("n = ", sample_size),
     sample_size = fct_inorder(sample_size)) %>% 
-  ggplot(aes(x = sample_size, y = beta1_hat, fill = sample_size)) + 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
   geom_violin()
 ```
 
-These estimates are centered around the truth (3) for each sample size, and the width of the distribution shrinks as sample size grows. 
-
-Next, I'll look at the bivariate distribution of intercept and slope estimates across sample sizes.
-
-```{r}
-sim_results %>% 
-  mutate(
-    sample_size = str_c("n = ", sample_size),
-    sample_size = fct_inorder(sample_size)) %>% 
-  ggplot(aes(x = beta0_hat, y = beta1_hat)) + 
-  geom_point(alpha = .2) + 
-  facet_grid(~sample_size)
-```
-
-The variability in the slope estimates was shown in the violin plot, but now we have a sense for the bivariate distribution of intercepts and slopes. Estimates of the intercept and slope are correlated with each other; this is expected from theoretical results describing the joint distribution of estimated regression coefficients. 
+These estimates are centered around the truth (2) for each sample size, and the width of the distribution shrinks as sample size grows. 
 
 Lastly I'll look at the empirical mean and variance of these estimates.
 
 ```{r}
 sim_results %>% 
   pivot_longer(
-    beta0_hat:beta1_hat,
+    mu_hat:sigma_hat,
     names_to = "parameter", 
     values_to = "estimate") %>% 
   group_by(parameter, sample_size) %>% 
-  summarize(emp_mean = mean(estimate),
-            emp_var = var(estimate)) %>% 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_var = var(estimate)) %>% 
   knitr::kable(digits = 3)
 ```
 
-These values are consistent with the formulas presented above. This kind of check is a useful way to support derivations (although they don't serve as a formal proof in any way).
-
-
+These values are consistent with the formula presented for the distribution of the sample mean. This kind of check is a useful way to support derivations (although they don't serve as a formal proof in any way).
 
 
 ## Other materials
