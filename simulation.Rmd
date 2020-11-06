@@ -36,7 +36,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ### Learning Objectives
 
-Use loop and apply functions to simulate data, and explore statistical properties of common estimation methods using simulations.
+Use iteration methods to simulate data, and explore statistical properties of common estimation methods under repeated sampling using simulations.
 
 ### Slide Deck
 
@@ -57,7 +57,7 @@ Use loop and apply functions to simulate data, and explore statistical propertie
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/CFOjyOIST9w"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
