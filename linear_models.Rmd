@@ -59,7 +59,7 @@ Review fundamentals of linear and generalized linear models, fit models in R, an
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/nW796MKc2AE"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
