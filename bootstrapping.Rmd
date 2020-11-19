@@ -11,16 +11,25 @@ Bootstrapping is a popular resampling-based approach to statistical inference, a
 This is the third module in the [Linear Models](topic_linear_models.html) topic.
 
 ```{r, echo = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
 knitr::opts_chunk$set(
-  collapse = TRUE,
+	echo = TRUE,
+	warning = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
 )
 
-library(tidyverse)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Overview {.tabset .tabset-pills}
@@ -48,7 +57,7 @@ Implement the bootstrap to obtain inference in non-standard cases using tools fo
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/jOoNgeIDGWo"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -201,15 +210,26 @@ bootstrap_results =
     models = map(strap_sample, ~lm(y ~ x, data = .x) ),
     results = map(models, broom::tidy)) %>% 
   select(-strap_sample, -models) %>% 
-  unnest() %>% 
-  group_by(term) %>% 
-  summarize(boot_se = sd(estimate))
+  unnest(results) 
 
 bootstrap_results %>% 
+  group_by(term) %>% 
+  summarize(boot_se = sd(estimate)) %>% 
   knitr::kable(digits = 3)
 ```
 
 Comparing these to the results of ordinary least squares, the standard error for the intercept is much smaller and the standard error for the intercept is a bit larger. This is reasonable, given the non-constant variance in the data given smaller residuals around zero and larger residuals in the the tails of the `x` distribution.
+
+I can also use the estimates across bootstrap samples to construct a confidence interval. For a 95% CI, we might try to exclude the lower and upper 2.5% of the distribution of parameter estimates across "repeated" samples. The code below will do that. 
+
+```{r}
+bootstrap_results %>% 
+  group_by(term) %>% 
+  summarize(
+    ci_lower = quantile(estimate, 0.025), 
+    ci_upper = quantile(estimate, 0.975))
+```
+
 
 For a simple linear regression, we can show the fitted lines for each bootstrap sample to build intuition for these results. 
 
