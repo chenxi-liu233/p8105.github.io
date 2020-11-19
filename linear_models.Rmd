@@ -13,16 +13,25 @@ This content assumes some familiarity with linear models, and focuses on the imp
 This is the first module in the [Linear Models](topic_linear_models.html) topic.
 
 ```{r, include = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
 knitr::opts_chunk$set(
-  collapse = TRUE,
+	echo = TRUE,
+	warning = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
 )
 
-library(tidyverse)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-theme_set(theme_bw() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 ## Overview {.tabset .tabset-pills}
@@ -80,16 +89,16 @@ nyc_airbnb =
   nyc_airbnb %>% 
   mutate(stars = review_scores_location / 2) %>% 
   rename(
-    boro = neighbourhood_group,
+    borough = neighbourhood_group,
     neighborhood = neighbourhood) %>% 
-  filter(boro != "Staten Island") %>% 
-  select(price, stars, boro, neighborhood, room_type)
+  filter(borough != "Staten Island") %>% 
+  select(price, stars, borough, neighborhood, room_type)
 ```
 
 An good place to start is to consider price as an outcome that may depend on rating and borough. We fit that initial model in the following code. 
 
 ```{r}
-fit = lm(price ~ stars + boro, data = nyc_airbnb)
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
 ```
 
 The `lm` function begins with the formula specification -- outcome on the left of the `~` and predictors separated by `+` on the right. As we'll see shortly, interactions between variables can be specified using `*`. You can also specify an intercept-only model (`outcome ~ 1`), a model with no intercept (`outcome ~ 0 + ...`), and a model using all available predictors (`outcome ~ .`). 
@@ -100,10 +109,10 @@ R will treat categorical (factor) covariates appropriately and predictably: indi
 nyc_airbnb = 
   nyc_airbnb %>% 
   mutate(
-    boro = fct_infreq(boro),
+    borough = fct_infreq(borough),
     room_type = fct_infreq(room_type))
 
-fit = lm(price ~ stars + boro, data = nyc_airbnb)
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
 ```
 
 It's important to note that changing reference categories won't change "fit" or statistical sigificance, but can affect ease of interpretation.
@@ -139,7 +148,7 @@ Both of these functions produce data frames, which makes it straightforward to i
 fit %>% 
   broom::tidy() %>% 
   select(term, estimate, p.value) %>% 
-  mutate(term = str_replace(term, "^boro", "Boro: ")) %>% 
+  mutate(term = str_replace(term, "^borough", "Borough: ")) %>% 
   knitr::kable(digits = 3)
 ```
 
@@ -162,7 +171,7 @@ Like many things in the tidyverse, the first argument is a dataframe. That makes
 ```{r}
 nyc_airbnb %>% 
   modelr::add_residuals(fit) %>% 
-  ggplot(aes(x = boro, y = resid)) + geom_violin()
+  ggplot(aes(x = borough, y = resid)) + geom_violin()
 
 nyc_airbnb %>% 
   modelr::add_residuals(fit) %>% 
@@ -181,8 +190,8 @@ We'll comment briefly on hypothesis testing. Model summaries include results of 
 Testing multiple coefficients is somewhat more complicated. A useful approach is to use nested models, meaning that the terms in a simple "null" model are a subset of the terms in a more complex "alternative" model. The are formal tests for comparing the null and alternative models, even when several coefficients are added in the alternative model. Tests of this kind are required to assess the significance of a categorical predictor with more than two levels, as in the example below.
 
 ```{r}
-fit_null = lm(price ~ stars + boro, data = nyc_airbnb)
-fit_alt = lm(price ~ stars + boro + room_type, data = nyc_airbnb)
+fit_null = lm(price ~ stars + borough, data = nyc_airbnb)
+fit_alt = lm(price ~ stars + borough + room_type, data = nyc_airbnb)
 ```
 
 The test of interest is implemented in the `anova` function which, of course, can be summarized using `broom::tidy`. 
@@ -203,7 +212,7 @@ In the airbnb data, we might think that star ratings and room type affects price
 
 ```{r}
 nyc_airbnb %>% 
-  lm(price ~ stars * boro + room_type * boro, data = .) %>% 
+  lm(price ~ stars * borough + room_type * borough, data = .) %>% 
   broom::tidy() %>% 
   knitr::kable(digits = 3)
 ```
@@ -215,18 +224,19 @@ Alternatively, we can nest within boroughs and fit borough-specific models assoc
 ```{r}
 nest_lm_res =
   nyc_airbnb %>% 
-  nest(data = -boro) %>% 
-  mutate(models = map(data, ~lm(price ~ stars + room_type, data = .x)),
-         models = map(models, broom::tidy)) %>% 
-  select(-data) %>% 
-  unnest(models)
+  nest(data = -borough) %>% 
+  mutate(
+    models = map(data, ~lm(price ~ stars + room_type, data = .x)),
+    results = map(models, broom::tidy)) %>% 
+  select(-data, -models) %>% 
+  unnest(results)
 ```
 
 The results of this approach are given in the table below. 
 
 ```{r}
 nest_lm_res %>% 
-  select(boro, term, estimate) %>% 
+  select(borough, term, estimate) %>% 
   mutate(term = fct_inorder(term)) %>% 
   pivot_wider(
     names_from = term, values_from = estimate) %>% 
@@ -242,15 +252,16 @@ An even more extreme example is the assessment of neighborhood effects in Manhat
 ```{r}
 manhattan_airbnb =
   nyc_airbnb %>% 
-  filter(boro == "Manhattan")
+  filter(borough == "Manhattan")
 
 manhattan_nest_lm_res =
   manhattan_airbnb %>% 
   nest(data = -neighborhood) %>% 
-  mutate(models = map(data, ~lm(price ~ stars + room_type, data = .x)),
-         models = map(models, broom::tidy)) %>% 
-  select(-data) %>% 
-  unnest(models)
+  mutate(
+    models = map(data, ~lm(price ~ stars + room_type, data = .x)),
+    results = map(models, broom::tidy)) %>% 
+  select(-data, -models) %>% 
+  unnest(results)
 ```
 
 And the chunk below shows neighborhood-specific estimates for the coefficients related to room type.
@@ -266,12 +277,12 @@ manhattan_nest_lm_res %>%
 
 There is, generally speaking, a reduction in room price for a private room or a shared room compared to an entire apartment, but this varies quite a bit across neighborhoods. 
 
-With this many factor levels, it really isn't a good idea to fit models with main effects or interactions for each. Instead, you'd be best-off using a mixed model, with random intercepts and slopes for each neighborhood. Although it's well beyond the scope of this class, code to fit a mixed model with neighborhood-level random intercepts and random slopes for room type is below. And, of course, we can tidy the results with `broom::tidy`. 
+With this many factor levels, it really isn't a good idea to fit models with main effects or interactions for each. Instead, you'd be best-off using a mixed model, with random intercepts and slopes for each neighborhood. Although it's well beyond the scope of this class, code to fit a mixed model with neighborhood-level random intercepts and random slopes for room type is below. And, of course, we can tidy the results using a mixed-model spinoff of the `broom` package.
 
 ```{r}
 manhattan_airbnb %>% 
   lme4::lmer(price ~ stars + room_type + (1 + room_type | neighborhood), data = .) %>% 
-  broom::tidy()
+  broom.mixed::tidy()
 ```
 
 Mixed models are pretty great!
