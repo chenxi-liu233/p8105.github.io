@@ -14,10 +14,6 @@ purrr
 dplyr
 stringr
 forcats
-viridisLite
-viridis
-p8105.datasets
 tidytext
-bindrcpp
 xml2
 rvest

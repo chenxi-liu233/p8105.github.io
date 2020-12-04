@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -455,192 +461,131 @@ div.tocify {
 </div>
 
 
-<p>This is a bit of a diversion for a public-health-focused course in data science, but it’s fun, related to web data, strings, and factors, and emphasizes tools in data wrangling. It’s most closely related to content in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic, and the slack channel for extra topics is <a href="https://p8105fall2019.slack.com/messages/CN01H0GHX">here</a>.</p>
-<div id="some-slides" class="section level2">
-<h2>Some slides</h2>
-<script async class="speakerdeck-embed" data-id="ee17524f046c49a58cec601fb98bb72d" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<p>This is a bit of a diversion for a public-health-focused course in data science, but it’s fun, related to web data, strings, and factors, and emphasizes tools in data wrangling. It’s most closely related to content in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/ee17524f046c49a58cec601fb98bb72d" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
 <div style="margin-bottom:5px">
-<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-tidy-text" title="Tidy Text" target="_blank">Tidy Data</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+<strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-tidy-data" title="Tidy Data" target="_blank">Tidy Data</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
 </div>
 <p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
-<p>I’ll write code for today’s content in a new R Markdown document called <code>tidy_text.Rmd</code>, and put it in the extra topics directory / GitHub repo. I’m going to load the usual packages, as well as <code>tidytext</code>.</p>
+<p>I’ll write code for today’s content in a new R Markdown document called <code>tidy_text.Rmd</code>, and put it in the extra topics directory / GitHub repo. I’m going to load the <code>tidyverse</code> as usual, as well as <code>tidytext</code> and <code>rvest</code>.</p>
 <pre class="r"><code>library(tidyverse)
-library(viridis)
-library(p8105.datasets)
+library(tidytext)
 
-library(tidytext)</code></pre>
+library(rvest)</code></pre>
+<pre><code>## Loading required package: xml2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     pluck</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>We’re going to examine the <a href="dataset_restaurant_inspections.html">NYC Restuarant Inspections</a> data, which we looked at in <a href="strings_and_factors.html">strings and factors</a>. I’ll load this dataset and restrict to variables I’m interested in right now.</p>
-<pre class="r"><code>data(&quot;rest_inspec&quot;)
-
-rest_inspec = 
-  rest_inspec %&gt;% 
-  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;)) %&gt;% 
-  mutate(inspection_num = row_number(),
-         boro = str_to_title(boro)) %&gt;% 
-  select(inspection_num, boro, grade, score, critical_flag, dba, cuisine_description, zipcode, violation_description)</code></pre>
-</div>
-<div id="words-and-wordcounts" class="section level3">
-<h3>Words and wordcounts</h3>
-<p>To illustrate tidy text and text analysis, we’ll focus on the <code>violation_description</code> which is stored as a string. To begin our analysis, we’ll un-nest the tokens (i.e. words) in each row; the result is a tidy dataset in which each word is contained within a separate row.</p>
-<pre class="r"><code>inspection_words = 
-  rest_inspec %&gt;% 
-  unnest_tokens(word, violation_description)</code></pre>
-<p>There are lots of words here that are uninformative. We’ll remove “stop words” using <code>anti_join</code>; in other settings the words you want to remove might be different.</p>
-<pre class="r"><code>data(stop_words)
-
-inspection_words = 
-  anti_join(inspection_words, stop_words)
-## Joining, by = &quot;word&quot;</code></pre>
-<p>Great! Let’s take a look at the most commonly used (informative) words in this dataset.</p>
-<pre class="r"><code>inspection_words %&gt;% 
-  count(word, sort = TRUE) %&gt;% 
-  top_n(10) %&gt;% 
-  mutate(word = fct_reorder(word, n)) %&gt;% 
-  ggplot(aes(x = word, y = n)) + 
-  geom_bar(stat = &quot;identity&quot;, fill = &quot;blue&quot;, alpha = .6) + 
-  coord_flip()
-## Selecting by n</code></pre>
-<p><img src="tidy_text_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
-</div>
-<div id="comparing-words-across-groups" class="section level3">
-<h3>Comparing words across groups</h3>
-<p>Let’s compare which words are more likely to come from a “C” versus “A” inspection grade. We limit to words that appear at least 5 times and compute the approximate log odds ratio for each word.</p>
-<pre class="r"><code>word_ratios = 
-  inspection_words %&gt;%
-  filter(grade %in% c(&quot;A&quot;, &quot;C&quot;)) %&gt;% 
-  count(word, grade) %&gt;%
-  group_by(word) %&gt;% 
-  filter(sum(n) &gt;= 5) %&gt;%
-  ungroup() %&gt;%
-  spread(grade, n, fill = 0) %&gt;%
-  mutate(
-    C_odds = (C + 1) / (sum(C) + 1),
-    A_odds = (A + 1) / (sum(A) + 1),
-    log_OR = log(C_odds / A_odds)
-  ) %&gt;%
-  arrange(desc(log_OR)) </code></pre>
-<p>We plot the top 15 most distinct words (that is, words that appear much more frequently in one group than the other) below.</p>
-<pre class="r"><code>word_ratios %&gt;%
-  mutate(pos_log_OR = ifelse(log_OR &gt; 0, &quot;C &gt; A&quot;, &quot;A &gt; C&quot;)) %&gt;% 
-  group_by(pos_log_OR) %&gt;%
-  top_n(15, abs(log_OR)) %&gt;%
-  ungroup() %&gt;%
-  mutate(word = fct_reorder(word, log_OR)) %&gt;%
-  ggplot(aes(word, log_OR, fill = pos_log_OR)) +
-  geom_col() +
-  coord_flip() +
-  ylab(&quot;log odds ratio (C/A)&quot;) +
-  scale_fill_discrete(name = &quot;&quot;)</code></pre>
-<p><img src="tidy_text_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
-<p>A lot of these seem pretty reasonable.</p>
-</div>
-<div id="sentiment-analysis" class="section level3">
-<h3>Sentiment analysis</h3>
-<p>Finally, let’s score the sentiment in each word. We’ll use the “bing” (like <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing Liu</a>, not like <a href="https://www.bing.com">bing.com</a>) sentiment lexicon, which simply categorizes each word as having a positive or negative sentiment.</p>
-<pre class="r"><code>bing_sentiments = get_sentiments(&quot;bing&quot;)</code></pre>
-<p>Note this is not perfect for this dataset – for example, this scores <code>cold</code> as <code>negative</code> which might not be accurate – but we’ll use it anyway.</p>
-<p>We need to combine this lexicon with our tidy dataset containing words from each inspection. Note that only words that are in the sentiment lexicon will be retained, as the rest of the words are not considered meaningful. We’ll also count the number of positive and negative words in each violation description, and create a score that is the difference between the number of positive words and negative words.</p>
-<pre class="r"><code>inspection_sentiments = 
-  inspection_words %&gt;% 
-  inner_join(., bing_sentiments) %&gt;% 
-  count(inspection_num, sentiment) %&gt;% 
-  spread(sentiment, n, fill = 0) %&gt;% 
-  mutate(sentiment = positive - negative) %&gt;% 
-  select(inspection_num, sentiment)
-## Joining, by = &quot;word&quot;</code></pre>
-<p>We now have sentiment scores for each inspection. We’ll combine these with our original dataset, which had inspections in each row rather than words in each row – the data tidied for text analysis aren’t really suitable for our current needs.</p>
-<pre class="r"><code>inspection_sentiments = 
-  right_join(rest_inspec, inspection_sentiments, 
-             by = &quot;inspection_num&quot;)</code></pre>
-<p>Finally, let’s make a plot showing inspection sentiments and grades. This could be a pretty big plot, so I’ll restrict to Manhattan and sample only a few thousand entries.</p>
-<pre class="r"><code>set.seed(1)
-
-inspection_sentiments %&gt;% 
-  filter(boro == &quot;Manhattan&quot;) %&gt;% 
-  sample_n(5000) %&gt;% 
-  mutate(inspection_num = factor(inspection_num),
-    inspection_num = fct_reorder(inspection_num, sentiment)) %&gt;% 
-  ggplot(aes(x = inspection_num, 
-             y = sentiment, fill = grade, color = grade)) + 
-  geom_bar(stat = &quot;identity&quot;) + 
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()) +
-  scale_fill_viridis(discrete = TRUE) + 
-  scale_color_viridis(discrete = TRUE) </code></pre>
-<p><img src="tidy_text_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
-<p>It’s not clear that sentiment is related to grade; this could reflect the very formal language of inspections or the inappropriateness of our lexicon.</p>
-</div>
-<div id="napoleon" class="section level3">
-<h3>Napoleon</h3>
-<p>A much more interesting example is the “Napoleon Dynamite reviews”, which we’ll analyze using the same basic approach as above. First, I’ll re-use code from <a href="iteration_and_listcols.html">iteration and listcols</a> to scrape the 1000 most recent reviews on Amazon (and cache the result).</p>
-<pre class="r"><code>library(rvest)
-## Loading required package: xml2
-## 
-## Attaching package: &#39;rvest&#39;
-## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     pluck
-## The following object is masked from &#39;package:readr&#39;:
-## 
-##     guess_encoding
-
-read_page_reviews = function(url) {
+<p>We’re sticking with “Napoleon Dynamite reviews”! First, I’ll re-use code from <a href="iteration_and_listcols.html">iteration and listcols</a> to scrape the 1000 most recent reviews on Amazon (and cache the result).</p>
+<pre class="r"><code>read_page_reviews &lt;- function(url) {
   
-  h = read_html(url)
+  html = read_html(url)
   
-  title = h %&gt;%
-    html_nodes(&quot;#cm_cr-review_list .review-title&quot;) %&gt;%
+  review_titles = 
+    html %&gt;%
+    html_nodes(&quot;.a-text-bold span&quot;) %&gt;%
     html_text()
   
-  stars = h %&gt;%
+  review_stars = 
+    html %&gt;%
     html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
     html_text() %&gt;%
-    str_extract(&quot;\\d&quot;) %&gt;%
+    str_extract(&quot;^\\d&quot;) %&gt;%
     as.numeric()
   
-  text = h %&gt;%
-    html_nodes(&quot;.review-data:nth-child(5)&quot;) %&gt;%
-    html_text()
+  review_text = 
+    html %&gt;%
+    html_nodes(&quot;.review-text-content span&quot;) %&gt;%
+    html_text() %&gt;% 
+    str_replace_all(&quot;\n&quot;, &quot;&quot;) %&gt;% 
+    str_trim()
   
-  data_frame(title, stars, text)
+  tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
 }
 
 url_base = &quot;https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=&quot;
 
 dynamite_reviews = 
-  tibble(page = 1:100,
-         urls = str_c(url_base, page)) %&gt;% 
+  tibble(
+    page = 1:100,
+    urls = str_c(url_base, page)) %&gt;% 
   mutate(reviews = map(urls, read_page_reviews)) %&gt;% 
-  unnest()</code></pre>
-<p>The output of the code above is a successfully scraped dataset with 5 and 1000 rows – one row for each review. For each review we get the title of that review, the number of stars it received, and text that describers the users feelings about the movie.</p>
-<p>Next we’ll turn this into a tidy dataset using the text in the reviews and remove stop words.</p>
-<pre class="r"><code>dynamite_reviews = 
-  dynamite_reviews %&gt;%
-  as_tibble() %&gt;%
-  mutate(review_num = row_number())
-
-data(stop_words)
+  unnest(reviews) %&gt;%
+  mutate(review_num = row_number()) %&gt;% 
+  relocate(page, review_num)</code></pre>
+<p>The output of the code above is a successfully scraped dataset with 6 and 1000 rows – one row for each review. For each review we get the title of that review, the number of stars it received, and text that describers the users feelings about the movie.</p>
+</div>
+<div id="words-and-wordcounts" class="section level3">
+<h3>Words and wordcounts</h3>
+<p>To illustrate tidy text and text analysis, we’ll focus on the reviews directly, which are stored as strings in <code>text</code>. To begin our analysis, we’ll un-nest the tokens (i.e. words) in each row; the result is a tidy dataset in which each word is contained within a separate row.</p>
+<pre class="r"><code>dynamite_words = 
+  dynamite_reviews %&gt;% 
+  unnest_tokens(word, text)</code></pre>
+<p>There are lots of words here that are uninformative. We’ll remove “stop words” using <code>anti_join</code>; in other settings the words you want to remove might be different.</p>
+<pre class="r"><code>data(stop_words)
 
 dynamite_words = 
-  dynamite_reviews %&gt;% 
-  unnest_tokens(word, text) %&gt;% 
-  anti_join(stop_words) %&gt;% 
-  arrange(review_num)
-## Joining, by = &quot;word&quot;</code></pre>
-<p>The code chunk below produces a table of the most frequently used in one- and five-star reviews.</p>
+  anti_join(dynamite_words, stop_words)</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<p>Great! Let’s take a look at the most commonly used (informative) words in this dataset.</p>
+<pre class="r"><code>dynamite_words %&gt;% 
+  count(word, sort = TRUE) %&gt;% 
+  top_n(10) %&gt;% 
+  mutate(word = fct_reorder(word, n)) %&gt;% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = &quot;identity&quot;, fill = &quot;blue&quot;, alpha = .6) + 
+  coord_flip()</code></pre>
+<pre><code>## Selecting by n</code></pre>
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+</div>
+<div id="comparing-words-across-groups" class="section level3">
+<h3>Comparing words across groups</h3>
+<p>The next code chunk below produces a table of the most frequently used in one- and five-star reviews.</p>
 <pre class="r"><code>dynamite_words %&gt;%
   filter(stars %in% c(1, 5)) %&gt;%
   group_by(stars) %&gt;%
   count(word) %&gt;% 
   top_n(5) %&gt;%
-  knitr::kable()
-## Selecting by n</code></pre>
+  knitr::kable()</code></pre>
+<pre><code>## Selecting by n</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -652,128 +597,143 @@ dynamite_words =
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
+<td align="left">bad</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
 <td align="left">dumb</td>
 <td align="right">8</td>
 </tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="left">funny</td>
-<td align="right">9</td>
-</tr>
 <tr class="odd">
 <td align="right">1</td>
-<td align="left">movie</td>
-<td align="right">43</td>
+<td align="left">dvd</td>
+<td align="right">7</td>
 </tr>
 <tr class="even">
+<td align="right">1</td>
+<td align="left">movie</td>
+<td align="right">50</td>
+</tr>
+<tr class="odd">
 <td align="right">1</td>
 <td align="left">time</td>
 <td align="right">9</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">1</td>
 <td align="left">watch</td>
 <td align="right">8</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">5</td>
 <td align="left">classic</td>
-<td align="right">115</td>
+<td align="right">102</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">5</td>
 <td align="left">funny</td>
-<td align="right">119</td>
-</tr>
-<tr class="even">
-<td align="right">5</td>
-<td align="left">love</td>
-<td align="right">140</td>
+<td align="right">125</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
-<td align="left">movie</td>
-<td align="right">393</td>
+<td align="left">love</td>
+<td align="right">138</td>
 </tr>
 <tr class="even">
 <td align="right">5</td>
-<td align="left">watch</td>
-<td align="right">87</td>
+<td align="left">movie</td>
+<td align="right">430</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">time</td>
+<td align="right">99</td>
 </tr>
 </tbody>
 </table>
 <p>The table above gives the top 5 most frequently used words in 1-star and 5-star reviews. <em>Movie</em> is the most used word for both 1 and 5-star reviews, though other words, like <em>dumb</em> differentiate 1-star reviews from 5-star reviews, which have words like <em>love</em>.</p>
-<p>Word frequency might be misleading because there are 774 5-star reviews and only 64 1-star reviews.</p>
-<p>To look a relative word frequency we plot the (approximate) log odds ratio for word appearance comparing 1-star reviews to 5-star reviews, shown below.</p>
-<pre class="r"><code>word_ratios &lt;- dynamite_words %&gt;%
-    filter(stars %in% c(1, 5)) %&gt;% 
-    count(word, stars) %&gt;%
-    group_by(word) %&gt;% 
-    filter(sum(n) &gt;= 3) %&gt;%
-    ungroup() %&gt;%
-    spread(stars, n, fill = 0) %&gt;%
-    mutate_if(is.numeric, funs((. + 1) / sum(. + 1))) %&gt;%
-    mutate(logratio = log(`5` / `1`)) %&gt;%
-    arrange(desc(logratio)) 
-## Warning: funs() is soft deprecated as of dplyr 0.8.0
-## Please use a list of either functions or lambdas: 
-## 
-##   # Simple named list: 
-##   list(mean = mean, median = median)
-## 
-##   # Auto named with `tibble::lst()`: 
-##   tibble::lst(mean, median)
-## 
-##   # Using lambdas
-##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
-## This warning is displayed once per session.
-
-word_ratios %&gt;% 
-  mutate(pos_log_OR = ifelse(logratio &gt; 0, &quot;5 star &gt; 1 star&quot;, &quot;1 star &gt; 5 star&quot;)) %&gt;%
-  group_by(pos_log_OR) %&gt;%
-  top_n(10, abs(logratio)) %&gt;%
+<p>Word frequency might be misleading because there are 812 5-star reviews and only 69 1-star reviews.</p>
+<p>Let’s compare which words are more likely to come from a 1 versus 5 star ratings. We limit to words that appear at least 5 times and compute the approximate log odds ratio for each word.</p>
+<pre class="r"><code>word_ratios = 
+  dynamite_words %&gt;%
+  filter(stars %in% c(1, 5)) %&gt;% 
+  count(word, stars) %&gt;%
+  group_by(word) %&gt;% 
+  filter(sum(n) &gt;= 5) %&gt;%
   ungroup() %&gt;%
-  mutate(word = fct_reorder(word, logratio)) %&gt;%
-  ggplot(aes(word, logratio, fill = pos_log_OR)) +
+  pivot_wider(
+    names_from = stars, 
+    values_from = n,
+    names_prefix = &quot;stars_&quot;,
+    values_fill = 0) %&gt;%
+  mutate(
+    stars_1_odds = (stars_1 + 1) / (sum(stars_1) + 1),
+    stars_5_odds = (stars_5 + 1) / (sum(stars_5) + 1),
+    log_OR = log(stars_5_odds / stars_1_odds)
+  ) %&gt;%
+  arrange(desc(log_OR)) </code></pre>
+<p>Next, let’s plot the top 10 most distinctive words (that is, words that appear much more frequently in one group than the other) below.</p>
+<pre class="r"><code>word_ratios %&gt;% 
+  mutate(pos_log_OR = ifelse(log_OR &gt; 0, &quot;5 star &gt; 1 star&quot;, &quot;1 star &gt; 5 star&quot;)) %&gt;%
+  group_by(pos_log_OR) %&gt;%
+  top_n(10, abs(log_OR)) %&gt;%
+  ungroup() %&gt;%
+  mutate(word = fct_reorder(word, log_OR)) %&gt;%
+  ggplot(aes(word, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
   ylab(&quot;log odds ratio (5/1)&quot;) +
   scale_fill_discrete(name = &quot;&quot;)</code></pre>
-<p><img src="tidy_text_files/figure-html/logodds_plot-1.png" width="90%" /></p>
-<p>Words like “classic”, “laugh”, and “love” have high relative frequency in the 5-star reviews and “boring”, “worst”, and “waste” have high relative frequency in the 1-star reviews. This seems to be a polarizing film.</p>
-<p>Finally we conduct a sentiment analysis of the review texts. Below is a plot of the sentiment results, colored by star rating.</p>
-<pre class="r"><code>dynamite_word_sentiments &lt;- dynamite_words %&gt;% 
-  inner_join(get_sentiments(&quot;bing&quot;)) %&gt;% 
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>Words like “classic”, “awesome”, and “love” have high relative frequency in the 5-star reviews and “boring”, “dumb”, and “bad” have high relative frequency in the 1-star reviews. This seems to be a polarizing film.</p>
+</div>
+<div id="sentiment-analysis" class="section level3">
+<h3>Sentiment analysis</h3>
+<p>Finally, let’s score the sentiment in each word. We’ll use the “bing” (like <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing Liu</a>, not like <a href="https://www.bing.com">bing.com</a>) sentiment lexicon, which simply categorizes each word as having a positive or negative sentiment.</p>
+<pre class="r"><code>bing_sentiments = get_sentiments(&quot;bing&quot;)</code></pre>
+<p>Note this is might not always be appropriate – this scores <code>cold</code> as <code>negative</code> which might not be accurate for e.g. food inspections – but we’ll use it anyway.</p>
+<p>We need to combine this lexicon with our tidy dataset containing words from each inspection. Note that only words that are in the sentiment lexicon will be retained, as the rest of the words are not considered meaningful. We’ll also count the number of positive and negative words in each review, and create a score that is the difference between the number of positive words and negative words.</p>
+<pre class="r"><code>dynamite_sentiments = 
+  dynamite_words %&gt;% 
+  inner_join(., bing_sentiments) %&gt;% 
   count(review_num, sentiment) %&gt;% 
-  spread(sentiment, n, fill = 0) %&gt;% 
-  mutate(sentiment = positive - negative) %&gt;% 
-  left_join(dynamite_reviews)
-## Joining, by = &quot;word&quot;
-## Joining, by = &quot;review_num&quot;
-
-ggplot(dynamite_word_sentiments, 
-       aes(x = reorder(review_num, -sentiment), 
-           y = sentiment, fill = stars, color = stars)) + 
+  pivot_wider(
+    names_from = sentiment, 
+    values_from = n, 
+    values_fill = 0) %&gt;% 
+  mutate(review_sentiment = positive - negative) %&gt;% 
+  select(review_num, review_sentiment)</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<p>We now have sentiment scores for each inspection. We’ll combine these with our original dataset, which had inspections in each row rather than words in each row – the data tidied for text analysis aren’t really suitable for our current needs.</p>
+<pre class="r"><code>dynamite_sentiments = 
+  right_join(
+    dynamite_reviews, dynamite_sentiments, 
+    by = &quot;review_num&quot;)</code></pre>
+<p>Finally, let’s make a plot showing inspection sentiments and stars.</p>
+<pre class="r"><code>dynamite_sentiments %&gt;% 
+  mutate(
+    review_num = factor(review_num),
+    review_num = fct_reorder(review_num, review_sentiment, .desc = TRUE)) %&gt;% 
+  ggplot(aes(x = review_num, y = review_sentiment, fill = stars, color = stars)) + 
   geom_bar(stat = &quot;identity&quot;) + 
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  scale_fill_viridis(direction = -1) + 
-  scale_color_viridis(direction = -1) </code></pre>
+  theme(
+    axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())</code></pre>
 <p><img src="tidy_text_files/figure-html/sentiment_plot-1.png" width="90%" /></p>
-<p>Sentiment seems to be at least somewhat associated with star rating in that more positive sentiments are more blue-purple (4-5 stars) and more negative sentiments are more green-yellow.</p>
+<p>Sentiment seems to be at least somewhat associated with star rating in that more positive sentiments are more yellow-green (4-5 stars) and more negative sentiments are more blue-purple.</p>
 <p>Here is the text from the most positive review:</p>
-<pre class="r"><code>dynamite_word_sentiments %&gt;%
-  filter(sentiment == max(sentiment)) %&gt;% 
-  pull(text)
-## [1] &quot;Love, love and love! My children ages 13, 10 and 8 enjoy family movie nights and my husband and I were looking for something that we all could enjoy. This movie was perfect! So much fun and beyond quotable comments. A fun family film!&quot;</code></pre>
+<pre class="r"><code>dynamite_sentiments %&gt;%
+  filter(review_sentiment == max(review_sentiment)) %&gt;% 
+  pull(text)</code></pre>
+<pre><code>## [1] &quot;love love love love love. We watch this twice a week and even had a Napoleon Dynamite party complete with corn dogs and tater tots. FUN!!&quot;</code></pre>
 <p><img src="images/napoleon_1.gif" style="width:50%; border:5px solid"></p>
-<p>And here is the text from the most negative 1-star review:</p>
-<pre class="r"><code>dynamite_word_sentiments %&gt;%
-  filter(sentiment == min(sentiment),
-         stars == 1) %&gt;% 
-  pull(text)
-## [1] &quot;Let me start by openly admitting that I am an 80&#39;s throwback and proud of it. I understand that my era did not produce horribly intelligent, deeply touching movies. That being said, this movie puts the Du-h! in Dumb!!  My teenage daughter had seen it a sleepover, so we rented it so she could show me how silly it is for our girly night.  She actually got tickled at a few spots on her second run through it. I sat open mouthed, amazed at the sheer senselessness of the whole thing...waiting desperately for a plot or growth of a character. None came. Since we had it rented for the weekend, she showed it to her older brother the next night. She giggled again, and he snickered with a confused look on his face once in a while. Then we couldn&#39;t let my Hubby miss out on the sheer stupidity of it all, so we watched it with him on Sunday afternoon.  Our daughter and son both snickered here and there, mostly at the looks on their parents&#39; faces.  My husband was, as was I, gobsmackered. We kept looking at each other as if to assure each other that it was indeed that painfully dumb.  The only real emotion I felt was a horribly heartbroken, sick to my stomach feeling for Napoleon and his friends for being so awkward and socially inept...I remember kids who struggled in school that way, and I always almost cried every time I saw them in a tough situation.  If anything it brought back bad memories of school....who needs that?  Anyway, all this to say it is a story about an awkward boy who uses bluster and dumb responses to deal with not fitting in.  It follows (if you can exaggerate and say there is a plot) him as he finds friends (just as goofy as he) and finds romance...sort of.&quot;</code></pre>
+<p>And here is the text from the most negative (1-star) review:</p>
+<pre class="r"><code>dynamite_sentiments %&gt;%
+  filter(review_sentiment == min(review_sentiment), stars == 1) %&gt;% 
+  pull(text)</code></pre>
+<pre><code>## [1] &quot;Let me start by openly admitting that I am an 80&#39;s throwback and proud of it. I understand that my era did not produce horribly intelligent, deeply touching movies. That being said, this movie puts the Du-h! in Dumb!!  My teenage daughter had seen it a sleepover, so we rented it so she could show me how silly it is for our girly night.  She actually got tickled at a few spots on her second run through it. I sat open mouthed, amazed at the sheer senselessness of the whole thing...waiting desperately for a plot or growth of a character. None came. Since we had it rented for the weekend, she showed it to her older brother the next night. She giggled again, and he snickered with a confused look on his face once in a while. Then we couldn&#39;t let my Hubby miss out on the sheer stupidity of it all, so we watched it with him on Sunday afternoon.  Our daughter and son both snickered here and there, mostly at the looks on their parents&#39; faces.  My husband was, as was I, gobsmackered. We kept looking at each other as if to assure each other that it was indeed that painfully dumb.  The only real emotion I felt was a horribly heartbroken, sick to my stomach feeling for Napoleon and his friends for being so awkward and socially inept...I remember kids who struggled in school that way, and I always almost cried every time I saw them in a tough situation.  If anything it brought back bad memories of school....who needs that?  Anyway, all this to say it is a story about an awkward boy who uses bluster and dumb responses to deal with not fitting in.  It follows (if you can exaggerate and say there is a plot) him as he finds friends (just as goofy as he) and finds romance...sort of.&quot;</code></pre>
 <p><img src="images/napoleon_2.gif" style="width:50%; border:5px solid"></p>
 </div>
 </div>
@@ -843,7 +803,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
