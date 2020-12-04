@@ -111,7 +111,7 @@ The search path discussion is particularly relevant in the context of writing yo
 cat(readr::read_file("resources/NAMESPACE"))
 ```
 
-We used `@import dplyr` and `@import purrr` in our roxygen comments, which adds the statements `import(dplyr)` and `import(purrr)` to the `NAMESPACE`. As a result, code in our package will include `dplyr` and `purrr` when looking for functions. 
+We used `@import dplyr` in our roxygen comments, which adds the statements `import(dplyr)` and `import(purrr)` to the `NAMESPACE`. As a result, code in our package will include `dplyr` and `purrr` when looking for functions. 
 
 We also used `@importFrom tibble tibble` and `@importFrom magrittr "%>%"` in our roxygen comments, which adds the statements `importFrom(tibble,tibble)` and `importFrom(magrittr,"%>%")` to the `NAMESPACE`. As a result, code in our package will include _these specific functions_ when executing code. 
 
@@ -121,7 +121,7 @@ There's an important but confusing distinction between import **_directives_** i
 cat(readr::read_file("resources/DESCRIPTION"))
 ```
 
-To illustrate this distinction, recall that we used `broom::tidy()` in our functions rather than including `@import broom` in the roxygen comments. This makes it very clear where `tidy()` comes from, and means we don't need `broom` in the search path; thus, these don't appear in the `NAMESPACE`. We do still need the packages though, so they're listed as a dependency in the `DESCRIPTION`. 
+To illustrate this distinction, recall that we used `tibble::tibble()` in our functions rather than including `@import tibble` in the roxygen comments. This makes it very clear where `tidy()` comes from, and means we don't need `broom` in the search path; thus, these don't appear in the `NAMESPACE`. We do still need the packages though, so they're listed as a dependency in the `DESCRIPTION`. 
 
 The `NAMESPACE` and roxygen comments also include exports, which identify functions that are visible when your package is attached. In bigger, more complex packages you may have functions you don't want users to have access to; for those, remove `@export` from the roxygen comments. 
 
@@ -150,7 +150,7 @@ _Testing_, in contrast, is package specific because it is concerned with whether
 
 Informal testing is common during development -- you run your functions on code snippets and make sure they give the results you expect. Formal testing makes this process more rigorous and saving the informal tests and running them each time you check your package. Like other best practices for development, this takes some time to get used to but guards against future trouble and improves your software. 
 
-The `testthat` package does as much as possible to facilitate formal testing. To set this up for your package, run `devtools::use_testthat()`. Doing so will create a directory `/tests/testthat/` to hold tests and a file `/tests/testthat.R` to run tests. It's your job to write the tests!
+The `testthat` package does as much as possible to facilitate formal testing. To set this up for your package, run `usethis::use_testthat()`. Doing so will create a directory `/tests/testthat/` to hold tests and a file `/tests/testthat.R` to run tests. It's your job to write the tests!
 
 The file `tests/testthat/test_sim_bern.R` is shown below (note: test files have to start with `test` and be in the right directory):
 
@@ -174,7 +174,7 @@ Help pages for functions are great, but assume users know roughly how a package 
 To build the infrastructure needed to include a vignette in `example.package`, I'll run the lines below. 
 
 ```{r, eval = FALSE}
-devtools::use_vignette("sim_vignette")
+usethis::use_vignette("sim_vignette")
 ```
 
 This makes several changes in the package directory. 

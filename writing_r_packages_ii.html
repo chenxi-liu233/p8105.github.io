@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -251,6 +250,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -279,6 +279,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -457,6 +463,14 @@ div.tocify {
 
 <p>If you write more than two functions, you need a package – this will remind you what functions do and how they interact with each other, help you keep track of inputs and outputs, and, if you want to share you code, allow you to do so in a standard format. The <a href="writing_r_packages_i.html">first part</a> of this module covered getting to a complete package from scratch; this module covers some important but more advanced issues in R package development.</p>
 <p>This is the second of two lectures on writing R packages.</p>
+<pre><code>## ── Attaching packages ──────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
 <div id="some-slides" class="section level2">
 <h2>Some slides</h2>
 <script async class="speakerdeck-embed" data-id="7c0c3b85cf824c209a4b691dda1b967b" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
@@ -516,10 +530,10 @@ iris %&gt;%
 <div id="namespace" class="section level3">
 <h3><code>NAMESPACE</code></h3>
 <p>The search path discussion is particularly relevant in the context of writing your own packages. In particular, the <code>NAMESPACE</code> file determines search path associated with your package. The <code>NAMESPACE</code> file for <code>example.package</code> is shown below.</p>
-<p>We used <code>@import dplyr</code> and <code>@import purrr</code> in our roxygen comments, which adds the statements <code>import(dplyr)</code> and <code>import(purrr)</code> to the <code>NAMESPACE</code>. As a result, code in our package will include <code>dplyr</code> and <code>purrr</code> when looking for functions.</p>
-<p>We also used <code>@importFrom tibble tibble</code> and <code>@importFrom magrittr &quot;%&gt;%&quot;</code> in our roxygen comments, which adds the statements <code>importFrom(tibble,tibble)</code> and <code>importFrom(magrittr,&quot;%&gt;%&quot;)</code> to the <code>NAMESPACE</code>. As a result, code in our package will include <em>these specific functions</em> when executing code.</p>
+<p>We used <code>@import dplyr</code> in our roxygen comments, which adds the statements <code>import(dplyr)</code> and <code>import(purrr)</code> to the <code>NAMESPACE</code>. As a result, code in our package will include <code>dplyr</code> and <code>purrr</code> when looking for functions.</p>
+<p>We also used <code>@importFrom tibble tibble</code> and <code>@importFrom magrittr "%&gt;%"</code> in our roxygen comments, which adds the statements <code>importFrom(tibble,tibble)</code> and <code>importFrom(magrittr,"%&gt;%")</code> to the <code>NAMESPACE</code>. As a result, code in our package will include <em>these specific functions</em> when executing code.</p>
 <p>There’s an important but confusing distinction between import <strong><em>directives</em></strong> in the <code>NAMESPACE</code> and the <code>Import</code> <strong><em>field</em></strong> in the <code>DESCRIPTION</code> (shown below). Although they share a name, these mean different things: roughly, in the <code>NAMESPACE</code> we’re listing packages that need to be included in the search path, while in the <code>DESCRIPTION</code> we’re listing packages that have to be installed for our package to work.</p>
-<p>To illustrate this distinction, recall that we used <code>broom::tidy()</code> in our functions rather than including <code>@import broom</code> in the roxygen comments. This makes it very clear where <code>tidy()</code> comes from, and means we don’t need <code>broom</code> in the search path; thus, these don’t appear in the <code>NAMESPACE</code>. We do still need the packages though, so they’re listed as a dependency in the <code>DESCRIPTION</code>.</p>
+<p>To illustrate this distinction, recall that we used <code>tibble::tibble()</code> in our functions rather than including <code>@import tibble</code> in the roxygen comments. This makes it very clear where <code>tidy()</code> comes from, and means we don’t need <code>broom</code> in the search path; thus, these don’t appear in the <code>NAMESPACE</code>. We do still need the packages though, so they’re listed as a dependency in the <code>DESCRIPTION</code>.</p>
 <p>The <code>NAMESPACE</code> and roxygen comments also include exports, which identify functions that are visible when your package is attached. In bigger, more complex packages you may have functions you don’t want users to have access to; for those, remove <code>@export</code> from the roxygen comments.</p>
 </div>
 <div id="checks" class="section level3">
@@ -538,7 +552,7 @@ iris %&gt;%
 <li>As you add or edit functions, you should be sure that changes don’t break existing code in unexpected ways</li>
 </ul>
 <p>Informal testing is common during development – you run your functions on code snippets and make sure they give the results you expect. Formal testing makes this process more rigorous and saving the informal tests and running them each time you check your package. Like other best practices for development, this takes some time to get used to but guards against future trouble and improves your software.</p>
-<p>The <code>testthat</code> package does as much as possible to facilitate formal testing. To set this up for your package, run <code>devtools::use_testthat()</code>. Doing so will create a directory <code>/tests/testthat/</code> to hold tests and a file <code>/tests/testthat.R</code> to run tests. It’s your job to write the tests!</p>
+<p>The <code>testthat</code> package does as much as possible to facilitate formal testing. To set this up for your package, run <code>usethis::use_testthat()</code>. Doing so will create a directory <code>/tests/testthat/</code> to hold tests and a file <code>/tests/testthat.R</code> to run tests. It’s your job to write the tests!</p>
 <p>The file <code>tests/testthat/test_sim_bern.R</code> is shown below (note: test files have to start with <code>test</code> and be in the right directory):</p>
 <p>These are pretty contrived tests, but give you an idea of how testing in general might work. Use <code>devtools::test()</code> to run your tests (these will also run when you check your package); output for my tests is shown below.</p>
 <p>This output contains <code>.</code> for each passed test in each context, and will indicate when a test is failed.</p>
@@ -547,7 +561,7 @@ iris %&gt;%
 <h3>Vignettes</h3>
 <p>Help pages for functions are great, but assume users know roughly how a package works and only need a reminder about some specifics. To give a more general introduction to a package – what functions do, how they interact, and why you wrote it – you need the longer-form documentation found in package vignettes. Fortunately, these can be written using R Markdown</p>
 <p>To build the infrastructure needed to include a vignette in <code>example.package</code>, I’ll run the lines below.</p>
-<pre class="r"><code>devtools::use_vignette(&quot;sim_vignette&quot;)</code></pre>
+<pre class="r"><code>usethis::use_vignette(&quot;sim_vignette&quot;)</code></pre>
 <p>This makes several changes in the package directory.</p>
 <ul>
 <li>Adds <code>knitr</code> and <code>rmarkdown</code> to <code>Suggests</code> in <code>DESCRIPTION</code>; these packages aren’t dependencies, but will be needed for someone else to knit your vignette.</li>
@@ -561,7 +575,7 @@ iris %&gt;%
 </ul>
 <p>Then edit the rest of the R Markdown document to give an overview of the package. This often consists of organizing some of the code you’ve used elsewhere – either in the examples or in the code you have that uses the package.</p>
 <p>The vignette I wrote for <code>example.package</code> can be downloaded <a href="resources/sim_vignette.Rmd">here</a>.</p>
-<p>Disseminating your vignette gets complicated, unfortunately – the knitted RMD is in <code>/inst/doc/</code>, which git is ignoring. <em>Building</em> a package (going from source to bundle) using <code>devtools::build()</code> will compile the vignette and include it in the bundle, so packages installed from a bundle or binary will have vignettes available. That means you can check out vignettes for packages you’ve installed from CRAN; see what’s available with <code>browseVignettes()</code>, or go straight to a vignette using <code>vignette(&quot;dplyr&quot;)</code>.</p>
+<p>Disseminating your vignette gets complicated, unfortunately – the knitted RMD is in <code>/inst/doc/</code>, which git is ignoring. <em>Building</em> a package (going from source to bundle) using <code>devtools::build()</code> will compile the vignette and include it in the bundle, so packages installed from a bundle or binary will have vignettes available. That means you can check out vignettes for packages you’ve installed from CRAN; see what’s available with <code>browseVignettes()</code>, or go straight to a vignette using <code>vignette("dplyr")</code>.</p>
 <p>Installing from github first builds the package bundle and then installs that; by default, this won’t knit vignettes in case they are time consuming or complex. You can force the inclusion of a vignette using <code>devtools::install_github(build_vignettes = TRUE)</code>.</p>
 <p>For packages I put on GH, I usually include a code chunk like the one below in my README to let users know how to include and access the vignette.</p>
 <pre class="r"><code>devtools::install_github(&quot;p8105/example.package&quot;, 
@@ -646,7 +660,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

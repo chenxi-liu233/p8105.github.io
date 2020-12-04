@@ -24,138 +24,148 @@ library(tidyverse)
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
 
-## Some slides
+### Learning Objectives
 
-<script async class="speakerdeck-embed" data-id="130d6e5970124547bcc8e6f28936ffdf" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+Create an R package from scratch!
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/130d6e5970124547bcc8e6f28936ffdf" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
 <div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-r-packages-i" title="Writing R Packages I" target="_blank">Writing R Packages I</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
 
 ## Example
 
 Rather than jumping into how to organize this material, we'll start by motivating the need for an R package by revisiting an example from [Iteration](topic_iteration.html). There, we wrote a short function to simulate data from a simple linear regression; this function returns a data frame containing the sample size and estimated coefficients for the simualted dataset. 
 
 ```{r}
-sim_regression = function(n, beta0 = 2, beta1 = 3) {
+sim_mean_sd = function(n, mu = 2, sigma = 3) {
   
   sim_data = tibble(
-    x = rnorm(n, mean = 1, sd = 1),
-    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+    x = rnorm(n, mean = mu, sd = sigma),
   )
   
-  ls_fit = lm(y ~ x, data = sim_data)
-  
-  tibble(
-    beta0_hat = coef(ls_fit)[1],
-    beta1_hat = coef(ls_fit)[2]
-  )
+  sim_data %>% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
 }
 ```
 
-We also wrote a wrapper function to repeat the simulation many times and collapse the output to a data frame. 
+You can download an R scripts containing [`sim_mean_sd`](./resources/sim_mean_sd.R). 
+
+We used these functions to examine the properties of the sample mean.
 
 ```{r}
-simulate_nruns = function(n_runs = 100, n, beta0 = 2, beta1 = 3) {
-  
-  rerun(n_runs, sim_regression(n, beta0, beta1)) %>% 
-    bind_rows()
-  
-}
-```
-
-You can download R scripts containing [`sim_regression`](./resources/sim_regression.R) and [`simulate_nruns`](./resources/simulate_nruns.R). 
-
-We used these functions to examine the properties of ordinary least squares estimates in a simple linear regression.
-
-```{r}
-library(broom)
 library(tidyverse)
 
 sim_results = 
   tibble(sample_size = c(30, 60, 120, 240)) %>% 
-  mutate(estimate_dfs = map(.x = sample_size, ~simulate_nruns(n = .x))) %>% 
-  unnest
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_dfs)
 
 sim_results %>% 
   mutate(
     sample_size = str_c("n = ", sample_size),
     sample_size = fct_inorder(sample_size)) %>% 
-  ggplot(aes(x = sample_size, y = beta1_hat, fill = sample_size)) + 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
   geom_violin()
 ```
 
 It's really easy to forget what these functions do and how to work with them, even in the space of a couple of weeks. In this case it's not _too_ bad to look back at the code, but for more complex functions it can be very challenging. That's why writing packages is helpful. 
 
-### `create()`
+### `create_package()`
 
-I'll create a new package skeleton called `example.package` using `devtools::create()`.
+I'll create a new package skeleton called `example.package` using `usethis::create_package()`.
 
 ```{r}
-library(devtools)
-create("~/Desktop/example.package")
+usethis::create_package("~/Desktop/example.package")
 ```
 
-(**Note**: you might have thought I was going to call this `example_package` in keeping with _literally everything else in the whole course_. You'd be right; that's exactly what I was going to do. But early on CRAN decided not to let underscores in package names and that's one of those things that just probably won't change. Putting `.`s in package names causes other problems and I would usuall avoid it, but it seemed like the best option in this case. So here we are, stuck with `example.package`.)
+(**Note**: you might have thought I was going to call this `example_package` in keeping with _literally everything else in the whole course_. You'd be right; that's exactly what I was going to do. But early on CRAN decided not to let underscores in package names and that's one of those things that just probably won't change. Putting `.`s in package names causes other problems and I would usually avoid it, but it seemed like the best option in this case. So here we are, stuck with `example.package`.)
 
-Take a look at the directory that `create()` creates. This contains `DESCRIPTION` and `NAMESPACE` files, an empty `R` directory, and an R Project -- everything you need to get a package started. 
+Take a look at the directory that `create_package()` creates. This contains `DESCRIPTION` and `NAMESPACE` files, an empty `R` directory, and an R Project -- everything you need to get a package started. 
 
 Open the R Project, and notice the build tab. RStudio has a lot of helpful built-in tools for package development, which we'll use frequently. Like other things we've seen, these are often shortcuts for commands that do the same stuff. 
 
-Your package directory is a git repo, but it isn't automatically connected to a "remote" repo on GitHub -- I encourage you to [set this up now](http://happygitwithr.com/existing-github-last.html), although it's not critical for most of what we'll do.
-
 ### Add functions
 
-My "package" currently doesn't do anything, so I'm going to copy the `.R` files above into the `R` directory. Then I'll install this version of the package and restart the R session, and run the code below.
+My "package" currently doesn't do anything, so I'm going to copy the `.R` file above into the `R` directory. Then I'll install this version of the package and restart the R session (which will remove the function from the environment), and run the code below.
 
 ```{r}
-library(broom)
 library(tidyverse)
 library(example.package)
 
-rm(list = ls())
-
-simulate_nruns(n_runs = 10, n = 30, beta0 = 2, beta1 = 3) 
+sim_mean_sd(n = 30) 
 ```
 
 I've removed the functions from the global environment, but can still run the code above. That's because we've made those functions accessible to R through `example.package`, which is great!!
 
-If you try `?sim_regression` you'll find there's nothing there; that's because we haven't written any documentation. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren't really useful without documentation.
+Right now, you have a package that contains a function that you can use. If someone else installed this, they could use the function as well. So, in a lot of ways, everything after this is just extra -- stuff that will make your package better and more user-friendly, and that is not bad to get the hang of. But if you just stop here ... congrats, you made an R package!
 
 ### Add documentation
 
-Open `sim_regression.R` and put your cursor somewhere inside the function. In RStudion, go to Code > Insert Roxygen Skeleton; this will add a bunch of commented lines above the function. We'll use the `roxygen2` package to convert these specially formatted lines into the file `/man/sim_regression.Rd`, which will become the help page accessed using `?sim_regression`.
+If you try `?sim_mean_sd` you'll find there's nothing there; that's because we haven't written any documentation. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren't really useful without documentation.
+
+Open `sim_regression.R` and put your cursor somewhere inside the function. In RStudio, go to Code > Insert Roxygen Skeleton; this will add a bunch of commented lines above the function. We'll use the `roxygen2` package to convert these specially formatted lines into the file `/man/sim_mean_sd.Rd`, which will become the help page accessed using `?sim_mean_sd`.
 
 After updating the title, writing a short summary of the function, describing input parameters and the return object (ignore `@export` and `@examples` for now), you should have something like the following:
 
 ```{r}
-#' Simulate from an SLR
+#' Generate sample mean and SD
 #'
-#' Simualtes data from a simple linear regression model with user-defined
-#' sample size and regression coefficients. Fits a SLR to the simulated 
-#' data and returns regression coefficients.
+#' Simulates data from a normal distribution with a  user-defined
+#' sample size, true mean, and true SD. Reports the sample mean and
+#' SD.
 #'
 #' @param n sample size
-#' @param beta0 intercept
-#' @param beta1 slope
+#' @param mu true mean
+#' @param sigma true standard deviation
 #'
-#' @return tbl_df with one row, containing sample size and coef estimates
+#' @return tibble with two rows, containing sample mean and SD
 #' @export
 #'
 #' @examples
 ```
 
-Repeat this process to create a roxygen comments for `simulate_nruns`. 
+Once the roxygen comments are in place, use `devtools::document()` in the console or Build > More > Document to create help pages for the two functions. Install and restart, and try `?sim_mean_sd` again. Now you have help pages accessible in the usual way -- neat!!
 
-Once the roxygen comments are in place, use `devtools::document()` in the console or Build > More > Document to create help pages for the two functions. Install and restart, and try `?sim_regression` again. Now you have help pages accessible in the usual way -- neat!!
-
-Open the directory for the package. You should find a new `/man/` subdirectory, with files for each function with the extension `.Rd`. These are the documentation files; you can open them if you want, but don't edit them! Always change your documentation in the roxygen comments -- doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.
+Open the directory for the package. You should find a new `/man/` subdirectory, with a file for each function with the extension `.Rd`. These are the documentation files; you can open them if you want, but don't edit them! Always change your documentation in the roxygen comments -- doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.
 
 These descriptions are helpful, but illustrative examples are great too! Edit the roxygen comments to include the lines below, then `devtools::document()`, install + rebuild, and check out the new help page. 
+
 ```{r}
 #' @examples
 #' # simulate a single dataset
-#' sim_regression(30, 2, 3)
+#' sim_mean_sd(30, 2, 3)
 ```
 
-As you writing documentation, keep in mind that you'll need to understand how your functions work later -- this is another case where you're collaborating with "future you", so anything you do now to make this clear will save you time in the long run! If you intend to share this with others, you probably need to be even more explicit in your documentation. 
+As you're writing documentation, keep in mind that you'll need to understand how your functions work later -- this is another case where you're collaborating with "future you", so anything you do now to make this clear will save you time in the long run! If you intend to share this with others, you probably need to be even more explicit in your documentation. 
 
 ### Package description
 
@@ -164,33 +174,31 @@ The `DESCRIPTION` file should mostly be edited by hand. This is higher-level inf
 * [There are rules](http://r-pkgs.had.co.nz/description.html#pkg-description) for the title and description
 * At this point, you're probably the only author
 * Start with version number `0.1.0`; Jeff Leek's guide has some nice thoughts about [versioning](https://github.com/jtleek/rpackages#versioning-your-package) based on Bioconductor. 
-* Add a licence -- run `devtools::use_mit_license()` and change `LICENSE.txt` to your name and the current year. 
+* Maybe add a licence -- run `usethis::use_mit_license("Jeff Goldsmith")`
 
 Once you've done all this, install and restart. 
 
 ### More functions
 
-Right now, `example.package` consists of a function to simulate data from a SLR, estimate model parameters, and return the results, and a second function that reruns the first, formats the results, and returns a dataframe. To build on this framework, we'll add a new function that simulates from a different data generating mechanism and edit `simulate_nruns` to work with both simulation functions.
+Right now, `example.package` consists of a single function to simulate data from a Normal distribution and return the sample mean and SD. To build on this framework, we'll add a new function that simulates from a different data generating mechanism.
 
-The `sim_bern_mean` function has the same general structure as `sim_regression()` but simulates data from a Bernoulli distribution and returns the sample average (download the script [here](./resources/sim_bern_mean.R).
+The `sim_bern_mean` function has the same general structure as `sim_mean_sd()` but simulates data from a Bernoulli distribution and returns the sample average (download the script [here](./resources/sim_bern_mean.R).
 
 ```{r}
 sim_bern_mean = function(n, prob) {
   
   sim_data = tibble(
-    y = rbinom(n, 1, prob)
+    x = rbinom(n, 1, prob)
   )
   
-  tibble(
-    samp_avg = mean(sim_data %>% pull(y))
-  )
+  sim_data %>% 
+    summarize(p_hat = mean(x))
 }
 ```
 
 To add this to `example.package`, we need to copy the script to `/R/`, write some documentation using roxygen comments, use `document()` to create the `.Rd` file, and install + restart. After these steps, I can check that the function works the way I intended.
 
 ```{r}
-library(broom)
 library(tidyverse)
 library(example.package)
 
@@ -199,47 +207,20 @@ rm(list = ls())
 sim_bern_mean(25, .9)
 ```
 
-A problem now is that `simulate_nruns` doesn't take advantage of this new function, so I need to do some edits there. Specifically, I'll add `sim_func` as an argument and use the [mysterious but useful](http://stat545.com/block011_write-your-own-function-03.html#the-useful-but-mysterious-...-argument) `...` to pass additional arguments on to other functions -- this is helpful because we can still send arguments to `sim_regression` or `sim_bern_mean` without listing everything in the definition of `simulate_nruns`. The function after making these edits follows. 
-
-```{r}
-simulate_nruns = function(n_rep, sim_func, ...) {
-  
-  rerun(n_rep, sim_func(...)) %>% 
-    bind_rows()
-  
-}
-```
-
-After making these edits, I'll need to change the documentation accordingly, run `devtools::document()`, install + restart, and check that the functions work as expected.
-
-```{r}
-library(broom)
-library(tidyverse)
-library(example.package)
-
-rm(list = ls())
-
-simulate_nruns(n_runs = 10, sim_func = sim_regression, n = 30, beta0 = 2, beta1 = 3)
-simulate_nruns(n_runs = 10, sim_func = sim_bern_mean, n = 25, prob = .9)
-```
-
-At this point, you'd probably want to add some default values to `sim_regression` and `sim_bern_mean` (and add these to the documentation!).
 
 ### Dependencies
 
-Our functions depend on other functions in `broom`, `tibble`, `magrittr`, `purrr`, and `dplyr`, but we haven't made this explicit. As a consequence, opening a new R session, loading only `example.package`, and running the functions as above will produce an error. We'll talk more about the details of this process later, but for now we simply need to know that our package depends on those packages. 
+Our functions depend on other functions in `tibble`, `magrittr`, and `dplyr`, but we haven't made this explicit. As a consequence, opening a new R session, loading only `example.package`, and running the functions as above will produce an error. We'll talk more about the details of this process later, but for now we simply need to know that our package depends on those packages. 
 
-The best way to make your package's dependencies known to R is to use `package::function()` everywhere in your code (e.g. `broom::tidy()`). This makes it clear which functions exist outside your package and can help prevent errors if multiple packages have functions with the same name. 
+The best way to make your package's dependencies known to R is to use `package::function()` everywhere in your code (e.g. `tibble::tibble()`). This makes it clear which functions exist outside your package and can help prevent errors if multiple packages have functions with the same name. 
 
-That strategy can be a bit heavy-handed if you use the same function a lot, or if you use lots of functions from the same package. In these cases, you can edit the roxygen comments to include `@importFrom package function` or `@import package`. These make it increasingly less clear which functions come from which package (especially `@import`) but will make the relevant functions available. In `example.package`, I'll use `broom::tidy()` to identify `tidy()`; `importFrom tibble tibble` to add `tibble()` and `importFrom magrittr "%>%"` to add the pipe; and `@import dplyr` for `bind_rows()` and `@import purrr` for `rerun()`.
+That strategy can be a bit heavy-handed if you use the same function a lot, or if you use lots of functions from the same package. In these cases, you can edit the roxygen comments to include `@importFrom package function` or `@import package`. These make it increasingly less clear which functions come from which package (especially `@import`) but will make the relevant functions available. In `example.package`, I'll use `tibble::tibble()` to be clear about where this function comes from; `importFrom magrittr "%>%"` to add the pipe; and `@import dplyr` for `summarize()`.
 
 These steps make it clear which packages you depend on, but you still need R to include them when you load your package. To address this point, add dependencies to the `Imports` field of the `DESCRIPTION`. This is a step you could do "by hand" since we've made edits to the file previously; instead we'll run the following lines in the console. Check the `DESCRIPTION` before and after!
 
 ```{r}
-devtools::use_package("broom")
 devtools::use_package("dplyr")
 devtools::use_package("magrittr")
-devtools::use_package("purrr")
 devtools::use_package("tibble")
 ```
 
@@ -253,8 +234,20 @@ rm(list = ls())
 ```{r}
 library(example.package)
 
-simulate_nruns(10, sim_func = sim_regression, n = 30, beta0 = 2, beta1 = 3)
-simulate_nruns(10, sim_func = sim_bern_mean, n = 25, prob = .9)
+sim_results = 
+  tibble(sample_size = c(30, 60, 120, 240)) %>% 
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_bern_mean(n = .x, prob = .85))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_dfs)
+
+sim_results %>% 
+  mutate(
+    sample_size = str_c("n = ", sample_size),
+    sample_size = fct_inorder(sample_size)) %>% 
+  ggplot(aes(x = sample_size, y = p_hat, fill = sample_size)) + 
+  geom_violin()
 ```
 
 Figuring out exactly what you depend on can take some getting used to, but it's a critical step for ensuring your package really is self-contained. You should also try to limit your dependencies, both to keep your package simple and to make it easier to maintain if the dependencies are updated. 
@@ -262,12 +255,21 @@ Figuring out exactly what you depend on can take some getting used to, but it's 
 
 ### Deploy on GitHub
 
-Throughout this example, I've been using git and GitHub because that's how I do all my work. In the case of package development, this turns out to have benefits beyond the usual version control stuff -- you can install R packages directly from GitHub!! 
+I created the package in a folder using a workflow that's a bit different from usual, and so right now my package isn't on GitHub. I'm going to fix that using `usethis` in a couple of ways. I'll run these lines in the console of the RStudio showing the project / package:
+
+```{r, eva}
+usethis::use_git()
+usethis::use_github()
+```
+
+Together (and after some input), these will initialize git in the directory and create a linked repository on GitHub.
+
+I use git and GitHub because that's how I do all my work. In the case of package development, this turns out to have benefits beyond the usual version control stuff -- you can install R packages directly from GitHub!! 
 
 Try installing `example.package` using the lines below.
 
 ```{r}
-devtools::install_github(repo = "p8105/example.package")
+devtools::install_github(repo = "jeff-goldsmith/example.package")
 ```
 
 GitHub has become a common way to make R packages publicly available. Packages that exist only on GitHub have a lot fewer guarantees than packages on CRAN and may be less stable, but can be useful anyway (especially if they're from a developer you trust). You can also frequently access the "developer versions" of CRAN packages using GitHub to get the latest features (again with the caveat that these might be less stable). 
@@ -277,7 +279,7 @@ GitHub has become a common way to make R packages publicly available. Packages t
 
 The information in the package documentation can be difficult for someone to find and read quickly, so it's helpful to add a short description if you intend to make your package useful for others. Files named `README.md` are handled in a special way by GitHub, and are perfect for this purpose. 
 
-Create a template README using `devtools::use_readme_rmd()`, and then edit so that someone who happens across the repo will know what the package does and how it works. I also like to include instructions for installing from GitHub that can be copy-and-pasted, so folks don't have to track down your user and repo names.
+Create a template README using `usethis::use_readme_rmd()`, and then edit so that someone who happens across the repo will know what the package does and how it works. I also like to include instructions for installing from GitHub that can be copy-and-pasted, so folks don't have to track down your user and repo names.
 
 After making edits, knit the README, commit, push to remote, and check out the GitHub repo!
 

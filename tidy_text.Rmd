@@ -34,6 +34,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ### Learning Objectives
 
+Use `tidytext` to organize text data, and to conduct frequency and sentiment analyses.
 
 ### Slide Deck
 
@@ -46,7 +47,7 @@ scale_fill_discrete = scale_fill_viridis_d
   </iframe>
 </div>
 
-<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-tidy-data" title="Tidy Data" target="_blank">Tidy Data</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-tidy-text" title="Tidy Text" target="_blank">Tidy Text</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
 
 ***
 
