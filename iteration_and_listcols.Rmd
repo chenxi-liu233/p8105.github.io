@@ -379,28 +379,34 @@ In [reading data from the web](reading_data_from_the_web.html) and elsewhere, we
 ```{r}
 library(rvest)
 
-read_page_reviews = function(url) {
+read_page_reviews <- function(url) {
   
   html = read_html(url)
   
-  title = 
+  review_titles = 
     html %>%
-    html_nodes("#cm_cr-review_list .review-title") %>%
+    html_nodes(".a-text-bold span") %>%
     html_text()
   
-  stars = 
+  review_stars = 
     html %>%
     html_nodes("#cm_cr-review_list .review-rating") %>%
     html_text() %>%
-    str_extract("\\d") %>%
+    str_extract("^\\d") %>%
     as.numeric()
   
-  text = 
+  review_text = 
     html %>%
-    html_nodes(".review-data:nth-child(5)") %>%
-    html_text()
+    html_nodes(".review-text-content span") %>%
+    html_text() %>% 
+    str_replace_all("\n", "") %>% 
+    str_trim()
   
-  tibble(title, stars, text)
+  tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
 }
 ```
 

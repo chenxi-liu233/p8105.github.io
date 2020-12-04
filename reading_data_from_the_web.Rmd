@@ -203,7 +203,7 @@ review_titles =
 
 review_stars = 
   dynamite_html %>%
-  html_nodes(".review-rating") %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
   html_text()
 
 review_text = 
