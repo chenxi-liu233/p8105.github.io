@@ -24,6 +24,8 @@ library(tidyverse)
 theme_set(theme_bw() + theme(legend.position = "bottom"))
 ```
 
+## Overview {.tabset .tabset-pills}
+
 ### Learning Objectives
 
 Create an R package from scratch!
@@ -47,7 +49,7 @@ Create an R package from scratch!
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/3LXxb9-JuAM"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -113,24 +115,9 @@ Take a look at the directory that `create_package()` creates. This contains `DES
 
 Open the R Project, and notice the build tab. RStudio has a lot of helpful built-in tools for package development, which we'll use frequently. Like other things we've seen, these are often shortcuts for commands that do the same stuff. 
 
-### Add functions
+### Add function and document
 
-My "package" currently doesn't do anything, so I'm going to copy the `.R` file above into the `R` directory. Then I'll install this version of the package and restart the R session (which will remove the function from the environment), and run the code below.
-
-```{r}
-library(tidyverse)
-library(example.package)
-
-sim_mean_sd(n = 30) 
-```
-
-I've removed the functions from the global environment, but can still run the code above. That's because we've made those functions accessible to R through `example.package`, which is great!!
-
-Right now, you have a package that contains a function that you can use. If someone else installed this, they could use the function as well. So, in a lot of ways, everything after this is just extra -- stuff that will make your package better and more user-friendly, and that is not bad to get the hang of. But if you just stop here ... congrats, you made an R package!
-
-### Add documentation
-
-If you try `?sim_mean_sd` you'll find there's nothing there; that's because we haven't written any documentation. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren't really useful without documentation.
+My "package" currently doesn't do anything, so I'm going to copy the `.R` file above into the `R` directory. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren't really useful without documentation.
 
 Open `sim_regression.R` and put your cursor somewhere inside the function. In RStudio, go to Code > Insert Roxygen Skeleton; this will add a bunch of commented lines above the function. We'll use the `roxygen2` package to convert these specially formatted lines into the file `/man/sim_mean_sd.Rd`, which will become the help page accessed using `?sim_mean_sd`.
 
@@ -153,11 +140,9 @@ After updating the title, writing a short summary of the function, describing in
 #' @examples
 ```
 
-Once the roxygen comments are in place, use `devtools::document()` in the console or Build > More > Document to create help pages for the two functions. Install and restart, and try `?sim_mean_sd` again. Now you have help pages accessible in the usual way -- neat!!
+Once the roxygen comments are in place, use `devtools::document()` in the console or Build > More > Document to create help pages for the function. In the directory for the package, you should find a new `/man/` subdirectory, with a file for each function with the extension `.Rd`. These are the documentation files; you can open them if you want, but don't edit them! Always change your documentation in the roxygen comments -- doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.
 
-Open the directory for the package. You should find a new `/man/` subdirectory, with a file for each function with the extension `.Rd`. These are the documentation files; you can open them if you want, but don't edit them! Always change your documentation in the roxygen comments -- doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.
-
-These descriptions are helpful, but illustrative examples are great too! Edit the roxygen comments to include the lines below, then `devtools::document()`, install + rebuild, and check out the new help page. 
+As you're writing documentation, keep in mind that you'll need to understand how your functions work later -- this is another case where you're collaborating with "future you", so anything you do now to make this clear will save you time in the long run! Illustrative examples are great for this! You can edit the roxygen comments to include the lines below, then run `devtools::document()`, to add an example to the help file. 
 
 ```{r}
 #' @examples
@@ -165,7 +150,20 @@ These descriptions are helpful, but illustrative examples are great too! Edit th
 #' sim_mean_sd(30, 2, 3)
 ```
 
-As you're writing documentation, keep in mind that you'll need to understand how your functions work later -- this is another case where you're collaborating with "future you", so anything you do now to make this clear will save you time in the long run! If you intend to share this with others, you probably need to be even more explicit in your documentation. 
+Now we have a function and some documentation, and need to install the package. Click Build > Install and Restart; this will install the package and restart R -- in particular, your global environment should be empty. You should be able to run the code below:
+
+```{r}
+library(tidyverse)
+library(example.package)
+
+sim_mean_sd(n = 30) 
+?sim_mean_sd
+```
+
+This is great -- we've made the functions accessible to R through `example.package`!! And there's documentation for it!
+
+Right now, you have a package that contains a function that you can use. If someone else installed this, they could use the function as well. So, in a lot of ways, everything after this is just extra -- stuff that will make your package better and more user-friendly, and that is not bad to get the hang of. But if you just stop here ... congrats, you made an R package!
+
 
 ### Package description
 
@@ -182,7 +180,7 @@ Once you've done all this, install and restart.
 
 Right now, `example.package` consists of a single function to simulate data from a Normal distribution and return the sample mean and SD. To build on this framework, we'll add a new function that simulates from a different data generating mechanism.
 
-The `sim_bern_mean` function has the same general structure as `sim_mean_sd()` but simulates data from a Bernoulli distribution and returns the sample average (download the script [here](./resources/sim_bern_mean.R).
+The `sim_bern_mean` function has the same general structure as `sim_mean_sd()` but simulates data from a Bernoulli distribution and returns the sample average (download the script [here](./resources/sim_bern_mean.R)).
 
 ```{r}
 sim_bern_mean = function(n, prob) {

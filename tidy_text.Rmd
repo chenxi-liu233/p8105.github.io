@@ -55,7 +55,7 @@ Use `tidytext` to organize text data, and to conduct frequency and sentiment ana
 
 <div class="vid_container">
   <iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/Udp2WlvuWHo"
     frameborder="0" allowfullscreen class="video">
   </iframe>
 </div>
@@ -294,4 +294,4 @@ dynamite_sentiments %>%
 * One of the book's authors, Julia Silge, has a [nice video](https://www.youtube.com/watch?v=0poJP8WQxew) talking about the work
 * The other of the book's authors, Dave Robinson, used the approach to examine Donald Trump's tweets in this this [blog post](http://varianceexplained.org/r/trump-tweets/)
 
-The code that I produced working examples in lecture is [here](https://github.com/jeff-goldsmith/example_data_wrangling_ii).
+The code that I produced working examples in lecture is [here](https://github.com/p8105/tidytext).

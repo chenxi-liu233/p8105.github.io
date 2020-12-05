@@ -463,14 +463,16 @@ div.tocify {
 
 <p>If you write more than two functions, you need a package – this will remind you what functions do and how they interact with each other, help you keep track of inputs and outputs, and, if you want to share you code, allow you to do so in a standard format. This module will take us from a few functions to a complete package.</p>
 <p>This is the first of two lectures on writing R packages.</p>
-<pre><code>## ── Attaching packages ──────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tibble  3.0.4     ✓ dplyr   1.0.2
 ## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ─────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2>Overview</h2>
 <div id="learning-objectives" class="section level3">
 <h3>Learning Objectives</h3>
 <p>Create an R package from scratch!</p>
@@ -494,10 +496,11 @@ div.tocify {
 <h3>Video Lecture</h3>
 <div class="vid_container">
 <p><iframe 
-    src="https://www.youtube.com/embed/oHg5SJYRHA0"
+    src="https://www.youtube.com/embed/3LXxb9-JuAM"
     frameborder="0" allowfullscreen class="video"> </iframe></p>
 </div>
 <hr />
+</div>
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
@@ -541,19 +544,9 @@ sim_results %&gt;%
 <p>Take a look at the directory that <code>create_package()</code> creates. This contains <code>DESCRIPTION</code> and <code>NAMESPACE</code> files, an empty <code>R</code> directory, and an R Project – everything you need to get a package started.</p>
 <p>Open the R Project, and notice the build tab. RStudio has a lot of helpful built-in tools for package development, which we’ll use frequently. Like other things we’ve seen, these are often shortcuts for commands that do the same stuff.</p>
 </div>
-<div id="add-functions" class="section level3">
-<h3>Add functions</h3>
-<p>My “package” currently doesn’t do anything, so I’m going to copy the <code>.R</code> file above into the <code>R</code> directory. Then I’ll install this version of the package and restart the R session (which will remove the function from the environment), and run the code below.</p>
-<pre class="r"><code>library(tidyverse)
-library(example.package)
-
-sim_mean_sd(n = 30) </code></pre>
-<p>I’ve removed the functions from the global environment, but can still run the code above. That’s because we’ve made those functions accessible to R through <code>example.package</code>, which is great!!</p>
-<p>Right now, you have a package that contains a function that you can use. If someone else installed this, they could use the function as well. So, in a lot of ways, everything after this is just extra – stuff that will make your package better and more user-friendly, and that is not bad to get the hang of. But if you just stop here … congrats, you made an R package!</p>
-</div>
-<div id="add-documentation" class="section level3">
-<h3>Add documentation</h3>
-<p>If you try <code>?sim_mean_sd</code> you’ll find there’s nothing there; that’s because we haven’t written any documentation. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren’t really useful without documentation.</p>
+<div id="add-function-and-document" class="section level3">
+<h3>Add function and document</h3>
+<p>My “package” currently doesn’t do anything, so I’m going to copy the <code>.R</code> file above into the <code>R</code> directory. Putting all your functions in a package keeps them from cluttering up your scripts and R Markdown documents, but packages aren’t really useful without documentation.</p>
 <p>Open <code>sim_regression.R</code> and put your cursor somewhere inside the function. In RStudio, go to Code &gt; Insert Roxygen Skeleton; this will add a bunch of commented lines above the function. We’ll use the <code>roxygen2</code> package to convert these specially formatted lines into the file <code>/man/sim_mean_sd.Rd</code>, which will become the help page accessed using <code>?sim_mean_sd</code>.</p>
 <p>After updating the title, writing a short summary of the function, describing input parameters and the return object (ignore <code>@export</code> and <code>@examples</code> for now), you should have something like the following:</p>
 <pre class="r"><code>#&#39; Generate sample mean and SD
@@ -570,13 +563,19 @@ sim_mean_sd(n = 30) </code></pre>
 #&#39; @export
 #&#39;
 #&#39; @examples</code></pre>
-<p>Once the roxygen comments are in place, use <code>devtools::document()</code> in the console or Build &gt; More &gt; Document to create help pages for the two functions. Install and restart, and try <code>?sim_mean_sd</code> again. Now you have help pages accessible in the usual way – neat!!</p>
-<p>Open the directory for the package. You should find a new <code>/man/</code> subdirectory, with a file for each function with the extension <code>.Rd</code>. These are the documentation files; you can open them if you want, but don’t edit them! Always change your documentation in the roxygen comments – doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.</p>
-<p>These descriptions are helpful, but illustrative examples are great too! Edit the roxygen comments to include the lines below, then <code>devtools::document()</code>, install + rebuild, and check out the new help page.</p>
+<p>Once the roxygen comments are in place, use <code>devtools::document()</code> in the console or Build &gt; More &gt; Document to create help pages for the function. In the directory for the package, you should find a new <code>/man/</code> subdirectory, with a file for each function with the extension <code>.Rd</code>. These are the documentation files; you can open them if you want, but don’t edit them! Always change your documentation in the roxygen comments – doing so keeps your functions and documentation in the same place, which makes it easier to stay organized and up to date.</p>
+<p>As you’re writing documentation, keep in mind that you’ll need to understand how your functions work later – this is another case where you’re collaborating with “future you”, so anything you do now to make this clear will save you time in the long run! Illustrative examples are great for this! You can edit the roxygen comments to include the lines below, then run <code>devtools::document()</code>, to add an example to the help file.</p>
 <pre class="r"><code>#&#39; @examples
 #&#39; # simulate a single dataset
 #&#39; sim_mean_sd(30, 2, 3)</code></pre>
-<p>As you’re writing documentation, keep in mind that you’ll need to understand how your functions work later – this is another case where you’re collaborating with “future you”, so anything you do now to make this clear will save you time in the long run! If you intend to share this with others, you probably need to be even more explicit in your documentation.</p>
+<p>Now we have a function and some documentation, and need to install the package. Click Build &gt; Install and Restart; this will install the package and restart R – in particular, your global environment should be empty. You should be able to run the code below:</p>
+<pre class="r"><code>library(tidyverse)
+library(example.package)
+
+sim_mean_sd(n = 30) 
+?sim_mean_sd</code></pre>
+<p>This is great – we’ve made the functions accessible to R through <code>example.package</code>!! And there’s documentation for it!</p>
+<p>Right now, you have a package that contains a function that you can use. If someone else installed this, they could use the function as well. So, in a lot of ways, everything after this is just extra – stuff that will make your package better and more user-friendly, and that is not bad to get the hang of. But if you just stop here … congrats, you made an R package!</p>
 </div>
 <div id="package-description" class="section level3">
 <h3>Package description</h3>
@@ -585,14 +584,14 @@ sim_mean_sd(n = 30) </code></pre>
 <li><a href="http://r-pkgs.had.co.nz/description.html#pkg-description">There are rules</a> for the title and description</li>
 <li>At this point, you’re probably the only author</li>
 <li>Start with version number <code>0.1.0</code>; Jeff Leek’s guide has some nice thoughts about <a href="https://github.com/jtleek/rpackages#versioning-your-package">versioning</a> based on Bioconductor.</li>
-<li>Maybe add a licence – run <code>usethis::use_mit_license("Jeff Goldsmith")</code></li>
+<li>Maybe add a licence – run <code>usethis::use_mit_license(&quot;Jeff Goldsmith&quot;)</code></li>
 </ul>
 <p>Once you’ve done all this, install and restart.</p>
 </div>
 <div id="more-functions" class="section level3">
 <h3>More functions</h3>
 <p>Right now, <code>example.package</code> consists of a single function to simulate data from a Normal distribution and return the sample mean and SD. To build on this framework, we’ll add a new function that simulates from a different data generating mechanism.</p>
-<p>The <code>sim_bern_mean</code> function has the same general structure as <code>sim_mean_sd()</code> but simulates data from a Bernoulli distribution and returns the sample average (download the script <a href="./resources/sim_bern_mean.R">here</a>.</p>
+<p>The <code>sim_bern_mean</code> function has the same general structure as <code>sim_mean_sd()</code> but simulates data from a Bernoulli distribution and returns the sample average (download the script <a href="./resources/sim_bern_mean.R">here</a>).</p>
 <pre class="r"><code>sim_bern_mean = function(n, prob) {
   
   sim_data = tibble(
@@ -613,8 +612,8 @@ sim_bern_mean(25, .9)</code></pre>
 <div id="dependencies" class="section level3">
 <h3>Dependencies</h3>
 <p>Our functions depend on other functions in <code>tibble</code>, <code>magrittr</code>, and <code>dplyr</code>, but we haven’t made this explicit. As a consequence, opening a new R session, loading only <code>example.package</code>, and running the functions as above will produce an error. We’ll talk more about the details of this process later, but for now we simply need to know that our package depends on those packages.</p>
-<p>The best way to make your package’s dependencies known to R is to use <code>package::function()</code> everywhere in your code (e.g. <code>tibble::tibble()</code>). This makes it clear which functions exist outside your package and can help prevent errors if multiple packages have functions with the same name.</p>
-<p>That strategy can be a bit heavy-handed if you use the same function a lot, or if you use lots of functions from the same package. In these cases, you can edit the roxygen comments to include <code>@importFrom package function</code> or <code>@import package</code>. These make it increasingly less clear which functions come from which package (especially <code>@import</code>) but will make the relevant functions available. In <code>example.package</code>, I’ll use <code>tibble::tibble()</code> to be clear about where this function comes from; <code>importFrom magrittr "%&gt;%"</code> to add the pipe; and <code>@import dplyr</code> for <code>summarize()</code>.</p>
+<p>The best way to make your package’s dependencies known to R is to use <code>package::function()</code> everywhere in your code (e.g. <code>tibble::tibble()</code>). This makes it clear which functions exist outside your package and can help prevent errors if multiple packages have functions with the same name.</p>
+<p>That strategy can be a bit heavy-handed if you use the same function a lot, or if you use lots of functions from the same package. In these cases, you can edit the roxygen comments to include <code>@importFrom package function</code> or <code>@import package</code>. These make it increasingly less clear which functions come from which package (especially <code>@import</code>) but will make the relevant functions available. In <code>example.package</code>, I’ll use <code>tibble::tibble()</code> to be clear about where this function comes from; <code>importFrom magrittr &quot;%&gt;%&quot;</code> to add the pipe; and <code>@import dplyr</code> for <code>summarize()</code>.</p>
 <p>These steps make it clear which packages you depend on, but you still need R to include them when you load your package. To address this point, add dependencies to the <code>Imports</code> field of the <code>DESCRIPTION</code>. This is a step you could do “by hand” since we’ve made edits to the file previously; instead we’ll run the following lines in the console. Check the <code>DESCRIPTION</code> before and after!</p>
 <pre class="r"><code>devtools::use_package(&quot;dplyr&quot;)
 devtools::use_package(&quot;magrittr&quot;)
