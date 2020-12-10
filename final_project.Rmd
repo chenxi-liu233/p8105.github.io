@@ -120,6 +120,14 @@ As noted above, we anticipate that team members will recieve the same grade in m
 
 The examples below are drawn from previous submissions in the to give an idea of the range of possible projects.
 
+#### Fall 2020
+
+* [Attacks on Aid](https://nab2194.github.io/aidworkers.github.io/final_report.html)
+* [Risky Coffee??](https://zl2974.github.io/hot_coffee/index.html)
+* [Bikes in NYC](https://byilma.github.io/nyc_microvehicle_injuries/index.html)
+* [Police Violence and Protest](https://rebekahhughes97.github.io/policeviolence/index.html)
+* [Trends in adult vaccination](https://mggn.github.io/vaccine.github.io/index.html)
+
 #### Fall 2019
 
 * [Evicted in Brooklyn](https://simmwill.github.io/evictions/)

@@ -595,6 +595,16 @@ div.tocify {
 <div id="examples" class="section level3">
 <h3>Examples</h3>
 <p>The examples below are drawn from previous submissions in the to give an idea of the range of possible projects.</p>
+<div id="fall-2020" class="section level4">
+<h4>Fall 2020</h4>
+<ul>
+<li><a href="https://nab2194.github.io/aidworkers.github.io/final_report.html">Attacks on Aid</a></li>
+<li><a href="https://zl2974.github.io/hot_coffee/index.html">Risky Coffee??</a></li>
+<li><a href="https://byilma.github.io/nyc_microvehicle_injuries/index.html">Bikes in NYC</a></li>
+<li><a href="https://rebekahhughes97.github.io/policeviolence/index.html">Police Violence and Protest</a></li>
+<li><a href="https://mggn.github.io/vaccine.github.io/index.html">Trends in adult vaccination</a></li>
+</ul>
+</div>
 <div id="fall-2019" class="section level4">
 <h4>Fall 2019</h4>
 <ul>
@@ -685,7 +695,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
